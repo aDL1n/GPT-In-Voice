@@ -1,5 +1,6 @@
-package dev.adlin.commands.util;
+package dev.adlin.manager;
 
+import dev.adlin.commands.util.DiscordAbstractCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -7,20 +8,19 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class DiscordCommandManager extends ListenerAdapter {
 
     private final JDA jda;
 
     private final List<DiscordAbstractCommand> discordCommandList = new ArrayList<>();
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOGGER = Logger.getLogger(DiscordCommandManager.class.getName());
 
     public DiscordCommandManager(JDA jda) {
         this.jda = jda;
@@ -28,7 +28,7 @@ public class DiscordCommandManager extends ListenerAdapter {
     }
 
     public void registerCommands() {
-        LOGGER.warn("Registering Discord commands...");
+        LOGGER.info("Registering Discord commands...");
         List<SlashCommandData> commandDataList = new ArrayList<>();
         discordCommandList.forEach(command -> {
             if (command.getOptionData() != null) {
@@ -50,20 +50,26 @@ public class DiscordCommandManager extends ListenerAdapter {
                 );
             }
 
-            LOGGER.info("Discord command {} registered!", command.getCommandName());
+            LOGGER.fine("Discord command " + command.getCommandName() + " registered!");
         });
 
         if (!discordCommandList.isEmpty()) {
             this.jda.updateCommands().addCommands(commandDataList).queue();
             LOGGER.info("All Discord commands registered!");
         } else {
-            LOGGER.warn("Discord commands is null!");
+            LOGGER.warning("No Discord commands to register.");
         }
     }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        discordCommandList.stream().filter(command -> command.getCommandName().equals(event.getName())).findFirst().get().execute(event);
+        discordCommandList.stream()
+                .filter(cmd -> cmd.getCommandName().equals(event.getName()))
+                .findFirst()
+                .ifPresentOrElse(
+                        cmd -> cmd.execute(event),
+                        () -> LOGGER.warning("Command not found: " + event.getName())
+                );
     }
 
     public void addDiscordCommand(DiscordAbstractCommand command) {

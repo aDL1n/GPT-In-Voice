@@ -1,4 +1,4 @@
-package dev.adlin.manager;
+package dev.adlin.handlers;
 
 import dev.adlin.utils.WhisperClient;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
-public class VoiceAudioManager implements AudioReceiveHandler {
+public class VoiceReceiveHandler implements AudioReceiveHandler {
 
-    private final Logger LOGGER = Logger.getLogger(VoiceAudioManager.class.getName());
+    private final Logger LOGGER = Logger.getLogger(VoiceReceiveHandler.class.getName());
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final ByteArrayOutputStream audioBuffer = new ByteArrayOutputStream();
@@ -72,7 +72,7 @@ public class VoiceAudioManager implements AudioReceiveHandler {
         try {
             audioBuffer.write(data);
         } catch (IOException e) {
-            LOGGER.throwing(VoiceAudioManager.class.getName(), "writeToBuffer", e);
+            LOGGER.throwing(VoiceReceiveHandler.class.getName(), "writeToBuffer", e);
         }
     }
 

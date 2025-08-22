@@ -1,8 +1,9 @@
 package dev.adlin.commands;
 
 import dev.adlin.commands.util.DiscordAbstractCommand;
-import dev.adlin.manager.VoiceAudioManager;
+import dev.adlin.handlers.VoiceReceiveHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -45,12 +46,15 @@ public class JoinCommand extends DiscordAbstractCommand {
         if (audioChannel != null) {
             AudioManager audioManager = guild.getAudioManager();
 
-            VoiceAudioManager voiceAudioManager = new VoiceAudioManager();
+            VoiceReceiveHandler voiceReceiveHandler = new VoiceReceiveHandler();
 
-            audioManager.setReceivingHandler(voiceAudioManager);
-            audioManager.setSendingHandler(voiceAudioManager);
+            audioManager.setReceivingHandler(voiceReceiveHandler);
+//            audioManager.setSendingHandler();
 
             audioManager.openAudioConnection(audioChannel);
+
+            commandInteraction.getJDA().getPresence().setActivity(Activity.listening("you in " + audioChannel.getName()));
+            commandInteraction.getJDA().getPresence().setStatus(OnlineStatus.ONLINE);
 
             commandInteraction.replyEmbeds(joinedToVoiceEmbed).queue();
         } else {
