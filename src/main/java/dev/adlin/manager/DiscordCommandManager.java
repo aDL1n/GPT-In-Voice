@@ -75,6 +75,7 @@ public class DiscordCommandManager extends ListenerAdapter {
     public void addDiscordCommand(DiscordAbstractCommand command) {
        this.addDiscordCommands(command);
     }
+
     public void addDiscordCommands(DiscordAbstractCommand... commands) {
         Arrays.stream(commands).filter(command -> !discordCommandList.contains(command)).forEach(discordCommandList::add);
     }
