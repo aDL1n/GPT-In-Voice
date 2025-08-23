@@ -1,4 +1,4 @@
-package dev.adlin.utils;
+package dev.adlin.stt;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

@@ -1,6 +1,7 @@
 package dev.adlin.handlers;
 
-import dev.adlin.utils.WhisperClient;
+import dev.adlin.stt.WhisperClient;
+import dev.adlin.utils.WhisperClientFactory;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class VoiceReceiveHandler implements AudioReceiveHandler {
@@ -16,7 +18,7 @@ public class VoiceReceiveHandler implements AudioReceiveHandler {
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final ByteArrayOutputStream audioBuffer = new ByteArrayOutputStream();
-    private final WhisperClient whisperClient = new WhisperClient("http://localhost:5000");
+    private final WhisperClient whisperClient;
 
     private ScheduledFuture<?> pendingTask = null;
     private boolean isRecording = false;
@@ -26,6 +28,10 @@ public class VoiceReceiveHandler implements AudioReceiveHandler {
 
     private static final double VOLUME_THRESHOLD = 0.017;
     private static final long SILENCE_DELAY_MS = 2000;
+
+    public VoiceReceiveHandler() {
+        whisperClient = WhisperClientFactory.getInstance();
+    }
 
     @Override
     public boolean canReceiveCombined() {
