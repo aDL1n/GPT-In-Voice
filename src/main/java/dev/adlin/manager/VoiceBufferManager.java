@@ -1,7 +1,6 @@
 package dev.adlin.manager;
 
 import dev.adlin.llm.LlmManager;
-import dev.adlin.llm.adapters.util.Role;
 import dev.adlin.stt.util.ISttClient;
 
 import java.io.ByteArrayOutputStream;
@@ -80,7 +79,7 @@ public class VoiceBufferManager {
             byte[] audioData = audioBuffer.toByteArray();
             String transcript = sttClient.transcriptAudio(audioData);
 
-            llmManager.getCurrentAdapter().sendMessage(Role.USER, transcript);
+            llmManager.sendFromSTT(transcript);
 
             audioBuffer.reset();
         }
