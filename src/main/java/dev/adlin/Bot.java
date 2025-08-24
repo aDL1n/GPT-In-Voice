@@ -2,11 +2,18 @@ package dev.adlin;
 
 import dev.adlin.commands.JoinCommand;
 import dev.adlin.commands.LeaveCommand;
+import dev.adlin.handlers.VoiceReceiveHandler;
+import dev.adlin.handlers.VoiceSendingHandler;
+import dev.adlin.llm.LlmManager;
 import dev.adlin.manager.DiscordCommandManager;
+import dev.adlin.manager.VoiceBufferManager;
+import dev.adlin.stt.SttManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -28,6 +35,19 @@ public class Bot {
                 .setStatus(OnlineStatus.IDLE)
                 .enableCache(CacheFlag.VOICE_STATE)
                 .build();
+
+        SttManager sttManager = new SttManager();
+        LlmManager llmManager = new LlmManager();
+
+        VoiceBufferManager bufferManager = new VoiceBufferManager(sttManager.getCurrentClient(), llmManager);
+        VoiceReceiveHandler voiceReceiveHandler = new VoiceReceiveHandler(bufferManager);
+        VoiceSendingHandler voiceSendingHandler = new VoiceSendingHandler();
+
+        Guild guild = jda.getGuildById(1317147191822909450L);
+        AudioManager audioManager = guild.getAudioManager();
+
+        audioManager.setReceivingHandler(voiceReceiveHandler);
+        audioManager.setSendingHandler(voiceSendingHandler);
 
         DiscordCommandManager discordCommandManager = new DiscordCommandManager(jda);
 

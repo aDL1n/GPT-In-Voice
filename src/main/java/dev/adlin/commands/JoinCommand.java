@@ -1,7 +1,6 @@
 package dev.adlin.commands;
 
 import dev.adlin.commands.util.DiscordAbstractCommand;
-import dev.adlin.handlers.VoiceReceiveHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
@@ -45,11 +44,6 @@ public class JoinCommand extends DiscordAbstractCommand {
 
         if (audioChannel != null) {
             AudioManager audioManager = guild.getAudioManager();
-
-            VoiceReceiveHandler voiceReceiveHandler = new VoiceReceiveHandler();
-
-            audioManager.setReceivingHandler(voiceReceiveHandler);
-//            audioManager.setSendingHandler();
 
             audioManager.openAudioConnection(audioChannel);
 
