@@ -1,0 +1,112 @@
+package dev.adlin.stt;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import dev.adlin.stt.util.ISttClient;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+public class Whisper implements ISttClient {
+
+    private final Logger LOGGER = Logger.getLogger(Whisper.class.getName());
+    private final Gson gson = new Gson();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+    private String serverUrl;
+
+    public Whisper() {
+        this.serverUrl = "http://localhost:5000";
+    }
+
+    @Override
+    public String transcriptAudio(byte[] data) {
+        try {
+            String requestId = sendToServer(data);
+            if (requestId != null) {
+                return waitForResult(requestId).get();
+            }
+        } catch (Exception e) {
+            LOGGER.throwing(Whisper.class.getName(), "transcriptAudio", e);
+        }
+        return null;
+    }
+
+    private String sendToServer(byte[] audio) {
+        try {
+            URL url = URI.create(serverUrl + "/stream").toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/octet-stream");
+
+            try (OutputStream out = conn.getOutputStream()) {
+                out.write(audio);
+                out.flush();
+                LOGGER.info("Audio batch sent");
+            }
+
+            try (InputStream in = conn.getInputStream()) {
+                JsonObject json = gson.fromJson(new InputStreamReader(in), JsonObject.class);
+                return json.get("request_id").getAsString();
+            }
+
+        } catch (IOException e) {
+            LOGGER.throwing(Whisper.class.getName(), "sendToServer", e);
+            return null;
+        }
+    }
+
+    private CompletableFuture<String> waitForResult(String requestId) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        scheduler.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = URI.create(serverUrl + "/result/" + requestId).toURL();
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+
+                    try (InputStream in = conn.getInputStream()) {
+                        JsonObject json = gson.fromJson(new InputStreamReader(in), JsonObject.class);
+
+                        if ("done".equals(json.get("status").getAsString())) {
+                            String text = json.get("text").getAsString();
+                            LOGGER.info("Распознанный текст: " + text);
+                            future.complete(text);
+                            return;
+                        }
+
+                        scheduler.schedule(this, 1, TimeUnit.SECONDS);
+                    }
+
+                } catch (Exception e) {
+                    LOGGER.throwing(Whisper.class.getName(), "waitForResult", e);
+                    future.completeExceptionally(e);
+                }
+            }
+        });
+
+        return future;
+    }
+
+    public Whisper setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+        return this;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+}
