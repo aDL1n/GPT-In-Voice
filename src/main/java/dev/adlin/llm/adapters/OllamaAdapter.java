@@ -21,6 +21,8 @@ public class OllamaAdapter implements ILlmAdapter {
     private final OllamaChatRequestBuilder builder;
     private final OllamaAPI ollamaAPI;
 
+    private OllamaChatResult result;
+
     public OllamaAdapter(String modelName) {
         this.ollamaAPI = new OllamaAPI();
         builder = OllamaChatRequestBuilder.getInstance(modelName);
@@ -28,9 +30,13 @@ public class OllamaAdapter implements ILlmAdapter {
 
     @Override
     public void sendMessage(Role role, String message) {
-        OllamaChatRequest request = builder.withMessage(translateRole(role), message).build();
+        OllamaChatRequest request;
+
+        if (result != null) request = builder.withMessages(result.getChatHistory()).withMessage(translateRole(role), message).build();
+        else request = builder.withMessage(translateRole(role), message).build();
+
         try {
-            OllamaChatResult result = ollamaAPI.chat(request);
+            result = ollamaAPI.chat(request);
             System.out.println(result.getResponseModel().getMessage().getContent());
         } catch (OllamaBaseException | IOException | InterruptedException | ToolInvocationException e) {
             LOGGER.log(Level.SEVERE, e.getMessage());
