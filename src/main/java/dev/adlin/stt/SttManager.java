@@ -9,8 +9,9 @@ public class SttManager {
 
     }
 
-    public void setCurrentClient(ISttClient currentClient) {
+    public SttManager setCurrentClient(ISttClient currentClient) {
         this.currentClient = currentClient;
+        return this;
     }
 
     public ISttClient getCurrentClient() {

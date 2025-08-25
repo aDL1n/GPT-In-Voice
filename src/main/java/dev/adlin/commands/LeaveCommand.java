@@ -40,7 +40,7 @@ public class LeaveCommand extends DiscordAbstractCommand {
             audioManager.closeAudioConnection();
 
             JDA jda = commandInteraction.getJDA();
-            jda.getPresence().setActivity(Activity.customStatus("Wait for you"));
+            jda.getPresence().setActivity(Activity.customStatus("Waiting for you"));
             jda.getPresence().setStatus(OnlineStatus.IDLE);
 
             commandInteraction.replyEmbeds(leaveSuccesses).queue();

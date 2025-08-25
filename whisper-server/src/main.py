@@ -66,10 +66,10 @@ def process_audio_task(request_id: str, raw_bytes: bytes):
 
     pcm_to_wav(pcm_path, wav_path)
 
-    segments, _ = model.transcribe(wav_path, temperature=0.2, language="ru")
+    segments, _ = model.transcribe(wav_path, temperature=0.5, language="ru")
     text = " ".join(seg.text.strip() for seg in segments)
 
-    # os.remove(wav_path)
+    os.remove(wav_path)
     os.remove(pcm_path)
     print("transcript done for: " + request_id)
     tasks[request_id] = {"status": "done", "text": text}

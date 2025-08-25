@@ -6,14 +6,14 @@ import dev.adlin.llm.adapters.util.Role;
 
 public class LlmManager {
 
-    private ILlmAdapter currentAdapter = new OllamaAdapter("llama3.2:1b");
+    private ILlmAdapter currentAdapter = new OllamaAdapter("llama3.2");
 
     public LlmManager() {
         currentAdapter.startChat();
     }
 
     public void sendFromSTT(String message) {
-        currentAdapter.sendMessage(Role.USER, message);
+        System.out.println(currentAdapter.sendMessage(Role.USER, message));
     }
 
     public LlmManager setCurrentAdapter(ILlmAdapter adapter) {

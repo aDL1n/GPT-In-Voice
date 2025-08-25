@@ -77,8 +77,8 @@ public class VoiceBufferManager {
     private void flushBuffer() {
         if (audioBuffer.size() > 0) {
             byte[] audioData = audioBuffer.toByteArray();
-            String transcript = sttClient.transcriptAudio(audioData);
 
+            String transcript = sttClient.transcriptAudio(audioData);
             llmManager.sendFromSTT(transcript);
 
             audioBuffer.reset();

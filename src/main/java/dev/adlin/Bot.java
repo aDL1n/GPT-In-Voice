@@ -31,10 +31,16 @@ public class Bot {
                 GatewayIntent.MESSAGE_CONTENT
             )
         ).addEventListeners()
-                .setActivity(Activity.customStatus("Wait for you"))
+                .setActivity(Activity.customStatus("Waiting for you"))
                 .setStatus(OnlineStatus.IDLE)
                 .enableCache(CacheFlag.VOICE_STATE)
                 .build();
+
+        try {
+            jda.awaitReady();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         SttManager sttManager = new SttManager();
         LlmManager llmManager = new LlmManager();
@@ -43,7 +49,7 @@ public class Bot {
         VoiceReceiveHandler voiceReceiveHandler = new VoiceReceiveHandler(bufferManager);
         VoiceSendingHandler voiceSendingHandler = new VoiceSendingHandler();
 
-        Guild guild = jda.getGuildById(1317147191822909450L);
+        Guild guild = jda.getGuildById("1317147191822909450");
         AudioManager audioManager = guild.getAudioManager();
 
         audioManager.setReceivingHandler(voiceReceiveHandler);
