@@ -29,7 +29,7 @@ public class SQLite implements IDataBase {
     @Override
     public void load() {
         try {
-            DataSource dataSource = this.createDataSource(new File("resources/LTM.db"));
+            DataSource dataSource = this.createDataSource(new File("src/main/resources/LTM.db"));
             connection = dataSource.getConnection();
         } catch (Exception e) {
             throw new RuntimeException(e);
