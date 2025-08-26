@@ -1,7 +1,7 @@
-package dev.adlin.llm.adapters;
+package dev.adlin.llm.adapters.impl;
 
-import dev.adlin.llm.adapters.util.ILlmAdapter;
-import dev.adlin.llm.adapters.util.Role;
+import dev.adlin.llm.adapters.ILlmAdapter;
+import dev.adlin.llm.adapters.Role;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequest;

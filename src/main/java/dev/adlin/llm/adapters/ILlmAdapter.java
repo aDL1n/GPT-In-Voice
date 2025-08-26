@@ -1,4 +1,4 @@
-package dev.adlin.llm.adapters.util;
+package dev.adlin.llm.adapters;
 
 public interface ILlmAdapter {
     

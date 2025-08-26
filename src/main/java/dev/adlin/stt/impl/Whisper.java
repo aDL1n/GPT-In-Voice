@@ -1,8 +1,8 @@
-package dev.adlin.stt;
+package dev.adlin.stt.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import dev.adlin.stt.util.ISttClient;
+import dev.adlin.stt.ISttClient;
 
 import java.io.IOException;
 import java.io.InputStream;

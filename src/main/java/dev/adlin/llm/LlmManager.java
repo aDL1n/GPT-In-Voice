@@ -1,8 +1,8 @@
 package dev.adlin.llm;
 
-import dev.adlin.llm.adapters.OllamaAdapter;
-import dev.adlin.llm.adapters.util.ILlmAdapter;
-import dev.adlin.llm.adapters.util.Role;
+import dev.adlin.llm.adapters.impl.OllamaAdapter;
+import dev.adlin.llm.adapters.ILlmAdapter;
+import dev.adlin.llm.adapters.Role;
 
 public class LlmManager {
 
