@@ -2,6 +2,7 @@ package dev.adlin;
 
 import dev.adlin.commands.JoinCommand;
 import dev.adlin.commands.LeaveCommand;
+import dev.adlin.database.SQLite;
 import dev.adlin.handlers.VoiceReceiveHandler;
 import dev.adlin.handlers.VoiceSendingHandler;
 import dev.adlin.llm.LlmManager;
@@ -41,6 +42,10 @@ public class Bot {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        SQLite sqLite = new SQLite();
+        sqLite.load();
+        sqLite.createLongTermMemoryTable();
 
         SttManager sttManager = new SttManager();
         LlmManager llmManager = new LlmManager();
