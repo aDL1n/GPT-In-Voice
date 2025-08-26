@@ -1,7 +1,7 @@
 package dev.adlin.manager;
 
 import dev.adlin.llm.LlmManager;
-import dev.adlin.stt.util.ISttClient;
+import dev.adlin.stt.ISttClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

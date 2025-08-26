@@ -22,7 +22,7 @@ import java.util.EnumSet;
 public class Bot {
     private final JDA jda;
 
-    public Bot(String token) {
+    public Bot(String token, String guildId) {
         this.jda = JDABuilder.create(
             token,
             EnumSet.of(
@@ -49,7 +49,7 @@ public class Bot {
         VoiceReceiveHandler voiceReceiveHandler = new VoiceReceiveHandler(bufferManager);
         VoiceSendingHandler voiceSendingHandler = new VoiceSendingHandler();
 
-        Guild guild = jda.getGuildById("1317147191822909450");
+        Guild guild = jda.getGuildById(guildId);
         AudioManager audioManager = guild.getAudioManager();
 
         audioManager.setReceivingHandler(voiceReceiveHandler);

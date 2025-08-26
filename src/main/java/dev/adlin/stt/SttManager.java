@@ -1,6 +1,6 @@
 package dev.adlin.stt;
 
-import dev.adlin.stt.util.ISttClient;
+import dev.adlin.stt.impl.Whisper;
 
 public class SttManager {
     private ISttClient currentClient = new Whisper();
