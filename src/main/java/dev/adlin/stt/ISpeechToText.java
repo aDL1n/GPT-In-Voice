@@ -1,5 +1,5 @@
 package dev.adlin.stt;
 
-public interface ISttClient {
+public interface ISpeechToText {
     String transcriptAudio(byte[] data);
 }

@@ -1,7 +1,7 @@
 package dev.adlin.manager;
 
 import dev.adlin.llm.LlmManager;
-import dev.adlin.stt.ISttClient;
+import dev.adlin.stt.ISpeechToText;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class VoiceBufferManager {
 
     private final Logger LOGGER = Logger.getLogger(VoiceBufferManager.class.getName());
 
-    private final ISttClient sttClient;
+    private final ISpeechToText sttClient;
     private final LlmManager llmManager;
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -27,7 +27,7 @@ public class VoiceBufferManager {
     private long lastSoundTime = 0;
     private ScheduledFuture<?> pendingTask;
 
-    public VoiceBufferManager(ISttClient sttClient, LlmManager llmManager) {
+    public VoiceBufferManager(ISpeechToText sttClient, LlmManager llmManager) {
         this.sttClient = sttClient;
         this.llmManager = llmManager;
     }
