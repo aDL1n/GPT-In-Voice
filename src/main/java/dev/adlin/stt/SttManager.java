@@ -3,18 +3,18 @@ package dev.adlin.stt;
 import dev.adlin.stt.impl.Whisper;
 
 public class SttManager {
-    private ISttClient currentClient = new Whisper();
+    private ISpeechToText currentClient = new Whisper();
 
     public SttManager() {
 
     }
 
-    public SttManager setCurrentClient(ISttClient currentClient) {
+    public SttManager setCurrentClient(ISpeechToText currentClient) {
         this.currentClient = currentClient;
         return this;
     }
 
-    public ISttClient getCurrentClient() {
+    public ISpeechToText getCurrentClient() {
         return currentClient;
     }
 }

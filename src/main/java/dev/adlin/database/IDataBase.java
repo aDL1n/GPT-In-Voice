@@ -9,6 +9,6 @@ public interface IDataBase {
     void load();
     void createLongTermMemoryTable();
     void saveLongTermMemory(LongTermMemoryData memoryData);
-    void saveLongTermMemorys(List<LongTermMemoryData> memoryDataList);
-    CompletableFuture<List<LongTermMemoryData>> getAllLongTermMemorys();
+    void saveLongTermMemories(List<LongTermMemoryData> memoryDataList);
+    CompletableFuture<List<LongTermMemoryData>> getAllLongTermMemories();
 }

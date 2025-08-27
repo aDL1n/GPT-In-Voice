@@ -67,7 +67,7 @@ public class SQLite implements IDataBase {
     }
 
     @Override
-    public void saveLongTermMemorys(List<LongTermMemoryData> memoryDataList) {
+    public void saveLongTermMemories(List<LongTermMemoryData> memoryDataList) {
         CompletableFuture.runAsync(() -> {
             try (PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO data (role, username, message, date) VALUES (?, ?, ?, ?)"
@@ -89,7 +89,7 @@ public class SQLite implements IDataBase {
     }
 
     @Override
-    public CompletableFuture<List<LongTermMemoryData>> getAllLongTermMemorys() {
+    public CompletableFuture<List<LongTermMemoryData>> getAllLongTermMemories() {
         return CompletableFuture.supplyAsync(() -> {
             try (PreparedStatement prepareStatement = connection.prepareStatement("SELECT * FROM data ORDER BY date ASC");
                  ResultSet resultSet = prepareStatement.executeQuery()

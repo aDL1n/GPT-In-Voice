@@ -2,8 +2,8 @@ package dev.adlin.llm.adapters.impl;
 
 import dev.adlin.llm.adapters.ILlmAdapter;
 import dev.adlin.llm.adapters.Role;
+import dev.adlin.utils.PromptBuilder;
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import io.github.ollama4j.models.chat.OllamaChatResult;
@@ -32,8 +32,10 @@ public class OllamaAdapter implements ILlmAdapter {
     public String sendMessage(Role role, String message) {
         OllamaChatRequest request;
 
-        if (result != null) request = builder.withMessages(result.getChatHistory()).withMessage(translateRole(role), message).build();
-        else request = builder.withMessage(translateRole(role), message).build();
+        if (result != null) request = builder.withMessages(result.getChatHistory())
+                .withMessage(PromptBuilder.translateRole(role), message)
+                .build();
+        else request = builder.withMessage(PromptBuilder.translateRole(role), message).build();
 
         try {
             result = ollamaAPI.chat(request);
@@ -66,15 +68,6 @@ public class OllamaAdapter implements ILlmAdapter {
                 Говоришь на русском языке.
                 
                 """);
-    }
-
-    private OllamaChatMessageRole translateRole(Role role) {
-        return switch (role) {
-            case TOOL -> OllamaChatMessageRole.TOOL;
-            case SYSTEM -> OllamaChatMessageRole.SYSTEM;
-            case ASSISTANT -> OllamaChatMessageRole.ASSISTANT;
-            case USER -> OllamaChatMessageRole.USER;
-        };
     }
 
     private void loadModel() {
