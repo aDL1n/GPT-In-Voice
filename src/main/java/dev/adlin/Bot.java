@@ -5,10 +5,12 @@ import dev.adlin.commands.LeaveCommand;
 import dev.adlin.database.SQLite;
 import dev.adlin.handlers.VoiceReceiveHandler;
 import dev.adlin.handlers.VoiceSendingHandler;
-import dev.adlin.llm.LlmManager;
+import dev.adlin.llm.adapters.Role;
+import dev.adlin.llm.adapters.impl.OllamaAdapter;
+import dev.adlin.llm.memory.LongTermMemoryData;
 import dev.adlin.manager.DiscordCommandManager;
 import dev.adlin.manager.VoiceBufferManager;
-import dev.adlin.stt.SttManager;
+import dev.adlin.stt.impl.Whisper;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -18,6 +20,8 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.EnumSet;
 
 public class Bot {
@@ -47,10 +51,11 @@ public class Bot {
         sqLite.load();
         sqLite.createLongTermMemoryTable();
 
-        SttManager sttManager = new SttManager();
-        LlmManager llmManager = new LlmManager();
+        Whisper whisper = new Whisper();
+        OllamaAdapter ollamaAdapter = new OllamaAdapter("llama3.2:3b");
 
-        VoiceBufferManager bufferManager = new VoiceBufferManager(sttManager.getCurrentClient(), llmManager);
+        VoiceBufferManager bufferManager = new VoiceBufferManager();
+
         VoiceReceiveHandler voiceReceiveHandler = new VoiceReceiveHandler(bufferManager);
         VoiceSendingHandler voiceSendingHandler = new VoiceSendingHandler();
 
@@ -67,6 +72,14 @@ public class Bot {
         );
 
         discordCommandManager.registerCommands();
+
+        bufferManager.setBufferListener(data -> {
+            String transcription = whisper.transcriptAudio(data);
+
+            sqLite.saveLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), transcription));
+            String result = ollamaAdapter.sendMessage(Role.USER, transcription);
+            sqLite.saveLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
+        });
     }
 
     public JDA getJda() {
