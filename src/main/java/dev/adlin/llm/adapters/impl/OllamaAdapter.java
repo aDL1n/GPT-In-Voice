@@ -1,6 +1,6 @@
 package dev.adlin.llm.adapters.impl;
 
-import dev.adlin.llm.adapters.ILlmAdapter;
+import dev.adlin.llm.adapters.LlmAdapter;
 import dev.adlin.llm.adapters.Role;
 import dev.adlin.utils.PromptBuilder;
 import io.github.ollama4j.OllamaAPI;
@@ -12,7 +12,7 @@ import io.github.ollama4j.models.response.Model;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class OllamaAdapter implements ILlmAdapter {
+public class OllamaAdapter implements LlmAdapter {
 
     private final Logger LOGGER = Logger.getLogger(OllamaAdapter.class.getName());
 

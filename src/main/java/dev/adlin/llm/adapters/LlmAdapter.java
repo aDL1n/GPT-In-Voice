@@ -1,6 +1,6 @@
 package dev.adlin.llm.adapters;
 
-public interface ILlmAdapter {
+public interface LlmAdapter {
     String sendMessage(Role role, String message);
     void startChat();
 }

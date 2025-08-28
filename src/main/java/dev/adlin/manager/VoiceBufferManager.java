@@ -1,8 +1,5 @@
 package dev.adlin.manager;
 
-import dev.adlin.llm.adapters.ILlmAdapter;
-import dev.adlin.llm.adapters.Role;
-import dev.adlin.stt.ISpeechToText;
 import dev.adlin.utils.AudioBufferListener;
 
 import java.io.ByteArrayOutputStream;

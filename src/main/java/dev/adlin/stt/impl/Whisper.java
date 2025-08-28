@@ -2,7 +2,7 @@ package dev.adlin.stt.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import dev.adlin.stt.ISpeechToText;
+import dev.adlin.stt.SpeechToText;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class Whisper implements ISpeechToText {
+public class Whisper implements SpeechToText {
 
     private final Logger LOGGER = Logger.getLogger(Whisper.class.getName());
     private final Gson gson = new Gson();

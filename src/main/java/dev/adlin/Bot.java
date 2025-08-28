@@ -2,12 +2,13 @@ package dev.adlin;
 
 import dev.adlin.commands.JoinCommand;
 import dev.adlin.commands.LeaveCommand;
-import dev.adlin.database.SQLite;
+import dev.adlin.database.impl.SQLite;
 import dev.adlin.handlers.VoiceReceiveHandler;
 import dev.adlin.handlers.VoiceSendingHandler;
 import dev.adlin.llm.adapters.Role;
 import dev.adlin.llm.adapters.impl.OllamaAdapter;
 import dev.adlin.llm.memory.LongTermMemoryData;
+import dev.adlin.llm.memory.MemoryManager;
 import dev.adlin.manager.DiscordCommandManager;
 import dev.adlin.manager.VoiceBufferManager;
 import dev.adlin.stt.impl.Whisper;
@@ -48,8 +49,8 @@ public class Bot {
         }
 
         SQLite sqLite = new SQLite();
-        sqLite.load();
-        sqLite.createLongTermMemoryTable();
+        MemoryManager memoryManager = new MemoryManager(sqLite);
+        memoryManager.initializeLongTermMemory();
 
         Whisper whisper = new Whisper();
         OllamaAdapter ollamaAdapter = new OllamaAdapter("llama3.2:3b");
@@ -76,9 +77,9 @@ public class Bot {
         bufferManager.setBufferListener(data -> {
             String transcription = whisper.transcriptAudio(data);
 
-            sqLite.saveLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), transcription));
+            memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), transcription));
             String result = ollamaAdapter.sendMessage(Role.USER, transcription);
-            sqLite.saveLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
+            memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
         });
     }
 
