@@ -1,7 +1,9 @@
 package dev.adlin.manager;
 
-import dev.adlin.llm.LlmManager;
+import dev.adlin.llm.adapters.ILlmAdapter;
+import dev.adlin.llm.adapters.Role;
 import dev.adlin.stt.ISpeechToText;
+import dev.adlin.utils.AudioBufferListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,8 +14,7 @@ public class VoiceBufferManager {
 
     private final Logger LOGGER = Logger.getLogger(VoiceBufferManager.class.getName());
 
-    private final ISpeechToText sttClient;
-    private final LlmManager llmManager;
+    private AudioBufferListener bufferListener;
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final ByteArrayOutputStream audioBuffer = new ByteArrayOutputStream();
@@ -27,9 +28,7 @@ public class VoiceBufferManager {
     private long lastSoundTime = 0;
     private ScheduledFuture<?> pendingTask;
 
-    public VoiceBufferManager(ISpeechToText sttClient, LlmManager llmManager) {
-        this.sttClient = sttClient;
-        this.llmManager = llmManager;
+    public VoiceBufferManager() {
     }
 
     public void processAudio(byte[] data, double volume) {
@@ -78,8 +77,9 @@ public class VoiceBufferManager {
         if (audioBuffer.size() > 0) {
             byte[] audioData = audioBuffer.toByteArray();
 
-            String transcript = sttClient.transcriptAudio(audioData);
-            llmManager.sendFromSTT(transcript);
+            if (bufferListener != null) {
+                bufferListener.onBufferReady(audioData);
+            }
 
             audioBuffer.reset();
         }
@@ -100,5 +100,9 @@ public class VoiceBufferManager {
         } catch (InterruptedException e) {
             scheduler.shutdownNow();
         }
+    }
+
+    public void setBufferListener(AudioBufferListener listener) {
+        this.bufferListener = listener;
     }
 }
