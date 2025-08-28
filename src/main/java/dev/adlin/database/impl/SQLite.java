@@ -1,7 +1,8 @@
-package dev.adlin.database;
+package dev.adlin.database.impl;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import dev.adlin.database.DataBase;
 import dev.adlin.llm.adapters.Role;
 import dev.adlin.llm.memory.LongTermMemoryData;
 
@@ -11,7 +12,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class SQLite implements IDataBase {
+public class SQLite implements DataBase {
 
     static {
         try {

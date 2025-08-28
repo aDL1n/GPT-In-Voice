@@ -1,6 +1,6 @@
 package dev.adlin.llm.memory;
 
-import dev.adlin.database.IDataBase;
+import dev.adlin.database.DataBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,12 @@ public class MemoryManager {
 
     private final List<LongTermMemoryData> longTermMemory = new ArrayList<>();
 
-    private final IDataBase dataBase;
+    private final DataBase dataBase;
 
-    public MemoryManager(IDataBase dataBase) {
+    public MemoryManager(DataBase dataBase) {
         this.dataBase = dataBase;
+
+        this.dataBase.load();
     }
 
     public void initializeLongTermMemory() {
