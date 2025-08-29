@@ -25,8 +25,6 @@ public class VoiceBufferManager {
     private long lastSoundTime = 0;
     private ScheduledFuture<?> pendingTask;
 
-    public VoiceBufferManager() {
-    }
 
     public void processAudio(byte[] data, double volume) {
         synchronized (lock) {
@@ -74,9 +72,12 @@ public class VoiceBufferManager {
         if (audioBuffer.size() > 0) {
             byte[] audioData = audioBuffer.toByteArray();
 
-            if (bufferListener != null) {
-                bufferListener.onBufferReady(audioData);
-            }
+            scheduler.execute(() -> {
+                if (bufferListener != null) {
+                    bufferListener.onBufferReady(audioData);
+
+                }
+            });
 
             audioBuffer.reset();
         }
