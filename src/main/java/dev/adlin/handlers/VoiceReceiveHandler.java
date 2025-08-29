@@ -3,6 +3,7 @@ package dev.adlin.handlers;
 import dev.adlin.manager.VoiceBufferManager;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
+import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
 public class VoiceReceiveHandler implements AudioReceiveHandler {
@@ -16,6 +17,11 @@ public class VoiceReceiveHandler implements AudioReceiveHandler {
     @Override
     public boolean canReceiveCombined() {
         return true;
+    }
+
+    @Override
+    public boolean includeUserInCombinedAudio(@NotNull User user) {
+        return !user.isBot();
     }
 
     @Override

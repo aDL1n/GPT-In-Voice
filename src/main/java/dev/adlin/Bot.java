@@ -12,6 +12,7 @@ import dev.adlin.llm.memory.MemoryManager;
 import dev.adlin.manager.DiscordCommandManager;
 import dev.adlin.manager.VoiceBufferManager;
 import dev.adlin.stt.impl.Whisper;
+import dev.adlin.utils.AudioProvider;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -56,9 +57,10 @@ public class Bot {
         OllamaAdapter ollamaAdapter = new OllamaAdapter("llama3.2:3b");
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();
+        AudioProvider audioProvider = new AudioProvider();
 
         VoiceReceiveHandler voiceReceiveHandler = new VoiceReceiveHandler(bufferManager);
-        VoiceSendingHandler voiceSendingHandler = new VoiceSendingHandler();
+        VoiceSendingHandler voiceSendingHandler = new VoiceSendingHandler(audioProvider);
 
         Guild guild = jda.getGuildById(guildId);
         AudioManager audioManager = guild.getAudioManager();
@@ -80,6 +82,8 @@ public class Bot {
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), transcription));
             String result = ollamaAdapter.sendMessage(Role.USER, transcription);
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
+
+//            audioProvider.addAudio();
         });
     }
 

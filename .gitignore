@@ -40,3 +40,5 @@ build/
 src/main/java/dev/adlin/Main.java
 
 whisper-server/temp/
+
+src/main/resources/
