@@ -12,6 +12,7 @@ import dev.adlin.llm.memory.MemoryManager;
 import dev.adlin.manager.DiscordCommandManager;
 import dev.adlin.manager.VoiceBufferManager;
 import dev.adlin.stt.impl.Whisper;
+import dev.adlin.tts.impl.Piper;
 import dev.adlin.utils.AudioProvider;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -53,8 +54,10 @@ public class Bot {
         MemoryManager memoryManager = new MemoryManager(sqLite);
         memoryManager.initializeLongTermMemory();
 
+        Piper piper = new Piper();
         Whisper whisper = new Whisper();
-        OllamaAdapter ollamaAdapter = new OllamaAdapter("llama3.2:3b");
+        OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b");
+        ollamaAdapter.startChat();
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();
         AudioProvider audioProvider = new AudioProvider();
@@ -83,7 +86,9 @@ public class Bot {
             String result = ollamaAdapter.sendMessage(Role.USER, transcription);
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
 
-//            audioProvider.addAudio();
+            byte[] speech = piper.speech(result);
+
+            audioProvider.addAudio(speech);
         });
     }
 
