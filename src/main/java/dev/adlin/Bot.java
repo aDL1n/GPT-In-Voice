@@ -14,6 +14,7 @@ import dev.adlin.manager.VoiceBufferManager;
 import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.impl.Piper;
 import dev.adlin.utils.AudioProvider;
+import dev.adlin.utils.PromptBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -56,7 +57,7 @@ public class Bot {
 
         Piper piper = new Piper();
         Whisper whisper = new Whisper();
-        OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b");
+        OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b", memoryManager);
         ollamaAdapter.startChat();
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();
@@ -86,7 +87,7 @@ public class Bot {
             String result = ollamaAdapter.sendMessage(Role.USER, transcription);
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
 
-            byte[] speech = piper.speech(result);
+            byte[] speech = piper.speech(PromptBuilder.clearString(result));
 
             audioProvider.addAudio(speech);
         });
