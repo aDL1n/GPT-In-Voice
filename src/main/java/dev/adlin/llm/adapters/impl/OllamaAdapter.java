@@ -2,6 +2,7 @@ package dev.adlin.llm.adapters.impl;
 
 import dev.adlin.llm.adapters.LlmAdapter;
 import dev.adlin.llm.adapters.Role;
+import dev.adlin.llm.memory.MemoryManager;
 import dev.adlin.utils.PromptBuilder;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
@@ -19,11 +20,13 @@ public class OllamaAdapter implements LlmAdapter {
     private final OllamaChatRequestBuilder builder;
     private final OllamaAPI ollamaAPI;
     private final String modelName;
+    private final MemoryManager memoryManager;
 
     private OllamaChatResult result;
 
-    public OllamaAdapter(String modelName) {
+    public OllamaAdapter(String modelName, MemoryManager memoryManager) {
         this.modelName = modelName;
+        this.memoryManager = memoryManager;
         this.ollamaAPI = new OllamaAPI();
         builder = OllamaChatRequestBuilder.getInstance(modelName);
     }
@@ -77,5 +80,9 @@ public class OllamaAdapter implements LlmAdapter {
         } catch (Exception e) {
             LOGGER.throwing(OllamaChatResult.class.getName(), "loadModel", e);
         }
+    }
+
+    public OllamaAPI getOllamaAPI() {
+        return ollamaAPI;
     }
 }

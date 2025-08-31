@@ -1,5 +1,4 @@
 import uuid
-import os
 import wave
 import io
 
@@ -23,8 +22,6 @@ syn_config = SynthesisConfig(
 )
 
 app = FastAPI()
-os.makedirs("temp", exist_ok=True)
-
 tasks = {}
 
 @app.post("/speech")
@@ -80,7 +77,7 @@ def convert_wav_to_pcm_48k16_stereo_be(wav_bytes: bytes) -> bytes:
     audio = audio.reshape(-1, src_channels)
 
     if src_channels == 1:
-        audio = np.repeat(audio, 2, axis=1)  # [N,1] -> [N,2]
+        audio = np.repeat(audio, 2, axis=1)
 
     if src_rate != TARGET_RATE:
         src_len = audio.shape[0]

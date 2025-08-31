@@ -9,7 +9,9 @@ import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PromptBuilder {
 
@@ -27,7 +29,7 @@ public class PromptBuilder {
                                 : data.message
                         )
                 )
-                .toList()
+                .collect(Collectors.toCollection(ArrayList::new))
         ).withMessage(translateRole(role), userName != null ? userName + ":" + content : content).build();
     }
 
@@ -38,5 +40,9 @@ public class PromptBuilder {
             case ASSISTANT -> OllamaChatMessageRole.ASSISTANT;
             case USER -> OllamaChatMessageRole.USER;
         };
+    }
+
+    public static String clearString(String string) {
+        return string.replaceAll("[\\\\p{So}\\\\p{Cn}]", "");
     }
 }
