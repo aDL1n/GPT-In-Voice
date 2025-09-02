@@ -1,15 +1,14 @@
 # <p style="text-align:center">GPT-In-Voice</p>
-Это Discord-бот, превращающий голосовой канал в живой диалог с LLM. Он подключается к войсу, распознаёт речь участников, понимает, кто говорит, и отвечает голосом, используя модели вроде ChatGPT.
+This is a Discord bot that turns a voice channel into a live conversation with LLM. It connects to the voice, recognizes the participants' speech, understands who is speaking, and responds with voice using models like ChatGPT.
 
 ---
 
-> ⚠️ Проект находится в разработке. Ожидаются изменения в архитектуре и API.
+> ⚠️ The project is under development.
 
+## Features
 
-## Возможности
-
-- Подключение в голосовой канал по команде
-- Прослушивание голосового чата и перевод аудио в текст
-- Отправка распознанной реплики в LLM (например, ChatGPT)
-- Получение ответа и (в будущем) озвучивание его голосом
-- Планируется: распознавание собеседников, инициатива от бота, расширенная память
+- Connect to a voice channel on command (forced or request)
+- Listen to voice chat and translate audio into text
+- Send a recognized replica to LLM (e.g. ChatGPT)
+- Receive a response and voice it
+- Planned: recognition of interlocutors, bot initiative, extended memory
