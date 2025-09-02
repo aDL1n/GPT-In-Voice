@@ -57,8 +57,7 @@ public class Bot {
 
         Piper piper = new Piper();
         Whisper whisper = new Whisper();
-        OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b", memoryManager);
-        ollamaAdapter.startChat();
+        OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b");
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();
         AudioProvider audioProvider = new AudioProvider();
