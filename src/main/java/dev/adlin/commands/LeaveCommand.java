@@ -16,12 +16,12 @@ import java.awt.*;
 public class LeaveCommand extends DiscordAbstractCommand {
 
     private final MessageEmbed leaveSuccesses = new EmbedBuilder()
-            .setTitle("Та за шо ты меня выгнал")
+            .setTitle("Why did you kick me out")
             .setColor(Color.GREEN)
             .build();
 
     private final MessageEmbed notInVoice = new EmbedBuilder()
-            .setTitle("Да от куда мне выходить по твоему")
+            .setTitle("I'm not in the voice channel")
             .setColor(Color.YELLOW)
             .build();
 

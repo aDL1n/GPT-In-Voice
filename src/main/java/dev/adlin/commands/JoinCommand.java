@@ -16,12 +16,12 @@ import java.awt.*;
 public class JoinCommand extends DiscordAbstractCommand {
 
     private final MessageEmbed notInVoiceEmbed = new EmbedBuilder()
-            .setTitle("Ты не в войс чате")
+            .setTitle("You not in voice chat")
             .setColor(Color.RED)
             .build();
 
     private final MessageEmbed joinedToVoiceEmbed = new EmbedBuilder()
-            .setTitle("Успешно подключился в голосовой канал")
+            .setTitle("Successfully connected to the voice channel")
             .setColor(Color.GREEN)
             .build();
 
