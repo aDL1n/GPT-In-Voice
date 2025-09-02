@@ -9,6 +9,8 @@ import dev.adlin.llm.memory.LongTermMemoryData;
 import javax.sql.DataSource;
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -95,7 +97,7 @@ public class SQLite implements DataBase {
             try (PreparedStatement prepareStatement = connection.prepareStatement("SELECT * FROM data ORDER BY date ASC");
                  ResultSet resultSet = prepareStatement.executeQuery()
             ) {
-                List<LongTermMemoryData> result = new java.util.ArrayList<>();
+                List<LongTermMemoryData> result = new ArrayList<>();
 
                 while (resultSet.next()) {
                     Role role = Role.Utils.getRoleFromDB(resultSet.getString("role"));
@@ -111,6 +113,33 @@ public class SQLite implements DataBase {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<List<LongTermMemoryData>> getLongTermMemories(int length) {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "SELECT role, username, message, date FROM data ORDER BY date DESC LIMIT ?";
+            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                ps.setInt(1, length);
+                try (ResultSet rs = ps.executeQuery()) {
+
+                    List<LongTermMemoryData> result = new ArrayList<>();
+                    while (rs.next()) {
+                        Role role = Role.Utils.getRoleFromDB(rs.getString("role"));
+                        String username = rs.getString("username");
+                        String message = rs.getString("message");
+                        Date date = new Date(rs.getLong("date"));
+                        result.add(new LongTermMemoryData(role, date, username, message));
+                    }
+
+                    Collections.reverse(result);
+                    return result;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
 
     private DataSource createDataSource(File dbFile) {
         HikariConfig config = new HikariConfig();
