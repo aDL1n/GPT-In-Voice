@@ -19,7 +19,7 @@ public class MemoryManager {
 
     public void initializeLongTermMemory() {
         dataBase.createLongTermMemoryTable();
-        dataBase.getAllLongTermMemories().thenAccept(longTermMemory::addAll);
+        dataBase.getLongTermMemories(100).thenAccept(longTermMemory::addAll);
     }
 
     public void addToLongTermMemory(LongTermMemoryData data) {

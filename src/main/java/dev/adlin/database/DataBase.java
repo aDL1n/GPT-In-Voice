@@ -11,4 +11,5 @@ public interface DataBase {
     void saveLongTermMemory(LongTermMemoryData memoryData);
     void saveLongTermMemories(List<LongTermMemoryData> memoryDataList);
     CompletableFuture<List<LongTermMemoryData>> getAllLongTermMemories();
+    CompletableFuture<List<LongTermMemoryData>> getLongTermMemories(int length);
 }

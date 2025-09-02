@@ -31,8 +31,8 @@ public class RagService {
         List<Chunk> chunks = new ArrayList<>();
 
         for (int i = 0; i < texts.size(); i++) {
-            String t = texts.get(i);
-            for (String ch : split(t, 800, 200)) {
+            String text = texts.get(i);
+            for (String ch : split(text, 500, 200)) {
                 try {
                     float[] emb = embedding.embed(ch);
                     chunks.add(new Chunk(source + "#" + (i++), ch, Map.of(
