@@ -7,12 +7,12 @@ import io.github.ollama4j.models.response.Model;
 import java.util.Collections;
 import java.util.List;
 
-public class NomicEmbeded implements EmbeddingAdapter {
+public class NomicEmbedding implements EmbeddingAdapter {
 
     private final OllamaAPI ollamaAPI;
     private static final String MODEL_NAME = "nomic-embed-text:v1.5";
 
-    public NomicEmbeded() {
+    public NomicEmbedding() {
         this.ollamaAPI = new OllamaAPI();
 
         loadModel();
