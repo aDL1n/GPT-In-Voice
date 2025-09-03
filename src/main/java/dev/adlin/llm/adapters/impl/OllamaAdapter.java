@@ -4,14 +4,12 @@ import dev.adlin.llm.adapters.LlmAdapter;
 import dev.adlin.llm.adapters.Role;
 import dev.adlin.utils.PromptBuilder;
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.chat.OllamaChatMessage;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.models.response.Model;
 
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 public class OllamaAdapter implements LlmAdapter {

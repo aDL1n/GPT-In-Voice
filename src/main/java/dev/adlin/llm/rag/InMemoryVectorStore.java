@@ -54,14 +54,14 @@ public class InMemoryVectorStore implements VectorStore {
     private boolean matchesFilter(Chunk chunk, Map<String, String> filter) {
         Map<String, String> meta = chunk.meta();
         if (meta == null || meta.isEmpty()) {
-            return false; // нечего сравнивать
+            return false;
         }
 
         for (var entry : filter.entrySet()) {
             String v1 = meta.get(entry.getKey());
             String v2 = entry.getValue();
             if (v1 == null) return false;
-            if (!v1.equalsIgnoreCase(v2.trim())) return false; // сравниваем без регистра и лишних пробелов
+            if (!v1.equalsIgnoreCase(v2.trim())) return false;
         }
         return true;
     }

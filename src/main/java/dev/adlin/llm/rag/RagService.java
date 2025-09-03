@@ -44,8 +44,6 @@ public class RagService {
             }
         }
         vectorStore.add(chunks);
-        System.out.println("[RAG] store size: " + vectorStore.size()); // сделай size() если нет
-
     }
 
     public static List<String> split(String s, int size, int overlap) {

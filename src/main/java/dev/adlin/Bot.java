@@ -6,7 +6,7 @@ import dev.adlin.database.impl.SQLite;
 import dev.adlin.handlers.VoiceReceiveHandler;
 import dev.adlin.handlers.VoiceSendingHandler;
 import dev.adlin.llm.adapters.Role;
-import dev.adlin.llm.adapters.impl.NomicEmbeded;
+import dev.adlin.llm.adapters.impl.NomicEmbedding;
 import dev.adlin.llm.adapters.impl.OllamaAdapter;
 import dev.adlin.llm.memory.LongTermMemoryData;
 import dev.adlin.llm.memory.MemoryManager;
@@ -63,7 +63,7 @@ public class Bot {
         OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b");
 
         InMemoryVectorStore vectorScore = new InMemoryVectorStore();
-        NomicEmbeded embedding = new NomicEmbeded();
+        NomicEmbedding embedding = new NomicEmbedding();
         RagService rag = new RagService(vectorScore, embedding);
 
         sqLite.getLongTermMemories(200).thenAccept(memories -> {
