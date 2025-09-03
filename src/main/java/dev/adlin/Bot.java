@@ -6,9 +6,13 @@ import dev.adlin.database.impl.SQLite;
 import dev.adlin.handlers.VoiceReceiveHandler;
 import dev.adlin.handlers.VoiceSendingHandler;
 import dev.adlin.llm.adapters.Role;
+import dev.adlin.llm.adapters.impl.NomicEmbeded;
 import dev.adlin.llm.adapters.impl.OllamaAdapter;
 import dev.adlin.llm.memory.LongTermMemoryData;
 import dev.adlin.llm.memory.MemoryManager;
+import dev.adlin.llm.rag.InMemoryVectorStore;
+import dev.adlin.llm.rag.RagService;
+import dev.adlin.llm.rag.ScoredChunk;
 import dev.adlin.manager.DiscordCommandManager;
 import dev.adlin.manager.VoiceBufferManager;
 import dev.adlin.stt.impl.Whisper;
@@ -25,8 +29,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.EnumSet;
+import java.util.*;
 
 public class Bot {
     private final JDA jda;
@@ -59,6 +62,24 @@ public class Bot {
         Whisper whisper = new Whisper();
         OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b");
 
+        InMemoryVectorStore vectorScore = new InMemoryVectorStore();
+        NomicEmbeded embedding = new NomicEmbeded();
+        RagService rag = new RagService(vectorScore, embedding);
+
+        sqLite.getLongTermMemories(200).thenAccept(memories -> {
+            rag.addDocuments(
+                    memories.stream().map(data ->
+                            data.role + " " + data.message
+                    ).toList(),
+                    "bootstrap",
+                    "longterm"
+            );
+        });
+
+        rag.addDocuments(List.of("Политика возврата: 30 дней, нужен чек."), "seed", "longterm");
+        System.out.println(RagService.formatChunks(rag.search("возврат", 3, "longterm")));
+
+
         VoiceBufferManager bufferManager = new VoiceBufferManager();
         AudioProvider audioProvider = new AudioProvider();
 
@@ -83,8 +104,18 @@ public class Bot {
             String transcription = whisper.transcriptAudio(data);
 
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), transcription));
+
+            List<ScoredChunk> hits = rag.search(transcription, 6, "longterm");
+            String ragContext = RagService.formatChunks(hits);
+
+            ollamaAdapter.sendMessage(Role.TOOL, "Подсказки из чата: " + ragContext);
+            System.out.println(ragContext);
+
             String result = ollamaAdapter.sendMessage(Role.USER, transcription);
+            rag.addDocuments(Collections.singletonList(transcription), "user", "longterm");
+
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
+            rag.addDocuments(Collections.singletonList(result), "assistant", "longterm");
 
             byte[] speech = piper.speech(PromptBuilder.clearString(result));
 

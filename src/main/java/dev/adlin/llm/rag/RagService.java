@@ -16,7 +16,7 @@ public class RagService {
         this.embedding = embeddingAdapter;
     }
 
-    public List<ScoredChunk> search(String query, int topK, String collection) {
+    public synchronized List<ScoredChunk> search(String query, int topK, String collection) {
         try {
             float[] embed = embedding.embed(query);
             Map<String,String> filter = collection == null ? null : Map.of("collection", collection);
@@ -44,6 +44,8 @@ public class RagService {
             }
         }
         vectorStore.add(chunks);
+        System.out.println("[RAG] store size: " + vectorStore.size()); // сделай size() если нет
+
     }
 
     public static List<String> split(String s, int size, int overlap) {
