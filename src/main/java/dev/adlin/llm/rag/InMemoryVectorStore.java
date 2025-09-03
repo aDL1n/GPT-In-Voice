@@ -2,9 +2,8 @@ package dev.adlin.llm.rag;
 
 import java.util.*;
 
-public class InMemoryVectoreScore implements VectorStore {
+public class InMemoryVectorStore implements VectorStore {
     private final List<EmbedEntry> data = new ArrayList<>();
-
 
     @Override
     public void add(List<Chunk> chunks) {
@@ -20,7 +19,7 @@ public class InMemoryVectoreScore implements VectorStore {
     }
 
     @Override
-    public List<ScoredChunk> search(float[] queryEmbedding, int topK, Map<String, String> filter) {
+    public synchronized List<ScoredChunk> search(float[] queryEmbedding, int topK, Map<String, String> filter) {
         if (queryEmbedding == null) throw new IllegalArgumentException("queryEmbedding is null");
         if (topK <= 0) return List.of();
 
@@ -29,7 +28,7 @@ public class InMemoryVectoreScore implements VectorStore {
         PriorityQueue<ScoredChunk> heap = new PriorityQueue<>(Comparator.comparingDouble(ScoredChunk::score));
 
         for (EmbedEntry embedEntry : data) {
-            if (filter != null && matchesFilter(embedEntry.chunk(), filter)) continue;
+            if (!matchesFilter(embedEntry.chunk(), filter)) continue;
 
             double score = dot(embeddingNorm, embedEntry.normEmbed());
 
@@ -47,16 +46,26 @@ public class InMemoryVectoreScore implements VectorStore {
         return result;
     }
 
+    @Override
+    public int size() {
+        return data.size();
+    }
+
     private boolean matchesFilter(Chunk chunk, Map<String, String> filter) {
         Map<String, String> meta = chunk.meta();
-        if (meta == null) return false;
-
-        for (Map.Entry<String, String> entry : filter.entrySet()) {
-            if (!Objects.equals(entry.getValue(), meta.get(entry.getKey()))) return false;
+        if (meta == null || meta.isEmpty()) {
+            return false; // нечего сравнивать
         }
 
+        for (var entry : filter.entrySet()) {
+            String v1 = meta.get(entry.getKey());
+            String v2 = entry.getValue();
+            if (v1 == null) return false;
+            if (!v1.equalsIgnoreCase(v2.trim())) return false; // сравниваем без регистра и лишних пробелов
+        }
         return true;
     }
+
 
     private float[] normalize(float[] v) {
         if (v == null || v.length == 0) return null;
