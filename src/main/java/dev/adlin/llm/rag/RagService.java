@@ -1,6 +1,9 @@
 package dev.adlin.llm.rag;
 
 import dev.adlin.llm.adapters.EmbeddingAdapter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +11,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RagService {
+
+    private static final Logger LOGGER = LogManager.getLogger(RagService.class);
+
     private final VectorStore vectorStore;
     private final EmbeddingAdapter embedding;
 
@@ -16,6 +22,7 @@ public class RagService {
         this.embedding = embeddingAdapter;
     }
 
+    @Nullable
     public synchronized List<ScoredChunk> search(String query, int topK, String collection) {
         try {
             float[] embed = embedding.embed(query);
@@ -23,8 +30,10 @@ public class RagService {
 
             return vectorStore.search(embed, topK, filter);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOGGER.error("Could not find information", e);
         }
+
+         return null;
     }
 
     public void addDocuments(List<String> texts, String source, String collection) {
@@ -38,8 +47,8 @@ public class RagService {
                     chunks.add(new Chunk(source + "#" + (i++), ch, Map.of(
                             "source", source, "collection", collection
                     ), emb));
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                } catch (Exception e) {
+                    LOGGER.error("Failed to add chunk to storage", e);
                 }
             }
         }

@@ -8,13 +8,14 @@ import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.models.response.Model;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class OllamaAdapter implements LlmAdapter {
 
-    private final Logger LOGGER = Logger.getLogger(OllamaAdapter.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(OllamaAdapter.class);
 
     private final OllamaChatRequestBuilder builder;
     private final OllamaAPI ollamaAPI;
@@ -43,10 +44,10 @@ public class OllamaAdapter implements LlmAdapter {
         try {
             result = ollamaAPI.chat(request);
             System.out.println(result.getResponseModel().getMessage().getContent());
-            return result.getResponseModel().getMessage().getContent();
 
+            return result.getResponseModel().getMessage().getContent();
         } catch (Exception e) {
-            LOGGER.throwing(OllamaChatResult.class.getName(), "sendMessage", e);
+            LOGGER.error("Failed to send message", e);
         }
 
         return null;
@@ -68,8 +69,9 @@ public class OllamaAdapter implements LlmAdapter {
         try {
             List<String> models = this.ollamaAPI.listModels().stream().map(Model::getModelName).toList();
             if (!models.contains(this.modelName)) this.ollamaAPI.pullModel(this.modelName);
+            LOGGER.info("Model loaded successful!");
         } catch (Exception e) {
-            LOGGER.throwing(OllamaChatResult.class.getName(), "loadModel", e);
+            LOGGER.error("Model not loaded", e);
         }
     }
 
