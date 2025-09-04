@@ -1,15 +1,17 @@
 package dev.adlin.manager;
 
+import dev.adlin.Bot;
 import dev.adlin.utils.AudioBufferListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.*;
-import java.util.logging.Logger;
 
 public class VoiceBufferManager {
 
-    private final Logger LOGGER = Logger.getLogger(VoiceBufferManager.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(VoiceBufferManager.class);
 
     private AudioBufferListener bufferListener;
 
@@ -47,7 +49,7 @@ public class VoiceBufferManager {
         try {
             audioBuffer.write(data);
         } catch (IOException e) {
-            LOGGER.throwing(VoiceBufferManager.class.getName(), "writeToBuffer", e);
+            LOGGER.error("Failed to write to buffer", e);
         }
     }
 
@@ -75,7 +77,7 @@ public class VoiceBufferManager {
             scheduler.execute(() -> {
                 if (bufferListener != null) {
                     bufferListener.onBufferReady(audioData);
-
+                    LOGGER.info("Buffer has ready");
                 }
             });
 

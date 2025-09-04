@@ -5,6 +5,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import dev.adlin.database.DataBase;
 import dev.adlin.llm.adapters.Role;
 import dev.adlin.llm.memory.LongTermMemoryData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -15,6 +17,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class SQLite implements DataBase {
+
+    private static final Logger LOGGER = LogManager.getLogger(SQLite.class);
 
     static {
         try {
@@ -32,10 +36,11 @@ public class SQLite implements DataBase {
     @Override
     public void load() {
         try {
-            DataSource dataSource = this.createDataSource(new File("src/main/resources/LTM.db"));
+            DataSource dataSource = this.createDataSource(new File("src/main/resources/database/LTM.db"));
             connection = dataSource.getConnection();
+            LOGGER.info("Database connected!");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOGGER.error("Database connection error", e);
         }
 
     }

@@ -13,8 +13,6 @@ public class MemoryManager {
 
     public MemoryManager(DataBase dataBase) {
         this.dataBase = dataBase;
-
-        this.dataBase.load();
     }
 
     public void initializeLongTermMemory() {

@@ -2,7 +2,11 @@ package dev.adlin.tts.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.TextToSpeech;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,19 +18,24 @@ import java.util.concurrent.TimeUnit;
 
 public class Piper implements TextToSpeech {
 
+    private static final Logger LOGGER = LogManager.getLogger(Piper.class);
+
     private final HttpClient client = HttpClient
             .newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
             .build();
     private final String baseUrl = "http://localhost:5002";
 
+    @Nullable
     @Override
     public byte[] speech(String text) {
         try {
             return speechAsync(text).get();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOGGER.error("Failed to convert text to speech", e);
         }
+
+        return null;
     }
 
     public CompletableFuture<byte[]> speechAsync(String text) {

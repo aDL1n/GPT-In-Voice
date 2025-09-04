@@ -1,8 +1,15 @@
 package dev.adlin.llm.rag;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryVectorStore implements VectorStore {
+
+    private static final Logger LOGGER = LogManager.getLogger(InMemoryVectorStore.class);
+
     private final List<EmbedEntry> data = new ArrayList<>();
 
     @Override
@@ -41,7 +48,9 @@ public class InMemoryVectorStore implements VectorStore {
         }
 
         ArrayList<ScoredChunk> result = new ArrayList<>(heap);
+
         result.sort(Comparator.comparingDouble(ScoredChunk::score).reversed());
+        LOGGER.debug(result.stream().map(s -> s.score() + " " + s.chunk().text()).collect(Collectors.joining(", ")));
 
         return result;
     }

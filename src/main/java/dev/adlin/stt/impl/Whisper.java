@@ -3,6 +3,9 @@ package dev.adlin.stt.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dev.adlin.stt.SpeechToText;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,20 +18,24 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 public class Whisper implements SpeechToText {
 
-    private final Logger LOGGER = Logger.getLogger(Whisper.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Whisper.class);
+
     private final Gson gson = new Gson();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final String serverUrl;
 
-    private String serverUrl;
-
-    public Whisper() {
-        this.serverUrl = "http://localhost:5000";
+    public Whisper(String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 
+    public Whisper() {
+        this("http://localhost:5000");
+    }
+
+    @Nullable
     @Override
     public String transcriptAudio(byte[] data) {
         try {
@@ -37,11 +44,12 @@ public class Whisper implements SpeechToText {
                 return waitForResult(requestId).get();
             }
         } catch (Exception e) {
-            LOGGER.throwing(Whisper.class.getName(), "transcriptAudio", e);
+            LOGGER.error("Failed to transcript audio", e);
         }
         return null;
     }
 
+    @Nullable
     private String sendToServer(byte[] audio) {
         try {
             URL url = URI.create(serverUrl + "/stream").toURL();
@@ -62,9 +70,10 @@ public class Whisper implements SpeechToText {
             }
 
         } catch (IOException e) {
-            LOGGER.throwing(Whisper.class.getName(), "sendToServer", e);
-            return null;
+            LOGGER.error("Failed to send audio to server", e);
         }
+
+        return null;
     }
 
     private CompletableFuture<String> waitForResult(String requestId) {
@@ -92,21 +101,12 @@ public class Whisper implements SpeechToText {
                     }
 
                 } catch (Exception e) {
-                    LOGGER.throwing(Whisper.class.getName(), "waitForResult", e);
+                    LOGGER.error("Failed to get result from server", e);
                     future.completeExceptionally(e);
                 }
             }
         });
 
         return future;
-    }
-
-    public Whisper setServerUrl(String serverUrl) {
-        this.serverUrl = serverUrl;
-        return this;
-    }
-
-    public String getServerUrl() {
-        return serverUrl;
     }
 }

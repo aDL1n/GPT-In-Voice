@@ -27,12 +27,15 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Instant;
 import java.util.*;
 
 public class Bot {
     private final JDA jda;
+    private static final Logger LOGGER = LogManager.getLogger(Bot.class);
 
     public Bot(String token, String guildId) {
         this.jda = JDABuilder.create(
@@ -55,6 +58,8 @@ public class Bot {
         }
 
         SQLite sqLite = new SQLite();
+        sqLite.load();
+
         MemoryManager memoryManager = new MemoryManager(sqLite);
         memoryManager.initializeLongTermMemory();
 
@@ -74,11 +79,8 @@ public class Bot {
                     "bootstrap",
                     "longterm"
             );
+            LOGGER.info("Memories loaded from database");
         });
-
-        rag.addDocuments(List.of("Политика возврата: 30 дней, нужен чек."), "seed", "longterm");
-        System.out.println(RagService.formatChunks(rag.search("возврат", 3, "longterm")));
-
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();
         AudioProvider audioProvider = new AudioProvider();
