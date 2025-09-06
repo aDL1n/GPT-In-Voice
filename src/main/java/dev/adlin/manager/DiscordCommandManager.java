@@ -1,6 +1,5 @@
 package dev.adlin.manager;
 
-import dev.adlin.Bot;
 import dev.adlin.commands.util.DiscordAbstractCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

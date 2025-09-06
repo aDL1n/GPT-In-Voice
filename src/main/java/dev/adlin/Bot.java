@@ -71,7 +71,8 @@ public class Bot {
         NomicEmbedding embedding = new NomicEmbedding();
         RagService rag = new RagService(vectorScore, embedding);
 
-        sqLite.getLongTermMemories(200).thenAccept(memories -> {
+        try {
+            List<LongTermMemoryData> memories = sqLite.getLongTermMemories(200).get();
             rag.addDocuments(
                     memories.stream().map(data ->
                             data.role + " " + data.message
@@ -80,7 +81,9 @@ public class Bot {
                     "longterm"
             );
             LOGGER.info("Memories loaded from database");
-        });
+        } catch (Exception e) {
+            LOGGER.error("Не удалось загрузить память", e);
+        }
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();
         AudioProvider audioProvider = new AudioProvider();
@@ -109,13 +112,11 @@ public class Bot {
 
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), user.getName(), transcription));
 
-            List<ScoredChunk> hits = rag.search(transcription, 6, "longterm");
+            List<ScoredChunk> hits = rag.search(transcription, 8, "longterm");
             String ragContext = RagService.formatChunks(hits);
 
-            ollamaAdapter.sendMessage("Подсказки из чата: " + ragContext);
-            System.out.println(ragContext);
-
-            String result = ollamaAdapter.sendMessage(transcription);
+            ollamaAdapter.sendMessage(Role.TOOL, "Подсказки из чата: " + ragContext);
+            String result = ollamaAdapter.sendMessage(Role.USER, user.getName() + transcription);
             rag.addDocuments(Collections.singletonList(transcription), user.getName(), "longterm");
 
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
