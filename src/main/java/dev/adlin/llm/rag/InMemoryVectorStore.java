@@ -50,7 +50,9 @@ public class InMemoryVectorStore implements VectorStore {
         ArrayList<ScoredChunk> result = new ArrayList<>(heap);
 
         result.sort(Comparator.comparingDouble(ScoredChunk::score).reversed());
-        LOGGER.debug(result.stream().map(s -> s.score() + " " + s.chunk().text()).collect(Collectors.joining(", ")));
+
+        String debugOutput = result.stream().map(s -> s.score() + " " + s.chunk().text()).collect(Collectors.joining("\n"));
+        LOGGER.debug(debugOutput);
 
         return result;
     }
