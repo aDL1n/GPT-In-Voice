@@ -18,12 +18,12 @@ import dev.adlin.manager.VoiceBufferManager;
 import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.impl.Piper;
 import dev.adlin.utils.AudioProvider;
-import dev.adlin.utils.PromptBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -102,24 +102,26 @@ public class Bot {
 
         discordCommandManager.registerCommands();
 
-        bufferManager.setBufferListener(data -> {
+        bufferManager.setBufferListener((userId, data) -> {
+            User user = guild.getMemberById(userId).getUser();
+
             String transcription = whisper.transcriptAudio(data);
 
-            memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), transcription));
+            memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), user.getName(), transcription));
 
             List<ScoredChunk> hits = rag.search(transcription, 6, "longterm");
             String ragContext = RagService.formatChunks(hits);
 
-            ollamaAdapter.sendMessage(Role.TOOL, "Подсказки из чата: " + ragContext);
+            ollamaAdapter.sendMessage("Подсказки из чата: " + ragContext);
             System.out.println(ragContext);
 
-            String result = ollamaAdapter.sendMessage(Role.USER, transcription);
-            rag.addDocuments(Collections.singletonList(transcription), "user", "longterm");
+            String result = ollamaAdapter.sendMessage(transcription);
+            rag.addDocuments(Collections.singletonList(transcription), user.getName(), "longterm");
 
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
             rag.addDocuments(Collections.singletonList(result), "assistant", "longterm");
 
-            byte[] speech = piper.speech(PromptBuilder.clearString(result));
+            byte[] speech = piper.speech(result);
 
             audioProvider.addAudio(speech);
         });

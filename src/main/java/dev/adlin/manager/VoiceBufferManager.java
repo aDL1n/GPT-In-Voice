@@ -1,7 +1,7 @@
 package dev.adlin.manager;
 
-import dev.adlin.Bot;
 import dev.adlin.utils.AudioBufferListener;
+import dev.adlin.utils.UserState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,84 +13,89 @@ public class VoiceBufferManager {
 
     private static final Logger LOGGER = LogManager.getLogger(VoiceBufferManager.class);
 
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
+            Math.max(2, Runtime.getRuntime().availableProcessors() / 2));
+
     private AudioBufferListener bufferListener;
-
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private final ByteArrayOutputStream audioBuffer = new ByteArrayOutputStream();
-
-    private final Object lock = new Object();
+    ConcurrentHashMap<String, UserState> users = new ConcurrentHashMap<>();
 
     private static final double VOLUME_THRESHOLD = 0.017;
     private static final long SILENCE_DELAY_MS = 2000;
 
-    private boolean isRecording = false;
-    private long lastSoundTime = 0;
-    private ScheduledFuture<?> pendingTask;
 
+    public VoiceBufferManager() {
 
-    public void processAudio(byte[] data, double volume) {
-        synchronized (lock) {
+    }
+
+    public void processAudioPerUser(String userId, byte[] data, double volume) {
+        if (userId == null || data == null || data.length == 0) return;
+
+        UserState userState = users.computeIfAbsent(userId, UserState::new);
+
+        synchronized (userState.getLock()) {
             if (volume > VOLUME_THRESHOLD) {
-                lastSoundTime = System.currentTimeMillis();
-                if (!isRecording) isRecording = true;
-                cancelPendingTask();
+                userState.setLastSoundTime(System.currentTimeMillis());
+                if (!userState.isRecording()) userState.setRecording(true);
+                cancelPendingTask(userState);
             }
 
-            if (isRecording) {
-                writeToBuffer(data);
+            if (userState.isRecording()) {
+                writeToBuffer(userState.getBuffer(), data);
 
-                if (volume <= VOLUME_THRESHOLD && pendingTask == null)
-                    scheduleSendTask();
+                if (volume <= VOLUME_THRESHOLD && userState.getPendingTask() == null)
+                    scheduleSendTask(userState);
             }
         }
     }
 
-    private void writeToBuffer(byte[] data) {
+    private void writeToBuffer(ByteArrayOutputStream buffer, byte[] data) {
         try {
-            audioBuffer.write(data);
+            buffer.write(data);
         } catch (IOException e) {
             LOGGER.error("Failed to write to buffer", e);
         }
     }
 
-    private void cancelPendingTask() {
-        if (pendingTask != null) {
-            pendingTask.cancel(false);
-            pendingTask = null;
+    private void cancelPendingTask(UserState userState) {
+        if (userState.getPendingTask() != null) {
+            userState.getPendingTask().cancel(false);
+            userState.setPendingTask(null);
         }
     }
 
-    private void scheduleSendTask() {
-        pendingTask = scheduler.schedule(() -> {
-            synchronized (lock) {
-                if (isRecording && System.currentTimeMillis() - lastSoundTime >= SILENCE_DELAY_MS) {
-                    flushBuffer();
-                }
-            }
-        }, SILENCE_DELAY_MS, TimeUnit.MILLISECONDS);
+    private void scheduleSendTask(UserState userState) {
+        userState.setPendingTask(
+                scheduler.schedule(() -> {
+                    synchronized (userState.getLock()) {
+                        if (userState.isRecording() && System.currentTimeMillis() - userState.getLastSoundTime() >= SILENCE_DELAY_MS) {
+                            flushBuffer(userState);
+                        }
+                    }
+                }, SILENCE_DELAY_MS, TimeUnit.MILLISECONDS)
+        );
     }
 
-    private void flushBuffer() {
-        if (audioBuffer.size() > 0) {
-            byte[] audioData = audioBuffer.toByteArray();
+    private void flushBuffer(UserState userState) {
+        if (userState.getBuffer().size() > 0) {
+            byte[] audioData = userState.getBuffer().toByteArray();
 
             scheduler.execute(() -> {
                 if (bufferListener != null) {
-                    bufferListener.onBufferReady(audioData);
+                    bufferListener.onBufferReady(userState.getId(), audioData);
                     LOGGER.info("Buffer has ready");
                 }
             });
 
-            audioBuffer.reset();
+            userState.getBuffer().reset();
         }
 
-        isRecording = false;
-        cancelPendingTask();
+        userState.setRecording(false);
+        cancelPendingTask(userState);
     }
 
-    public void shutdown() {
-        synchronized (lock) {
-            flushBuffer();
+    public void shutdown(UserState userState) {
+        synchronized (userState.getLock()) {
+            flushBuffer(userState);
         }
 
         scheduler.shutdown();

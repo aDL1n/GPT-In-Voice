@@ -1,5 +1,5 @@
 package dev.adlin.utils;
 
 public interface AudioBufferListener {
-    void onBufferReady(byte[] data);
+    void onBufferReady(String userId, byte[] data);
 }
