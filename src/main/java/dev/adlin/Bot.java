@@ -13,6 +13,7 @@ import dev.adlin.llm.memory.MemoryManager;
 import dev.adlin.llm.rag.InMemoryVectorStore;
 import dev.adlin.llm.rag.RagService;
 import dev.adlin.llm.rag.ScoredChunk;
+import dev.adlin.manager.ChatManager;
 import dev.adlin.manager.DiscordCommandManager;
 import dev.adlin.manager.VoiceBufferManager;
 import dev.adlin.stt.impl.Whisper;
@@ -71,6 +72,8 @@ public class Bot {
         NomicEmbedding embedding = new NomicEmbedding();
         RagService rag = new RagService(vectorScore, embedding);
 
+        ChatManager chatManager = new ChatManager(ollamaAdapter);
+
         try {
             List<LongTermMemoryData> memories = sqLite.getLongTermMemories(200).get();
             rag.addDocuments(
@@ -115,8 +118,8 @@ public class Bot {
             List<ScoredChunk> hits = rag.search(transcription, 8, "longterm");
             String ragContext = RagService.formatChunks(hits);
 
-            ollamaAdapter.sendMessage(Role.TOOL, "Подсказки из чата: " + ragContext);
-            String result = ollamaAdapter.sendMessage(Role.USER, user.getName() + transcription);
+            chatManager.sendMessage(Role.TOOL, "Подсказки из чата: " + ragContext);
+            String result = chatManager.sendMessage(Role.USER, user.getName() + transcription);
             rag.addDocuments(Collections.singletonList(transcription), user.getName(), "longterm");
 
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
