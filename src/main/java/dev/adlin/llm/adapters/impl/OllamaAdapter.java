@@ -1,8 +1,10 @@
 package dev.adlin.llm.adapters.impl;
 
-import dev.adlin.llm.adapters.Role;
+import dev.adlin.llm.adapters.LlmAdapter;
 import dev.adlin.utils.PromptUtils;
+import dev.adlin.utils.chat.ChatMessage;
 import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.chat.OllamaChatMessage;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import io.github.ollama4j.models.chat.OllamaChatResult;
@@ -13,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OllamaAdapter {
+public class OllamaAdapter implements LlmAdapter {
 
     private static final Logger LOGGER = LogManager.getLogger(OllamaAdapter.class);
 
@@ -21,7 +23,6 @@ public class OllamaAdapter {
     private final OllamaAPI ollamaAPI;
     private final String modelName;
 
-    private OllamaChatResult result;
 
     public OllamaAdapter(String modelName) {
         this.modelName = modelName;
@@ -29,42 +30,27 @@ public class OllamaAdapter {
         builder = OllamaChatRequestBuilder.getInstance(modelName);
 
         this.loadModel();
-        this.startChat();
     }
 
-
-    public String sendMessage(Role role, String message) {
-        OllamaChatRequest request;
-
-        if (result != null) request = builder.withMessages(result.getChatHistory())
-                .withMessage(PromptUtils.translateRole(role), message)
+    @Override
+    public String sendMessages(List<ChatMessage> messages) {
+        OllamaChatRequest request = builder
+                .withMessages(messages.stream().map(
+                        message -> new OllamaChatMessage(PromptUtils.translateRole(message.role()), message.content())
+                ).toList())
+                .withKeepAlive("-1")
                 .build();
-        else request = builder.withMessage(PromptUtils.translateRole(role), message).build();
 
         try {
-            result = ollamaAPI.chat(request);
-            System.out.println(result.getResponseModel().getMessage().getContent());
+            OllamaChatResult response = this.ollamaAPI.chat(request);
+            System.out.println(response.getChatHistory().stream().map(OllamaChatMessage::getContent).collect(Collectors.joining("\n")));
 
-            return result.getResponseModel().getMessage().getContent();
+            return response.getResponseModel().getMessage().getContent();
         } catch (Exception e) {
             LOGGER.error("Failed to send message", e);
         }
 
-        System.out.println(result.getChatHistory().stream().map(data -> data.getContent()).collect(Collectors.joining("\n")));
-
         return null;
-    }
-
-    private void startChat() {
-        this.sendMessage(Role.SYSTEM, """
-                Ты — голосовой ассистент в Discord, похожий на человека. Ты участвуешь в голосовом чате, слушаешь, что говорят другие, и отвечаешь естественно, как будто ты обычный участник беседы.
-                Твоя цель — быть полезным, дружелюбным и уместным. Не отвечай сразу на каждую фразу — воспринимай разговор как поток, будь живым участником. Если тебя спрашивают — отвечай. Если обсуждают что-то интересное — можешь сам вступить. Если разговор личный или серьёзный — веди себя уважительно. Можешь шутить, если это уместно.
-                Твой голос синтезируется, поэтому избегай слишком длинных и сложных фраз. Говори просто, по-человечески. Не используй канцеляризмов и шаблонных фраз вроде «как языковая модель».
-                Ты знаешь, кто участвует в чате (если тебе передаётся имя говорящего), и можешь обращаться к людям по имени. Старайся запоминать, о чём уже шла речь, чтобы поддерживать контекст.
-                Избегай слишком частых ответов — не перебивай других. Следи за тоном беседы. Если в комнате тишина — можешь сам начать разговор, но только если уместно.
-                Если ты что-то не понял — уточни. Не выдумывай, если не уверен. Будь естественным.
-                У тебя есть дополнительный скрытый контекст (RAG): это факты и сведения из долговременной памяти. Используй их только для того, чтобы быть точнее и полезнее, но не упоминай источник и не объясняй, откуда они взялись. Просто отвечай так, будто ты это помнишь или знаешь.
-                """);
     }
 
     private void loadModel() {
@@ -77,7 +63,4 @@ public class OllamaAdapter {
         }
     }
 
-    public OllamaAPI getOllamaAPI() {
-        return ollamaAPI;
-    }
 }
