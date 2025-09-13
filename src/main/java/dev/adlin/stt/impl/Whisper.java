@@ -92,7 +92,7 @@ public class Whisper implements SpeechToText {
 
                         if ("done".equals(json.get("status").getAsString())) {
                             String text = json.get("text").getAsString();
-                            LOGGER.info("Распознанный текст: {}", text);
+                            LOGGER.info("Translated text: {}", text);
                             future.complete(text);
                             return;
                         }

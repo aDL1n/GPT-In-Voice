@@ -9,6 +9,8 @@ import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.models.response.Model;
+import io.github.ollama4j.utils.Options;
+import io.github.ollama4j.utils.OptionsBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,11 +36,15 @@ public class OllamaAdapter implements LlmAdapter {
 
     @Override
     public String sendMessages(List<ChatMessage> messages) {
+        Options options = new OptionsBuilder()
+                .build();
+
         OllamaChatRequest request = builder
                 .withMessages(messages.stream().map(
                         message -> new OllamaChatMessage(PromptUtils.translateRole(message.role()), message.content())
-                ).toList())
-                .withKeepAlive("-1")
+                ).collect(Collectors.toList()))
+//                .withOptions(options)
+//                .withKeepAlive("-1s")
                 .build();
 
         try {

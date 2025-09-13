@@ -23,9 +23,7 @@ public class VoiceBufferManager {
     private static final long SILENCE_DELAY_MS = 2000;
 
 
-    public VoiceBufferManager() {
-
-    }
+    public VoiceBufferManager() {}
 
     public void processAudioPerUser(String userId, byte[] data, double volume) {
         if (userId == null || data == null || data.length == 0) return;
@@ -82,7 +80,7 @@ public class VoiceBufferManager {
             scheduler.execute(() -> {
                 if (bufferListener != null) {
                     bufferListener.onBufferReady(userState.getId(), audioData);
-                    LOGGER.info("Buffer has ready");
+                    LOGGER.info("Buffer is ready");
                 }
             });
 
@@ -99,6 +97,7 @@ public class VoiceBufferManager {
         }
 
         scheduler.shutdown();
+
         try {
             if (!scheduler.awaitTermination(5, TimeUnit.SECONDS))
                 scheduler.shutdownNow();
