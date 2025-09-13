@@ -74,19 +74,19 @@ public class Bot {
 
         ChatManager chatManager = new ChatManager(ollamaAdapter);
 
-        try {
-            List<LongTermMemoryData> memories = sqLite.getLongTermMemories(200).get();
-            rag.addDocuments(
-                    memories.stream().map(data ->
-                            data.role + " " + data.message
-                    ).toList(),
-                    "bootstrap",
-                    "longterm"
-            );
-            LOGGER.info("Memories loaded from database");
-        } catch (Exception e) {
-            LOGGER.error("Не удалось загрузить память", e);
-        }
+//        try {
+//            List<LongTermMemoryData> memories = sqLite.getLongTermMemories(200).get();
+//            rag.addDocuments(
+//                    memories.stream().map(data ->
+//                            data.role + " " + data.message
+//                    ).toList(),
+//                    "bootstrap",
+//                    "longterm"
+//            );
+//            LOGGER.info("Memories loaded from database");
+//        } catch (Exception e) {
+//            LOGGER.error("Failed to load memory", e);
+//        }
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();
         AudioProvider audioProvider = new AudioProvider();
@@ -119,7 +119,7 @@ public class Bot {
             String ragContext = RagService.formatChunks(hits);
 
             chatManager.sendMessage(Role.TOOL, "Подсказки из чата: " + ragContext);
-            String result = chatManager.sendMessage(Role.USER, user.getName() + transcription);
+            String result = chatManager.sendMessage(Role.USER, user.getName() + ": " + transcription);
             rag.addDocuments(Collections.singletonList(transcription), user.getName(), "longterm");
 
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));

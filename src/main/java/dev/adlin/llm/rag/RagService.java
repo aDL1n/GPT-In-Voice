@@ -74,5 +74,4 @@ public class RagService {
                 .collect(Collectors.joining("\n"));
     }
 
-
 }

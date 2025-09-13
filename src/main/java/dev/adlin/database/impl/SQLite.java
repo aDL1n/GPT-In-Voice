@@ -145,7 +145,6 @@ public class SQLite implements DataBase {
         });
     }
 
-
     private DataSource createDataSource(File dbFile) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:sqlite:" + dbFile);

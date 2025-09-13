@@ -2,7 +2,6 @@ package dev.adlin.tts.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.TextToSpeech;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +29,7 @@ public class Piper implements TextToSpeech {
     @Override
     public byte[] speech(String text) {
         try {
+            LOGGER.info("The answer has been successfully translated into speech");
             return speechAsync(text).get();
         } catch (Exception e) {
             LOGGER.error("Failed to convert text to speech", e);
