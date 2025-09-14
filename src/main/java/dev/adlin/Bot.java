@@ -5,6 +5,7 @@ import dev.adlin.commands.LeaveCommand;
 import dev.adlin.database.impl.SQLite;
 import dev.adlin.handlers.VoiceReceiveHandler;
 import dev.adlin.handlers.VoiceSendingHandler;
+import dev.adlin.listeners.DiscordVoiceListener;
 import dev.adlin.llm.adapters.Role;
 import dev.adlin.llm.adapters.impl.NomicEmbedding;
 import dev.adlin.llm.adapters.impl.OllamaAdapter;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -100,6 +102,29 @@ public class Bot {
 
         audioManager.setReceivingHandler(voiceReceiveHandler);
         audioManager.setSendingHandler(voiceSendingHandler);
+
+        jda.addEventListener(new DiscordVoiceListener(event -> {
+            AudioChannelUnion joinedChannel = event.getChannelJoined();
+            AudioChannelUnion leftChannel = event.getChannelLeft();
+
+            if (joinedChannel != null &&
+                    event.getEntity().getUser() != event.getJDA().getSelfUser() &&
+                    guild.getAudioManager().getConnectedChannel().equals(joinedChannel)
+            ) {
+                chatManager.sendMessage(
+                        new ChatMessage(Role.TOOL, "discord", event.getEntity().getUser().getName() + " has joined to your voice channel")
+                );
+            }
+
+            if (leftChannel != null &&
+                    event.getEntity().getUser() != event.getJDA().getSelfUser() &&
+                    guild.getAudioManager().getConnectedChannel().equals(leftChannel)
+            ) {
+                chatManager.sendMessage(
+                        new ChatMessage(Role.TOOL, "discord", event.getEntity().getUser().getName() + " has leaved from your voice channel")
+                );
+            }
+        }));
 
         DiscordCommandManager discordCommandManager = new DiscordCommandManager(jda);
 
