@@ -37,14 +37,19 @@ public class OllamaAdapter implements LlmAdapter {
     @Override
     public String sendMessages(List<ChatMessage> messages) {
         Options options = new OptionsBuilder()
+                .setMirostat(2)
+                .setMirostatEta(0.4f)
+                .setNumCtx(4096)
+                .setNumPredict(1024)
+                .setRepeatLastN(256)
                 .build();
 
         OllamaChatRequest request = builder
                 .withMessages(messages.stream().map(
-                        message -> new OllamaChatMessage(PromptUtils.translateRole(message.role()), message.content())
+                        message ->
+                                new OllamaChatMessage(PromptUtils.translateRole(message.role()), message.userName() + ": " + message.content())
                 ).collect(Collectors.toList()))
-//                .withOptions(options)
-//                .withKeepAlive("-1s")
+                .withOptions(options)
                 .build();
 
         try {
