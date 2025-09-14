@@ -19,6 +19,7 @@ import dev.adlin.manager.VoiceBufferManager;
 import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.impl.Piper;
 import dev.adlin.utils.AudioProvider;
+import dev.adlin.utils.chat.ChatMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -74,19 +75,19 @@ public class Bot {
 
         ChatManager chatManager = new ChatManager(ollamaAdapter);
 
-//        try {
-//            List<LongTermMemoryData> memories = sqLite.getLongTermMemories(200).get();
-//            rag.addDocuments(
-//                    memories.stream().map(data ->
-//                            data.role + " " + data.message
-//                    ).toList(),
-//                    "bootstrap",
-//                    "longterm"
-//            );
-//            LOGGER.info("Memories loaded from database");
-//        } catch (Exception e) {
-//            LOGGER.error("Failed to load memory", e);
-//        }
+        try {
+            List<LongTermMemoryData> memories = sqLite.getLongTermMemories(100).get();
+            rag.addDocuments(
+                    memories.stream().map(data ->
+                            data.role + " " + data.message
+                    ).toList(),
+                    "bootstrap",
+                    "longterm"
+            );
+            LOGGER.info("Memories loaded from database");
+        } catch (Exception e) {
+            LOGGER.error("Failed to load memory", e);
+        }
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();
         AudioProvider audioProvider = new AudioProvider();
@@ -118,8 +119,8 @@ public class Bot {
             List<ScoredChunk> hits = rag.search(transcription, 8, "longterm");
             String ragContext = RagService.formatChunks(hits);
 
-            chatManager.sendMessage(Role.TOOL, "Подсказки из чата: " + ragContext);
-            String result = chatManager.sendMessage(Role.USER, user.getName() + ": " + transcription);
+            chatManager.sendMessage(new ChatMessage(Role.TOOL, "longtermmemory", "Подсказки из чата: " + ragContext));
+            String result = chatManager.sendMessage(new ChatMessage(Role.USER, user.getName(), transcription));
             rag.addDocuments(Collections.singletonList(transcription), user.getName(), "longterm");
 
             memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));

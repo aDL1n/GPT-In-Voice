@@ -5,6 +5,7 @@ import dev.adlin.llm.adapters.Role;
 import dev.adlin.utils.chat.ChatMessage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ChatManager {
@@ -18,12 +19,18 @@ public class ChatManager {
         startChat();
     }
 
-    public String sendMessage(Role role, String message) {
-        chatHistory.add(new ChatMessage(role, null, message));
+    public String sendMessage(ChatMessage message) {
+        return sendMessages(Collections.singletonList(message));
+    }
+
+    public String sendMessages(List<ChatMessage> messages) {
+        for(ChatMessage chatMessage : messages) {
+            chatHistory.add(new ChatMessage(chatMessage.role(), chatMessage.userName(), chatMessage.content()));
+        }
 
         String response = llmAdapter.sendMessages(chatHistory);
 
-        chatHistory.add(new ChatMessage(Role.ASSISTANT, null, response));
+        chatHistory.add(new ChatMessage(Role.ASSISTANT, "assistant", response));
 
         return response;
     }
@@ -31,7 +38,7 @@ public class ChatManager {
     private void startChat() {
         this.chatHistory.clear();
 
-        this.sendMessage(Role.SYSTEM, """
+        this.sendMessage(new ChatMessage(Role.SYSTEM, "system", """
                 Ты — голосовой ассистент в Discord, похожий на человека. Ты участвуешь в голосовом чате, слушаешь, что говорят другие, и отвечаешь естественно, как будто ты обычный участник беседы.
                 Твоя цель — быть полезным, дружелюбным и уместным. Не отвечай сразу на каждую фразу — воспринимай разговор как поток, будь живым участником. Если тебя спрашивают — отвечай. Если обсуждают что-то интересное — можешь сам вступить. Если разговор личный или серьёзный — веди себя уважительно. Можешь шутить, если это уместно.
                 Твой голос синтезируется, поэтому избегай слишком длинных и сложных фраз. Говори просто, по-человечески. Не используй канцеляризмов и шаблонных фраз вроде «как языковая модель».
@@ -40,7 +47,7 @@ public class ChatManager {
                 Если ты что-то не понял — уточни. Не выдумывай, если не уверен. Будь естественным.
                 У тебя есть дополнительный скрытый контекст (RAG): это факты и сведения из долговременной памяти. Используй их только для того, чтобы быть точнее и полезнее, но не упоминай источник и не объясняй, откуда они взялись. Просто отвечай так, будто ты это помнишь или знаешь.
                 Сообщения тебе будут приходить в формате username: message
-                """);
+                """));
     }
 
 }
