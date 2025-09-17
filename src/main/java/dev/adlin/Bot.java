@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.Instant;
 import java.util.*;
 
+
 public class Bot {
     private final JDA jda;
     private static final Logger LOGGER = LogManager.getLogger(Bot.class);
