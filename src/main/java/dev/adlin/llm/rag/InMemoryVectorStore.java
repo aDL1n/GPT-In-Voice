@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class InMemoryVectorStore implements VectorStore {
 
-    private static final Logger LOGGER = LogManager.getLogger(InMemoryVectorStore.class);
+    private static final Logger log = LogManager.getLogger(InMemoryVectorStore.class);
 
     private final List<EmbedEntry> data = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public class InMemoryVectorStore implements VectorStore {
         result.sort(Comparator.comparingDouble(ScoredChunk::score).reversed());
 
         String debugOutput = result.stream().map(s -> s.score() + " " + s.chunk().text()).collect(Collectors.joining("\n"));
-        LOGGER.debug(debugOutput);
+        log.debug(debugOutput);
 
         return result;
     }

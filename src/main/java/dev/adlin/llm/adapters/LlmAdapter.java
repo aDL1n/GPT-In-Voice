@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface LlmAdapter {
     String sendMessages(List<ChatMessage> messages);
+    boolean isConnected();
 }

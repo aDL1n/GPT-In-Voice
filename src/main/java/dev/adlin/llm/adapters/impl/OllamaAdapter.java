@@ -19,12 +19,13 @@ import java.util.stream.Collectors;
 
 public class OllamaAdapter implements LlmAdapter {
 
-    private static final Logger LOGGER = LogManager.getLogger(OllamaAdapter.class);
+    private static final Logger log = LogManager.getLogger(OllamaAdapter.class);
 
     private final OllamaChatRequestBuilder builder;
     private final OllamaAPI ollamaAPI;
     private final String modelName;
 
+    private boolean connected = false;
 
     public OllamaAdapter(String modelName) {
         this.modelName = modelName;
@@ -36,6 +37,11 @@ public class OllamaAdapter implements LlmAdapter {
 
     @Override
     public String sendMessages(List<ChatMessage> messages) {
+        if (!this.connected) {
+            log.error("Cannot send messages when not connected");
+            return null;
+        }
+
         Options options = new OptionsBuilder()
                 .setMirostat(2)
                 .setMirostatEta(0.4f)
@@ -58,19 +64,27 @@ public class OllamaAdapter implements LlmAdapter {
 
             return response.getResponseModel().getMessage().getContent();
         } catch (Exception e) {
-            LOGGER.error("Failed to send message", e);
+            log.error("Failed to send message", e);
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return this.connected;
     }
 
     private void loadModel() {
         try {
             List<String> models = this.ollamaAPI.listModels().stream().map(Model::getModelName).toList();
             if (!models.contains(this.modelName)) this.ollamaAPI.pullModel(this.modelName);
-            LOGGER.info("Model loaded successful!");
+
+            log.info("Model loaded successful!");
+
+            this.connected = true;
         } catch (Exception e) {
-            LOGGER.error("Model not loaded", e);
+            log.error("Model not loaded");
         }
     }
 

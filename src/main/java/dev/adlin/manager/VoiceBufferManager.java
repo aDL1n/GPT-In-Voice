@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 
 public class VoiceBufferManager {
 
-    private static final Logger LOGGER = LogManager.getLogger(VoiceBufferManager.class);
+    private static final Logger log = LogManager.getLogger(VoiceBufferManager.class);
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
             Math.max(2, Runtime.getRuntime().availableProcessors() / 2));
@@ -50,7 +50,7 @@ public class VoiceBufferManager {
         try {
             buffer.write(data);
         } catch (IOException e) {
-            LOGGER.error("Failed to write to buffer", e);
+            log.error("Failed to write to buffer", e);
         }
     }
 
@@ -80,7 +80,7 @@ public class VoiceBufferManager {
             scheduler.execute(() -> {
                 if (bufferListener != null) {
                     bufferListener.onBufferReady(userState.getId(), audioData);
-                    LOGGER.info("Buffer is ready");
+                    log.info("Buffer is ready");
                 }
             });
 

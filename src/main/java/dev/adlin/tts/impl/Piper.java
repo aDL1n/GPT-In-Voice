@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Piper implements TextToSpeech {
 
-    private static final Logger LOGGER = LogManager.getLogger(Piper.class);
+    private static final Logger log = LogManager.getLogger(Piper.class);
 
     private final HttpClient client = HttpClient
             .newBuilder()
@@ -29,10 +29,10 @@ public class Piper implements TextToSpeech {
     @Override
     public byte[] speech(String text) {
         try {
-            LOGGER.info("The answer has been successfully translated into speech");
+            log.info("The answer has been successfully translated into speech");
             return speechAsync(text).get();
         } catch (Exception e) {
-            LOGGER.error("Failed to convert text to speech", e);
+            log.error("Failed to convert text to speech", e);
         }
 
         return null;
