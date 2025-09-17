@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Whisper implements SpeechToText {
 
-    private static final Logger LOGGER = LogManager.getLogger(Whisper.class);
+    private static final Logger log = LogManager.getLogger(Whisper.class);
 
     private final Gson gson = new Gson();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -44,7 +44,7 @@ public class Whisper implements SpeechToText {
                 return waitForResult(requestId).get();
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to transcript audio", e);
+            log.error("Failed to transcript audio", e);
         }
         return null;
     }
@@ -61,7 +61,7 @@ public class Whisper implements SpeechToText {
             try (OutputStream out = conn.getOutputStream()) {
                 out.write(audio);
                 out.flush();
-                LOGGER.info("Audio batch sent");
+                log.info("Audio batch sent");
             }
 
             try (InputStream in = conn.getInputStream()) {
@@ -70,7 +70,7 @@ public class Whisper implements SpeechToText {
             }
 
         } catch (IOException e) {
-            LOGGER.error("Failed to send audio to server", e);
+            log.error("Failed to send audio to server", e);
         }
 
         return null;
@@ -92,7 +92,7 @@ public class Whisper implements SpeechToText {
 
                         if ("done".equals(json.get("status").getAsString())) {
                             String text = json.get("text").getAsString();
-                            LOGGER.info("Translated text: {}", text);
+                            log.info("Translated text: {}", text);
                             future.complete(text);
                             return;
                         }
@@ -101,7 +101,7 @@ public class Whisper implements SpeechToText {
                     }
 
                 } catch (Exception e) {
-                    LOGGER.error("Failed to get result from server", e);
+                    log.error("Failed to get result from server", e);
                     future.completeExceptionally(e);
                 }
             }

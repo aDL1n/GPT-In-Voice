@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class RagService {
 
-    private static final Logger LOGGER = LogManager.getLogger(RagService.class);
+    private static final Logger log = LogManager.getLogger(RagService.class);
 
     private final VectorStore vectorStore;
     private final EmbeddingAdapter embedding;
@@ -24,19 +24,29 @@ public class RagService {
 
     @Nullable
     public synchronized List<ScoredChunk> search(String query, int topK, String collection) {
+        if (!embedding.isConnected()) {
+            log.error("Embedding is not connected");
+            return null;
+        }
+
         try {
             float[] embed = embedding.embed(query);
             Map<String,String> filter = collection == null ? null : Map.of("collection", collection);
 
             return vectorStore.search(embed, topK, filter);
         } catch (Exception e) {
-            LOGGER.error("Could not find information", e);
+            log.error("Could not find information", e);
         }
 
          return null;
     }
 
     public void addDocuments(List<String> texts, String source, String collection) {
+        if (!embedding.isConnected()) {
+            log.error("Embedding is not connected");
+            return;
+        }
+
         List<Chunk> chunks = new ArrayList<>();
 
         for (int i = 0; i < texts.size(); i++) {
@@ -48,7 +58,7 @@ public class RagService {
                             "source", source, "collection", collection
                     ), emb));
                 } catch (Exception e) {
-                    LOGGER.error("Failed to add chunk to storage", e);
+                    log.error("Failed to add chunk to storage", e);
                 }
             }
         }

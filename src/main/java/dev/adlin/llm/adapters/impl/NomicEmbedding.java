@@ -12,10 +12,12 @@ import java.util.List;
 
 public class NomicEmbedding implements EmbeddingAdapter {
 
-    private static final Logger LOGGER = LogManager.getLogger(NomicEmbedding.class);
+    private static final Logger log = LogManager.getLogger(NomicEmbedding.class);
 
     private final OllamaAPI ollamaAPI;
     private static final String MODEL_NAME = "nomic-embed-text:v1.5";
+
+    private boolean connected = false;
 
     public NomicEmbedding() {
         this.ollamaAPI = new OllamaAPI();
@@ -40,19 +42,25 @@ public class NomicEmbedding implements EmbeddingAdapter {
 
             return out;
         } catch (Exception e) {
-            LOGGER.error("Failed to get embedding", e);
+            log.error("Failed to get embedding", e);
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return this.connected;
     }
 
     private void loadModel() {
         try {
             List<String> models = this.ollamaAPI.listModels().stream().map(Model::getModelName).toList();
             if (!models.contains(MODEL_NAME)) this.ollamaAPI.pullModel(MODEL_NAME);
-            LOGGER.info("Model loaded successful!");
+            log.info("Model loaded successful!");
+            this.connected = true;
         } catch (Exception e) {
-            LOGGER.error("Model not loaded", e);
+            log.error("Model not loaded");
         }
     }
 }

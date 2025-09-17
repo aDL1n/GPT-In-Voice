@@ -40,7 +40,7 @@ import java.util.*;
 
 public class Bot {
     private final JDA jda;
-    private static final Logger LOGGER = LogManager.getLogger(Bot.class);
+    private static final Logger log = LogManager.getLogger(Bot.class);
 
     public Bot(String token, String guildId) {
         this.jda = JDABuilder.create(
@@ -87,9 +87,9 @@ public class Bot {
                     "bootstrap",
                     "longterm"
             );
-            LOGGER.info("Memories loaded from database");
+            log.info("Memories loaded from database");
         } catch (Exception e) {
-            LOGGER.error("Failed to load memory", e);
+            log.error("Failed to load memory", e);
         }
 
         VoiceBufferManager bufferManager = new VoiceBufferManager();

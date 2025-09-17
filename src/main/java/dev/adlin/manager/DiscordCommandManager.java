@@ -21,7 +21,7 @@ public class DiscordCommandManager extends ListenerAdapter {
     private final JDA jda;
 
     private final List<DiscordAbstractCommand> discordCommandList = new ArrayList<>();
-    private static final Logger LOGGER = LogManager.getLogger(DiscordCommandManager.class);
+    private static final Logger log = LogManager.getLogger(DiscordCommandManager.class);
 
     public DiscordCommandManager(JDA jda) {
         this.jda = jda;
@@ -29,7 +29,7 @@ public class DiscordCommandManager extends ListenerAdapter {
     }
 
     public void registerCommands() {
-        LOGGER.info("Registering commands...");
+        log.info("Registering commands...");
         List<SlashCommandData> commandDataList = new ArrayList<>();
         discordCommandList.forEach(command -> {
             if (command.getOptionData() != null) {
@@ -51,14 +51,14 @@ public class DiscordCommandManager extends ListenerAdapter {
                 );
             }
 
-            LOGGER.info("Command {} registered!", command.getCommandName());
+            log.info("Command {} registered!", command.getCommandName());
         });
 
         if (!discordCommandList.isEmpty()) {
             this.jda.updateCommands().addCommands(commandDataList).queue();
-            LOGGER.info("All Discord commands registered!");
+            log.info("All Discord commands registered!");
         } else {
-            LOGGER.warn("No Discord commands to register.");
+            log.warn("No Discord commands to register.");
         }
     }
 
@@ -69,7 +69,7 @@ public class DiscordCommandManager extends ListenerAdapter {
                 .findFirst()
                 .ifPresentOrElse(
                         command -> command.execute(event),
-                        () -> LOGGER.warn("Command not found: {}", event.getName())
+                        () -> log.warn("Command not found: {}", event.getName())
                 );
     }
 

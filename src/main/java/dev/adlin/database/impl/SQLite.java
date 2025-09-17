@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SQLite implements DataBase {
 
-    private static final Logger LOGGER = LogManager.getLogger(SQLite.class);
+    private static final Logger log = LogManager.getLogger(SQLite.class);
 
     static {
         try {
@@ -38,9 +38,9 @@ public class SQLite implements DataBase {
         try {
             DataSource dataSource = this.createDataSource(new File("src/main/resources/database/LTM.db"));
             connection = dataSource.getConnection();
-            LOGGER.info("Database connected!");
+            log.info("Database connected!");
         } catch (Exception e) {
-            LOGGER.error("Database connection error", e);
+            log.error("Database connection error", e);
         }
 
     }
