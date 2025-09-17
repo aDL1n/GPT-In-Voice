@@ -32,7 +32,7 @@ public class NomicEmbedding implements EmbeddingAdapter {
                 throw new RuntimeException("Empty embeddings result from Ollama");
             }
 
-            List<Double> vec = result.getFirst();
+            List<Double> vec = result.get(0);
             float[] out = new float[vec.size()];
 
             for (int i = 0; i < vec.size(); i++)
