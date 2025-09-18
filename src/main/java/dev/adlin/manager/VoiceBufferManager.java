@@ -15,15 +15,17 @@ public class VoiceBufferManager {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
             Math.max(2, Runtime.getRuntime().availableProcessors() / 2));
+    private final ConcurrentHashMap<String, UserState> users = new ConcurrentHashMap<>();
 
     private AudioBufferListener bufferListener;
-    ConcurrentHashMap<String, UserState> users = new ConcurrentHashMap<>();
 
     private static final double VOLUME_THRESHOLD = 0.017;
     private static final long SILENCE_DELAY_MS = 2000;
 
 
-    public VoiceBufferManager() {}
+    public VoiceBufferManager() {
+
+    }
 
     public void processAudioPerUser(String userId, byte[] data, double volume) {
         if (userId == null || data == null || data.length == 0) return;
@@ -91,11 +93,7 @@ public class VoiceBufferManager {
         cancelPendingTask(userState);
     }
 
-    public void shutdown(UserState userState) {
-        synchronized (userState.getLock()) {
-            flushBuffer(userState);
-        }
-
+    public void shutdown() {
         scheduler.shutdown();
 
         try {

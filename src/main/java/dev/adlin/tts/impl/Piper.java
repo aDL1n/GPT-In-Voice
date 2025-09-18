@@ -23,7 +23,16 @@ public class Piper implements TextToSpeech {
             .newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
             .build();
-    private final String baseUrl = "http://localhost:5002";
+
+    private final String baseUrl;
+
+    public Piper(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public Piper() {
+        this.baseUrl = "http://localhost:5002";
+    }
 
     @Nullable
     @Override

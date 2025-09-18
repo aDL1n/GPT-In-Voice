@@ -23,7 +23,7 @@ public class RagService {
     }
 
     @Nullable
-    public synchronized List<ScoredChunk> search(String query, int topK, String collection) {
+    public List<ScoredChunk> search(String query, int topK, String collection) {
         if (!embedding.isConnected()) {
             log.error("Embedding is not connected");
             return null;
@@ -51,10 +51,12 @@ public class RagService {
 
         for (int i = 0; i < texts.size(); i++) {
             String text = texts.get(i);
+            int chunkIndex = 0;
+
             for (String ch : split(text, 500, 200)) {
                 try {
                     float[] emb = embedding.embed(ch);
-                    chunks.add(new Chunk(source + "#" + (i++), ch, Map.of(
+                    chunks.add(new Chunk(source + "#" + (chunkIndex++), ch, Map.of(
                             "source", source, "collection", collection
                     ), emb));
                 } catch (Exception e) {
@@ -65,7 +67,10 @@ public class RagService {
         vectorStore.add(chunks);
     }
 
+
     public static List<String> split(String s, int size, int overlap) {
+        if (s != null && s.length() < size) throw new IllegalArgumentException("Length exceeded");
+
         List<String> res = new ArrayList<>();
 
         for (int start = 0; start < s.length(); start += size - overlap) {
