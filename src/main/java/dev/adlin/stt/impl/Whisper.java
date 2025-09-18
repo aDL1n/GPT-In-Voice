@@ -1,34 +1,33 @@
 package dev.adlin.stt.impl;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dev.adlin.stt.SpeechToText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import com.google.gson.JsonParser;
+
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class Whisper implements SpeechToText {
 
     private static final Logger log = LogManager.getLogger(Whisper.class);
 
-    private final Gson gson = new Gson();
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private final String serverUrl;
+    private final HttpClient client = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
+            .build();
 
-    public Whisper(String serverUrl) {
-        this.serverUrl = serverUrl;
+    private final String baseUrl;
+
+    public Whisper(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
     public Whisper() {
@@ -39,74 +38,59 @@ public class Whisper implements SpeechToText {
     @Override
     public String transcriptAudio(byte[] data) {
         try {
-            String requestId = sendToServer(data);
-            if (requestId != null) {
-                return waitForResult(requestId).get();
-            }
+            log.info("Sending audio for transcription");
+            return transcriptAudioAsync(data).get();
         } catch (Exception e) {
             log.error("Failed to transcript audio", e);
+            return null;
         }
-        return null;
     }
 
-    @Nullable
-    private String sendToServer(byte[] audio) {
-        try {
-            URL url = URI.create(serverUrl + "/stream").toURL();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/octet-stream");
+    public CompletableFuture<String> transcriptAudioAsync(byte[] audio) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/stream"))
+                .header("Content-Type", "application/octet-stream")
+                .POST(HttpRequest.BodyPublishers.ofByteArray(audio))
+                .build();
 
-            try (OutputStream out = conn.getOutputStream()) {
-                out.write(audio);
-                out.flush();
-                log.info("Audio batch sent");
-            }
-
-            try (InputStream in = conn.getInputStream()) {
-                JsonObject json = gson.fromJson(new InputStreamReader(in), JsonObject.class);
-                return json.get("request_id").getAsString();
-            }
-
-        } catch (IOException e) {
-            log.error("Failed to send audio to server", e);
-        }
-
-        return null;
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(response -> {
+                    if (response.statusCode() != 200) {
+                        throw new RuntimeException("sendToServer request failed: " + response.body());
+                    }
+                    JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject();
+                    String requestId = json.get("request_id").getAsString();
+                    log.info("Audio batch sent, received request_id: {}", requestId);
+                    return pollUntilDone(requestId);
+                });
     }
 
-    private CompletableFuture<String> waitForResult(String requestId) {
-        CompletableFuture<String> future = new CompletableFuture<>();
+    private CompletableFuture<String> pollUntilDone(String requestId) {
+        HttpRequest pollRequest = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/result/" + requestId))
+                .GET()
+                .build();
 
-        scheduler.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = URI.create(serverUrl + "/result/" + requestId).toURL();
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("GET");
-
-                    try (InputStream in = conn.getInputStream()) {
-                        JsonObject json = gson.fromJson(new InputStreamReader(in), JsonObject.class);
-
-                        if ("done".equals(json.get("status").getAsString())) {
-                            String text = json.get("text").getAsString();
-                            log.info("Translated text: {}", text);
-                            future.complete(text);
-                            return;
-                        }
-
-                        scheduler.schedule(this, 1, TimeUnit.SECONDS);
+        return client.sendAsync(pollRequest, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(response -> {
+                    if (response.statusCode() != 200) {
+                        throw new RuntimeException("polling request failed with status: " + response.statusCode());
                     }
 
-                } catch (Exception e) {
-                    log.error("Failed to get result from server", e);
-                    future.completeExceptionally(e);
-                }
-            }
-        });
+                    JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject();
+                    String status = json.get("status").getAsString();
 
-        return future;
+                    if ("done".equals(status)) {
+                        String text = json.get("text").getAsString();
+                        log.info("Transcription completed: {}", text);
+                        return CompletableFuture.completedFuture(text);
+                    } else {
+                        return CompletableFuture.supplyAsync(
+                                () -> null,
+                                CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS)
+                        ).thenCompose(ignored -> pollUntilDone(requestId));
+                    }
+                });
     }
 }
+

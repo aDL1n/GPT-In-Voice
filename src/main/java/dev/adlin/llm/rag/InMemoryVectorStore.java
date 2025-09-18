@@ -19,7 +19,9 @@ public class InMemoryVectorStore implements VectorStore {
         for (Chunk chunk : chunks) {
             float[] embed = chunk.embedding();
             if (embed == null || embed.length == 0) continue;
+
             float[] normEmbed = normalize(embed);
+            if (normEmbed == null || normEmbed.length == 0) continue;
 
             data.add(new EmbedEntry(chunk, normEmbed));
         }
