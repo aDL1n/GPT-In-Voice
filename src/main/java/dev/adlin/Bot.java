@@ -2,7 +2,6 @@ package dev.adlin;
 
 import dev.adlin.commands.JoinCommand;
 import dev.adlin.commands.LeaveCommand;
-import dev.adlin.database.impl.SQLite;
 import dev.adlin.handlers.VoiceReceiveHandler;
 import dev.adlin.handlers.VoiceSendingHandler;
 import dev.adlin.listeners.DiscordVoiceListener;
@@ -10,13 +9,13 @@ import dev.adlin.llm.adapters.Role;
 import dev.adlin.llm.adapters.impl.NomicEmbedding;
 import dev.adlin.llm.adapters.impl.OllamaAdapter;
 import dev.adlin.llm.memory.LongTermMemoryData;
-import dev.adlin.llm.memory.MemoryManager;
 import dev.adlin.llm.rag.InMemoryVectorStore;
 import dev.adlin.llm.rag.RagService;
 import dev.adlin.llm.rag.ScoredChunk;
 import dev.adlin.manager.ChatManager;
 import dev.adlin.manager.DiscordCommandManager;
 import dev.adlin.manager.VoiceBufferManager;
+import dev.adlin.service.LongTermMemoryService;
 import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.impl.Piper;
 import dev.adlin.utils.AudioProvider;
@@ -37,12 +36,15 @@ import org.apache.logging.log4j.Logger;
 import java.time.Instant;
 import java.util.*;
 
-
 public class Bot {
+
     private final JDA jda;
+    private final LongTermMemoryService longTermMemoryService;
+
     private static final Logger log = LogManager.getLogger(Bot.class);
 
-    public Bot(String token, String guildId) {
+    public Bot(String token, String guildId, LongTermMemoryService longTermMemoryService) {
+        this.longTermMemoryService = longTermMemoryService;
         this.jda = JDABuilder.create(
             token,
             EnumSet.of(
@@ -56,17 +58,13 @@ public class Bot {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .build();
 
+
+
         try {
             jda.awaitReady();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        SQLite sqLite = new SQLite();
-        sqLite.load();
-
-        MemoryManager memoryManager = new MemoryManager(sqLite);
-        memoryManager.initializeLongTermMemory();
 
         Piper piper = new Piper();
         Whisper whisper = new Whisper();
@@ -79,10 +77,10 @@ public class Bot {
         ChatManager chatManager = new ChatManager(ollamaAdapter);
 
         try {
-            List<LongTermMemoryData> memories = sqLite.getLongTermMemories(100).get();
+            List<LongTermMemoryData> memories = longTermMemoryService.getLongTermMemories(100);
             rag.addDocuments(
                     memories.stream().map(data ->
-                            data.role + " " + data.message
+                            data.role + " " + data.content
                     ).toList(),
                     "bootstrap",
                     "longterm"
@@ -140,16 +138,16 @@ public class Bot {
 
             String transcription = whisper.transcriptAudio(data);
 
-            memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), user.getName(), transcription));
+            longTermMemoryService.saveLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), user.getName(), transcription));
+            rag.addDocuments(Collections.singletonList(transcription), user.getName(), "longterm");
 
             List<ScoredChunk> hits = rag.search(transcription, 8, "longterm");
             String ragContext = RagService.formatChunks(hits);
 
             chatManager.sendMessage(new ChatMessage(Role.TOOL, "longtermmemory", "Подсказки из чата: " + ragContext));
             String result = chatManager.sendMessage(new ChatMessage(Role.USER, user.getName(), transcription));
-            rag.addDocuments(Collections.singletonList(transcription), user.getName(), "longterm");
 
-            memoryManager.addToLongTermMemory(new LongTermMemoryData(Role.ASSISTANT, Date.from(Instant.now()), result));
+            longTermMemoryService.saveLongTermMemory(new LongTermMemoryData(Role.USER, Date.from(Instant.now()), "assistant", result));
             rag.addDocuments(Collections.singletonList(result), "assistant", "longterm");
 
             byte[] speech = piper.speech(result);

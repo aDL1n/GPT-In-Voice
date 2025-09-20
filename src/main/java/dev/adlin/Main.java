@@ -1,5 +1,6 @@
 package dev.adlin;
 
+import dev.adlin.service.LongTermMemoryService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +14,7 @@ public class Main {
     }
 
     @Bean
-    public Bot bot(@Value("${discord.token}") String token, @Value("${discord.guild-id}") String guildId) {
-        return new Bot(token, guildId);
+    public Bot bot(@Value("${discord.token}") String token, @Value("${discord.guild-id}") String guildId, LongTermMemoryService longTermMemoryService) {
+        return new Bot(token, guildId, longTermMemoryService);
     }
 }
