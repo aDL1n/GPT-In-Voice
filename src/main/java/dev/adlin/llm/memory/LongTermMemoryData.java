@@ -14,16 +14,16 @@ public class LongTermMemoryData {
     @Nullable
     public String userName;
     @NotNull
-    public String message;
+    public String content;
 
-    public LongTermMemoryData(@NotNull Role role, @NotNull Date date, @Nullable String userName, @NotNull String message) {
+    public LongTermMemoryData(@NotNull Role role, @NotNull Date date, @Nullable String userName, @NotNull String content) {
         this.role = role;
         this.date = date;
         this.userName = userName;
-        this.message = message;
+        this.content = content;
     }
 
-    public LongTermMemoryData(@NotNull Role role, @NotNull Date date, @NotNull String message) {
-        this(role, date, null, message);
+    public LongTermMemoryData(@NotNull Role role, @NotNull Date date, @NotNull String content) {
+        this(role, date, null, content);
     }
 }
