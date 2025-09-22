@@ -19,7 +19,10 @@ import dev.adlin.service.LongTermMemoryService;
 import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.impl.Piper;
 import dev.adlin.utils.AudioProvider;
+import dev.adlin.utils.BotState;
+import dev.adlin.utils.BotStatus;
 import dev.adlin.utils.chat.ChatMessage;
+import jakarta.annotation.PostConstruct;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -39,11 +42,19 @@ import java.util.*;
 public class Bot {
 
     private final JDA jda;
+    private final BotState botState;
+    private final String guildId;
     private final LongTermMemoryService longTermMemoryService;
 
     private static final Logger log = LogManager.getLogger(Bot.class);
 
-    public Bot(String token, String guildId, LongTermMemoryService longTermMemoryService) {
+    public Bot(
+            String token,
+            String guildId,
+            LongTermMemoryService longTermMemoryService,
+            BotState botState
+    ) {
+        this.guildId = guildId;
         this.longTermMemoryService = longTermMemoryService;
         this.jda = JDABuilder.create(
             token,
@@ -57,9 +68,11 @@ public class Bot {
                 .setStatus(OnlineStatus.IDLE)
                 .enableCache(CacheFlag.VOICE_STATE)
                 .build();
+        this.botState = botState;
+    }
 
-
-
+    @PostConstruct
+    public void start() {
         try {
             jda.awaitReady();
         } catch (InterruptedException e) {
@@ -108,7 +121,8 @@ public class Bot {
 
             if (joinedChannel != null &&
                     event.getEntity().getUser() != event.getJDA().getSelfUser() &&
-                    guild.getAudioManager().getConnectedChannel().equals(joinedChannel)
+                    guild.getAudioManager().getConnectedChannel().equals(joinedChannel) &&
+                    guild.getAudioManager().isConnected()
             ) {
                 chatManager.sendMessage(
                         new ChatMessage(Role.TOOL, "discord", event.getEntity().getUser().getName() + " has joined to your voice channel")
@@ -117,7 +131,8 @@ public class Bot {
 
             if (leftChannel != null &&
                     event.getEntity().getUser() != event.getJDA().getSelfUser() &&
-                    guild.getAudioManager().getConnectedChannel().equals(leftChannel)
+                    guild.getAudioManager().getConnectedChannel().equals(leftChannel) &&
+                    guild.getAudioManager().isConnected()
             ) {
                 chatManager.sendMessage(
                         new ChatMessage(Role.TOOL, "discord", event.getEntity().getUser().getName() + " has leaved from your voice channel")
@@ -128,7 +143,7 @@ public class Bot {
         DiscordCommandManager discordCommandManager = new DiscordCommandManager(jda);
 
         discordCommandManager.addDiscordCommands(
-                new JoinCommand(), new LeaveCommand()
+                new JoinCommand(botState), new LeaveCommand(botState)
         );
 
         discordCommandManager.registerCommands();
@@ -154,6 +169,8 @@ public class Bot {
 
             audioProvider.addAudio(speech);
         });
+
+        botState.setStatus(BotStatus.READY);
     }
 
     public JDA getJda() {
