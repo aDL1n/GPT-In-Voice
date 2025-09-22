@@ -1,6 +1,8 @@
 package dev.adlin.commands;
 
 import dev.adlin.commands.util.DiscordAbstractCommand;
+import dev.adlin.utils.BotState;
+import dev.adlin.utils.BotStatus;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -24,9 +26,11 @@ public class LeaveCommand extends DiscordAbstractCommand {
             .setTitle("I'm not in the voice channel")
             .setColor(Color.YELLOW)
             .build();
+    private final BotState botState;
 
-    public LeaveCommand() {
+    public LeaveCommand(BotState botState) {
         super("leave", "send request to leave from voice channel");
+        this.botState = botState;
     }
 
     @Override
@@ -42,6 +46,8 @@ public class LeaveCommand extends DiscordAbstractCommand {
             JDA jda = commandInteraction.getJDA();
             jda.getPresence().setActivity(Activity.customStatus("Waiting for you"));
             jda.getPresence().setStatus(OnlineStatus.IDLE);
+
+            botState.setStatus(BotStatus.READY);
 
             commandInteraction.replyEmbeds(leaveSuccesses).queue();
             return;

@@ -1,6 +1,8 @@
 package dev.adlin.commands;
 
 import dev.adlin.commands.util.DiscordAbstractCommand;
+import dev.adlin.utils.BotState;
+import dev.adlin.utils.BotStatus;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
@@ -10,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 
@@ -25,8 +28,11 @@ public class JoinCommand extends DiscordAbstractCommand {
             .setColor(Color.GREEN)
             .build();
 
-    public JoinCommand() {
+    private final BotState botState;
+
+    public JoinCommand(BotState botState) {
         super("join", "send join request to bot", new OptionData(OptionType.USER, "user", "to user"));
+        this.botState = botState;
     }
 
     @Override
@@ -49,6 +55,8 @@ public class JoinCommand extends DiscordAbstractCommand {
 
             commandInteraction.getJDA().getPresence().setActivity(Activity.listening("you in " + audioChannel.getName()));
             commandInteraction.getJDA().getPresence().setStatus(OnlineStatus.ONLINE);
+
+            botState.setStatus(BotStatus.IN_VOICE);
 
             commandInteraction.replyEmbeds(joinedToVoiceEmbed).queue();
         } else {
