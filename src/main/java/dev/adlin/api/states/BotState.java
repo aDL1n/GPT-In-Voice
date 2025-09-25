@@ -1,11 +1,14 @@
-package dev.adlin.utils;
+package dev.adlin.api.states;
+
+import dev.adlin.api.states.util.BotStatus;
+import dev.adlin.utils.chat.ChatMessage;
 
 public class BotState {
 
     private BotStatus status;
-    private String currentPromptRequest;
+    private ChatMessage currentPromptRequest;
 
-    public BotState(BotStatus status, String currentPromptRequest) {
+    public BotState(BotStatus status, ChatMessage currentPromptRequest) {
         this.status = status;
         this.currentPromptRequest = currentPromptRequest;
     }
@@ -21,11 +24,11 @@ public class BotState {
         this.status = status;
     }
 
-    public String getCurrentPromptRequest() {
+    public ChatMessage getCurrentPromptRequest() {
         return currentPromptRequest;
     }
 
-    public void setCurrentPromptRequest(String currentPromptRequest) {
+    public void setCurrentPromptRequest(ChatMessage currentPromptRequest) {
         this.currentPromptRequest = currentPromptRequest;
     }
 }

@@ -1,8 +1,8 @@
 package dev.adlin.commands;
 
 import dev.adlin.commands.util.DiscordAbstractCommand;
-import dev.adlin.utils.BotState;
-import dev.adlin.utils.BotStatus;
+import dev.adlin.api.states.BotState;
+import dev.adlin.api.states.util.BotStatus;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 

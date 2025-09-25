@@ -1,4 +1,4 @@
-package dev.adlin.utils;
+package dev.adlin.api.states.util;
 
 public enum BotStatus {
     LOADING,
