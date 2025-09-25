@@ -1,8 +1,8 @@
 package dev.adlin;
 
 import dev.adlin.service.LongTermMemoryService;
-import dev.adlin.utils.BotState;
-import dev.adlin.utils.BotStatus;
+import dev.adlin.api.states.BotState;
+import dev.adlin.api.states.util.BotStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

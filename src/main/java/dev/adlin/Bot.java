@@ -19,8 +19,8 @@ import dev.adlin.service.LongTermMemoryService;
 import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.impl.Piper;
 import dev.adlin.utils.AudioProvider;
-import dev.adlin.utils.BotState;
-import dev.adlin.utils.BotStatus;
+import dev.adlin.api.states.BotState;
+import dev.adlin.api.states.util.BotStatus;
 import dev.adlin.utils.chat.ChatMessage;
 import jakarta.annotation.PostConstruct;
 import net.dv8tion.jda.api.JDA;
@@ -159,6 +159,7 @@ public class Bot {
             List<ScoredChunk> hits = rag.search(transcription, 8, "longterm");
             String ragContext = RagService.formatChunks(hits);
 
+            botState.setCurrentPromptRequest(new ChatMessage(Role.USER, user.getName(), transcription));
             chatManager.sendMessage(new ChatMessage(Role.TOOL, "longtermmemory", "Подсказки из чата: " + ragContext));
             String result = chatManager.sendMessage(new ChatMessage(Role.USER, user.getName(), transcription));
 
