@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/discord")
-public class DiscordController {
+@RequestMapping("/rag")
+public class RagController {
 
-    private static final Logger log = LoggerFactory.getLogger(DiscordController.class);
+    private static final Logger log = LoggerFactory.getLogger(RagController.class);
 
 }

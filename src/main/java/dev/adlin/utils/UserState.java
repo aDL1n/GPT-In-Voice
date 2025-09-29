@@ -1,4 +1,4 @@
-package dev.adlin.api.states;
+package dev.adlin.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.ScheduledFuture;
