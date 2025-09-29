@@ -1,5 +1,6 @@
 package dev.adlin;
 
+import dev.adlin.api.states.DiscordState;
 import dev.adlin.commands.JoinCommand;
 import dev.adlin.commands.LeaveCommand;
 import dev.adlin.handlers.VoiceReceiveHandler;
@@ -43,6 +44,7 @@ public class Bot {
 
     private final JDA jda;
     private final BotState botState;
+    private final DiscordState discordState;
     private final String guildId;
     private final LongTermMemoryService longTermMemoryService;
 
@@ -52,7 +54,8 @@ public class Bot {
             String token,
             String guildId,
             LongTermMemoryService longTermMemoryService,
-            BotState botState
+            BotState botState,
+            DiscordState discordState
     ) {
         this.guildId = guildId;
         this.longTermMemoryService = longTermMemoryService;
@@ -69,6 +72,7 @@ public class Bot {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .build();
         this.botState = botState;
+        this.discordState = discordState;
     }
 
     @PostConstruct
