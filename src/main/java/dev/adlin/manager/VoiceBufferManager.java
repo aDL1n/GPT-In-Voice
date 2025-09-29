@@ -1,7 +1,7 @@
 package dev.adlin.manager;
 
 import dev.adlin.utils.AudioBufferListener;
-import dev.adlin.api.states.UserState;
+import dev.adlin.utils.UserState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
