@@ -1,7 +1,7 @@
 package dev.adlin;
 
 import dev.adlin.api.states.DiscordState;
-import dev.adlin.service.LongTermMemoryService;
+import dev.adlin.services.LongTermMemoryService;
 import dev.adlin.api.states.BotState;
 import dev.adlin.api.states.util.BotStatus;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +21,7 @@ public class BotConfig {
 
     @Bean
     public DiscordState getDiscordState() {
-        return new DiscordState(
-                null
-        );
+        return new DiscordState();
     }
 
     @Bean

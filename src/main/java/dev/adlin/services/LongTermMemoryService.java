@@ -1,4 +1,4 @@
-package dev.adlin.service;
+package dev.adlin.services;
 
 import dev.adlin.llm.memory.LongTermMemoryData;
 import dev.adlin.repository.LongTermMemoryRepository;
