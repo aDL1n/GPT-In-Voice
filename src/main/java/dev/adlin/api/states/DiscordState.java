@@ -5,38 +5,52 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DiscordState {
 
-    private final AudioManager audioManager;
+    private AudioManager audioManager;
+    private boolean ready = false;
 
-    public DiscordState(AudioManager audioManager) {
-        this.audioManager = audioManager;
-    }
+    public DiscordState() {}
 
     public boolean isInVoiceChannel() {
         return this.audioManager.isConnected();
     }
 
     @Nullable
-    public String getVoiceChannelName() {
+    public Optional<String> getVoiceChannelName() {
         if (this.audioManager.isConnected()) {
-            return this.audioManager.getConnectedChannel().getName();
+            return Optional.of(this.audioManager.getConnectedChannel().getName());
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Nullable
-    public List<String> getVoiceUserNameList() {
+    public Optional<List<String>> getVoiceUserNameList() {
         if (this.audioManager.isConnected()) {
-            audioManager.getConnectedChannel().asVoiceChannel().getMembers()
+            return Optional.ofNullable(audioManager.getConnectedChannel().asVoiceChannel().getMembers()
                     .stream()
+                            .filter(member -> member.getUser().isBot())
                     .map(Member::getNickname)
-                    .toList()
-            ;
+                    .toList())  ;
         }
 
-        return null;
+        return Optional.empty();
+    }
+
+    @Nullable
+    public AudioManager getAudioManager() {
+        return audioManager;
+    }
+
+    public void setAudioManager(AudioManager audioManager) {
+        this.audioManager = audioManager;
+        this.ready = true;
+    }
+
+    public boolean isReady() {
+        return ready;
     }
 }

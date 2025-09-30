@@ -16,7 +16,7 @@ import dev.adlin.llm.rag.ScoredChunk;
 import dev.adlin.manager.ChatManager;
 import dev.adlin.manager.DiscordCommandManager;
 import dev.adlin.manager.VoiceBufferManager;
-import dev.adlin.service.LongTermMemoryService;
+import dev.adlin.services.LongTermMemoryService;
 import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.impl.Piper;
 import dev.adlin.utils.AudioProvider;
@@ -83,6 +83,11 @@ public class Bot {
             throw new RuntimeException(e);
         }
 
+        Guild guild = jda.getGuildById(guildId);
+        AudioManager audioManager = guild.getAudioManager();
+
+        this.discordState.setAudioManager(audioManager);
+
         Piper piper = new Piper();
         Whisper whisper = new Whisper();
         OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b");
@@ -112,9 +117,6 @@ public class Bot {
 
         VoiceReceiveHandler voiceReceiveHandler = new VoiceReceiveHandler(bufferManager);
         VoiceSendingHandler voiceSendingHandler = new VoiceSendingHandler(audioProvider);
-
-        Guild guild = jda.getGuildById(guildId);
-        AudioManager audioManager = guild.getAudioManager();
 
         audioManager.setReceivingHandler(voiceReceiveHandler);
         audioManager.setSendingHandler(voiceSendingHandler);
