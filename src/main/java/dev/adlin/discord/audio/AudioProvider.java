@@ -1,4 +1,4 @@
-package dev.adlin.utils;
+package dev.adlin.discord.audio;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;

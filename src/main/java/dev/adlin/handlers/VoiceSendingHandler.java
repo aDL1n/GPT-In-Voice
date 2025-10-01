@@ -1,6 +1,6 @@
 package dev.adlin.handlers;
 
-import dev.adlin.utils.AudioProvider;
+import dev.adlin.discord.audio.AudioProvider;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import org.jetbrains.annotations.Nullable;
 

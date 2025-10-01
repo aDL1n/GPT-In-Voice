@@ -1,7 +1,7 @@
 package dev.adlin.api.states;
 
 import dev.adlin.api.states.util.BotStatus;
-import dev.adlin.utils.chat.ChatMessage;
+import dev.adlin.llm.chat.ChatMessage;
 
 public class BotState {
 

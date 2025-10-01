@@ -2,7 +2,7 @@ package dev.adlin.llm.adapters.impl;
 
 import dev.adlin.llm.adapters.LlmAdapter;
 import dev.adlin.utils.PromptUtils;
-import dev.adlin.utils.chat.ChatMessage;
+import dev.adlin.llm.chat.ChatMessage;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessage;
 import io.github.ollama4j.models.chat.OllamaChatRequest;

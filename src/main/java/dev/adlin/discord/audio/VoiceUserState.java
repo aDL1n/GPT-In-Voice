@@ -1,9 +1,9 @@
-package dev.adlin.utils;
+package dev.adlin.discord.audio;
 
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.ScheduledFuture;
 
-public class UserState {
+public class VoiceUserState {
     private final String id;
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
@@ -13,7 +13,7 @@ public class UserState {
 
     private final Object lock = new Object();
 
-    public UserState(String id) {
+    public VoiceUserState(String id) {
         this.id = id;
     }
 

@@ -1,7 +1,7 @@
 package dev.adlin;
 
 import dev.adlin.api.states.DiscordState;
-import dev.adlin.services.LongTermMemoryService;
+import dev.adlin.llm.memory.LongTermMemoryService;
 import dev.adlin.api.states.BotState;
 import dev.adlin.api.states.util.BotStatus;
 import org.springframework.beans.factory.annotation.Value;

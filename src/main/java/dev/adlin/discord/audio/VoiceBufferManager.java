@@ -1,7 +1,5 @@
-package dev.adlin.manager;
+package dev.adlin.discord.audio;
 
-import dev.adlin.utils.AudioBufferListener;
-import dev.adlin.utils.UserState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +13,7 @@ public class VoiceBufferManager {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
             Math.max(2, Runtime.getRuntime().availableProcessors() / 2));
-    private final ConcurrentHashMap<String, UserState> users = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, VoiceUserState> users = new ConcurrentHashMap<>();
 
     private AudioBufferListener bufferListener;
 
@@ -30,20 +28,20 @@ public class VoiceBufferManager {
     public void processAudioPerUser(String userId, byte[] data, double volume) {
         if (userId == null || data == null || data.length == 0) return;
 
-        UserState userState = users.computeIfAbsent(userId, UserState::new);
+        VoiceUserState voiceUserState = users.computeIfAbsent(userId, VoiceUserState::new);
 
-        synchronized (userState.getLock()) {
+        synchronized (voiceUserState.getLock()) {
             if (volume > VOLUME_THRESHOLD) {
-                userState.setLastSoundTime(System.currentTimeMillis());
-                if (!userState.isRecording()) userState.setRecording(true);
-                cancelPendingTask(userState);
+                voiceUserState.setLastSoundTime(System.currentTimeMillis());
+                if (!voiceUserState.isRecording()) voiceUserState.setRecording(true);
+                cancelPendingTask(voiceUserState);
             }
 
-            if (userState.isRecording()) {
-                writeToBuffer(userState.getBuffer(), data);
+            if (voiceUserState.isRecording()) {
+                writeToBuffer(voiceUserState.getBuffer(), data);
 
-                if (volume <= VOLUME_THRESHOLD && userState.getPendingTask() == null)
-                    scheduleSendTask(userState);
+                if (volume <= VOLUME_THRESHOLD && voiceUserState.getPendingTask() == null)
+                    scheduleSendTask(voiceUserState);
             }
         }
     }
@@ -56,41 +54,41 @@ public class VoiceBufferManager {
         }
     }
 
-    private void cancelPendingTask(UserState userState) {
-        if (userState.getPendingTask() != null) {
-            userState.getPendingTask().cancel(false);
-            userState.setPendingTask(null);
+    private void cancelPendingTask(VoiceUserState voiceUserState) {
+        if (voiceUserState.getPendingTask() != null) {
+            voiceUserState.getPendingTask().cancel(false);
+            voiceUserState.setPendingTask(null);
         }
     }
 
-    private void scheduleSendTask(UserState userState) {
-        userState.setPendingTask(
+    private void scheduleSendTask(VoiceUserState voiceUserState) {
+        voiceUserState.setPendingTask(
                 scheduler.schedule(() -> {
-                    synchronized (userState.getLock()) {
-                        if (userState.isRecording() && System.currentTimeMillis() - userState.getLastSoundTime() >= SILENCE_DELAY_MS) {
-                            flushBuffer(userState);
+                    synchronized (voiceUserState.getLock()) {
+                        if (voiceUserState.isRecording() && System.currentTimeMillis() - voiceUserState.getLastSoundTime() >= SILENCE_DELAY_MS) {
+                            flushBuffer(voiceUserState);
                         }
                     }
                 }, SILENCE_DELAY_MS, TimeUnit.MILLISECONDS)
         );
     }
 
-    private void flushBuffer(UserState userState) {
-        if (userState.getBuffer().size() > 0) {
-            byte[] audioData = userState.getBuffer().toByteArray();
+    private void flushBuffer(VoiceUserState voiceUserState) {
+        if (voiceUserState.getBuffer().size() > 0) {
+            byte[] audioData = voiceUserState.getBuffer().toByteArray();
 
             scheduler.execute(() -> {
                 if (bufferListener != null) {
-                    bufferListener.onBufferReady(userState.getId(), audioData);
+                    bufferListener.onBufferReady(voiceUserState.getId(), audioData);
                     log.info("Buffer is ready");
                 }
             });
 
-            userState.getBuffer().reset();
+            voiceUserState.getBuffer().reset();
         }
 
-        userState.setRecording(false);
-        cancelPendingTask(userState);
+        voiceUserState.setRecording(false);
+        cancelPendingTask(voiceUserState);
     }
 
     public void shutdown() {

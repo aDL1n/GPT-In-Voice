@@ -1,6 +1,6 @@
 package dev.adlin.llm.adapters;
 
-import dev.adlin.utils.chat.ChatMessage;
+import dev.adlin.llm.chat.ChatMessage;
 
 import java.util.List;
 

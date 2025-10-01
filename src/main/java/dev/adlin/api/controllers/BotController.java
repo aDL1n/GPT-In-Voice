@@ -3,6 +3,8 @@ package dev.adlin.api.controllers;
 import dev.adlin.api.states.BotState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,10 +22,9 @@ public class BotController {
     }
 
     @GetMapping("/state")
-    public BotState getState() {
+    public ResponseEntity<BotState> getState() {
         log.info("REST request to get the state");
-
-        return state;
+        return new ResponseEntity<>(state, HttpStatus.OK);
     }
 
 }

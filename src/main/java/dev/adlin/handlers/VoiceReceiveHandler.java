@@ -1,6 +1,6 @@
 package dev.adlin.handlers;
 
-import dev.adlin.manager.VoiceBufferManager;
+import dev.adlin.discord.audio.VoiceBufferManager;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.UserAudio;
 import org.jetbrains.annotations.NotNull;

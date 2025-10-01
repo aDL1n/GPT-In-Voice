@@ -1,4 +1,4 @@
-package dev.adlin.utils.chat;
+package dev.adlin.llm.chat;
 
 import dev.adlin.llm.adapters.Role;
 
