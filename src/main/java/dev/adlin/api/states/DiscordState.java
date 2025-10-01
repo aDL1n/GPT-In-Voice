@@ -32,9 +32,10 @@ public class DiscordState {
         if (this.audioManager.isConnected()) {
             return Optional.ofNullable(audioManager.getConnectedChannel().asVoiceChannel().getMembers()
                     .stream()
-                            .filter(member -> member.getUser().isBot())
+                    .filter(member -> member.getUser().isBot())
                     .map(Member::getNickname)
-                    .toList())  ;
+                    .toList()
+            );
         }
 
         return Optional.empty();

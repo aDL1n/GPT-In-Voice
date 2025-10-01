@@ -2,19 +2,16 @@ package dev.adlin.api.states;
 
 import dev.adlin.api.states.util.BotStatus;
 import dev.adlin.llm.chat.ChatMessage;
+import org.jetbrains.annotations.Nullable;
 
 public class BotState {
 
-    private BotStatus status;
+
+    private BotStatus status = BotStatus.LOADING;
+    @Nullable
     private ChatMessage currentPromptRequest;
 
-    public BotState(BotStatus status, ChatMessage currentPromptRequest) {
-        this.status = status;
-        this.currentPromptRequest = currentPromptRequest;
-    }
-
-    public BotState() {
-    }
+    public BotState() {}
 
     public BotStatus getStatus() {
         return status;
@@ -24,11 +21,11 @@ public class BotState {
         this.status = status;
     }
 
-    public ChatMessage getCurrentPromptRequest() {
+    public @Nullable ChatMessage getCurrentPromptRequest() {
         return currentPromptRequest;
     }
 
-    public void setCurrentPromptRequest(ChatMessage currentPromptRequest) {
+    public void setCurrentPromptRequest(@Nullable ChatMessage currentPromptRequest) {
         this.currentPromptRequest = currentPromptRequest;
     }
 }
