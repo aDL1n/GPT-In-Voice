@@ -1,6 +1,5 @@
 package dev.adlin.discord;
 
-import dev.adlin.discord.command.DiscordAbstractCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -24,8 +23,8 @@ public class DiscordCommandManager extends ListenerAdapter {
     private static final Logger log = LogManager.getLogger(DiscordCommandManager.class);
 
     public DiscordCommandManager(JDA jda) {
-        jda.addEventListener(this);
         this.jda = jda;
+        this.jda.addEventListener(this);
     }
 
     public void registerCommands() {
@@ -74,7 +73,7 @@ public class DiscordCommandManager extends ListenerAdapter {
     }
 
     public void addDiscordCommand(DiscordAbstractCommand command) {
-        this.addDiscordCommands(command);
+       this.addDiscordCommands(command);
     }
 
     public void addDiscordCommands(DiscordAbstractCommand... commands) {

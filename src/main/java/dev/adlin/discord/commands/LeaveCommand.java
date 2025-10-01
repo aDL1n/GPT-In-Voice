@@ -1,6 +1,6 @@
-package dev.adlin.commands;
+package dev.adlin.discord.commands;
 
-import dev.adlin.commands.util.DiscordAbstractCommand;
+import dev.adlin.discord.DiscordAbstractCommand;
 import dev.adlin.api.states.BotState;
 import dev.adlin.api.states.util.BotStatus;
 import net.dv8tion.jda.api.EmbedBuilder;

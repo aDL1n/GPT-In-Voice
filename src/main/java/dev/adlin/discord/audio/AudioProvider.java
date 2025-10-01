@@ -1,12 +1,9 @@
 package dev.adlin.discord.audio;
 
-import org.springframework.stereotype.Component;
-
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
 
-@Component
 public class AudioProvider {
     private static final int SAMPLE_RATE = 48000;
     private static final int CHANNELS = 2;
@@ -18,8 +15,6 @@ public class AudioProvider {
     private final Queue<byte[]> chunks = new LinkedList<>();
 
     public void addAudio(byte[] pcmData) {
-        if (pcmData == null || pcmData.length == 0 ) return;
-
         int offset = 0;
         while (offset + CHUNK_SIZE <= pcmData.length) {
             byte[] chunk = new byte[CHUNK_SIZE];

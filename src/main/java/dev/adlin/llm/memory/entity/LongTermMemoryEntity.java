@@ -1,4 +1,4 @@
-package dev.adlin.repository.entity;
+package dev.adlin.llm.memory.entity;
 
 
 import dev.adlin.llm.adapters.Role;
@@ -36,9 +36,7 @@ public class LongTermMemoryEntity {
         this.date = date;
     }
 
-    public LongTermMemoryEntity() {
-
-    }
+    public LongTermMemoryEntity() {}
 
     public void setId(Long id) {
         this.id = id;

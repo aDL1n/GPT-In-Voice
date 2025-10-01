@@ -1,8 +1,7 @@
-package dev.adlin.services;
+package dev.adlin.llm.memory;
 
-import dev.adlin.llm.memory.LongTermMemoryData;
-import dev.adlin.repository.LongTermMemoryRepository;
-import dev.adlin.repository.entity.LongTermMemoryEntity;
+import dev.adlin.llm.memory.entity.LongTermMemoryData;
+import dev.adlin.llm.memory.entity.LongTermMemoryEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,7 @@ public class LongTermMemoryService {
     }
 
     public List<LongTermMemoryData> getLongTermMemories(int count) {
-        List<LongTermMemoryEntity> longTermMemoryEntityList = longTermMemoryRepository.findLongTermMemory(count);
+        List<LongTermMemoryEntity> longTermMemoryEntityList = longTermMemoryRepository.findLongTermMemories(count);
 
         return longTermMemoryEntityList.stream()
                 .map(this::toRepoEntity)
