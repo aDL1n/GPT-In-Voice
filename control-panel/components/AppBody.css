@@ -1,0 +1,10 @@
+.customBody {
+    display: flex;
+    margin: 0rem 1rem 1rem 1rem;
+    border-radius: 25px;
+    background-color: rgb(78, 78, 78);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
