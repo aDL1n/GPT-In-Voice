@@ -1,7 +1,7 @@
 package dev.adlin.llm.chat;
 
-import dev.adlin.llm.adapters.LlmAdapter;
-import dev.adlin.llm.adapters.Role;
+import dev.adlin.llm.adapter.LlmAdapter;
+import dev.adlin.llm.adapter.Role;
 
 import java.util.ArrayList;
 import java.util.Collections;

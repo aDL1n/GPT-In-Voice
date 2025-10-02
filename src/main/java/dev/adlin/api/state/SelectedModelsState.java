@@ -1,14 +1,10 @@
-package dev.adlin.api.states;
+package dev.adlin.api.state;
 
-import dev.adlin.llm.adapters.LlmAdapter;
-import dev.adlin.llm.adapters.impl.OllamaAdapter;
+import dev.adlin.llm.adapter.LlmAdapter;
 import dev.adlin.stt.SpeechToText;
-import dev.adlin.stt.impl.Whisper;
 import dev.adlin.tts.TextToSpeech;
-import dev.adlin.tts.impl.Piper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.context.annotation.Bean;
 
 public class SelectedModelsState {
 

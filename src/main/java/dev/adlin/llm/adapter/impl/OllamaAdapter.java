@@ -1,6 +1,6 @@
-package dev.adlin.llm.adapters.impl;
+package dev.adlin.llm.adapter.impl;
 
-import dev.adlin.llm.adapters.LlmAdapter;
+import dev.adlin.llm.adapter.LlmAdapter;
 import dev.adlin.utils.PromptUtils;
 import dev.adlin.llm.chat.ChatMessage;
 import io.github.ollama4j.OllamaAPI;

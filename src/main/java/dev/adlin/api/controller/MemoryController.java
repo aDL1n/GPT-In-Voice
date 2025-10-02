@@ -1,8 +1,7 @@
-package dev.adlin.api.controllers;
+package dev.adlin.api.controller;
 
 import dev.adlin.llm.memory.LongTermMemoryService;
 import dev.adlin.llm.memory.entity.LongTermMemoryData;
-import dev.adlin.llm.memory.entity.LongTermMemoryEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

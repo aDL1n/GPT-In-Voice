@@ -1,6 +1,6 @@
 package dev.adlin.llm.memory.entity;
 
-import dev.adlin.llm.adapters.Role;
+import dev.adlin.llm.adapter.Role;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

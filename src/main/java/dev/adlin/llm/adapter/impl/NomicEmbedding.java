@@ -1,6 +1,6 @@
-package dev.adlin.llm.adapters.impl;
+package dev.adlin.llm.adapter.impl;
 
-import dev.adlin.llm.adapters.EmbeddingAdapter;
+import dev.adlin.llm.adapter.EmbeddingAdapter;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.response.Model;
 import org.apache.logging.log4j.LogManager;

@@ -1,6 +1,6 @@
 package dev.adlin.utils;
 
-import dev.adlin.llm.adapters.Role;
+import dev.adlin.llm.adapter.Role;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 
 public class PromptUtils {

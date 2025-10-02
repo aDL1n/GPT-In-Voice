@@ -1,6 +1,6 @@
-package dev.adlin.api.controllers;
+package dev.adlin.api.controller;
 
-import dev.adlin.api.states.DiscordState;
+import dev.adlin.api.state.DiscordState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
