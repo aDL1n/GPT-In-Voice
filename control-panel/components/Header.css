@@ -1,0 +1,38 @@
+/* src/components/CustomHeader.css */
+.custom-header {
+  background-color: #2c2c2c;
+  color: white;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  padding: 1rem;
+  margin: 1rem;
+  transition: background-color 0.3s;
+  border-radius: 25px;
+}
+
+.custom-header.scrolled {
+  background-color: #0e0e0e;
+}
+
+.custom-header__title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.custom-header__nav {
+  display: flex;
+}
+
+.custom-header__link {
+  color: white;
+  margin-left: 1rem;
+  text-decoration: none;
+  transition: 0.25s;
+}
+
+.custom-header__link:hover {
+  box-shadow: 0 0.5em 0.5em -0.4em var(--hover);
+  transform: translateY(-0.15em);
+}

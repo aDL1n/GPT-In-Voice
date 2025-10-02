@@ -15,6 +15,8 @@ public class AudioProvider {
     private final Queue<byte[]> chunks = new LinkedList<>();
 
     public void addAudio(byte[] pcmData) {
+        if (pcmData == null || pcmData.length == 0 ) return;
+
         int offset = 0;
         while (offset + CHUNK_SIZE <= pcmData.length) {
             byte[] chunk = new byte[CHUNK_SIZE];
