@@ -1,6 +1,6 @@
 package dev.adlin.llm.rag;
 
-import dev.adlin.llm.adapters.EmbeddingAdapter;
+import dev.adlin.llm.adapter.EmbeddingAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;

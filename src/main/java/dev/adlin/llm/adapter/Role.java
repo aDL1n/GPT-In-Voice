@@ -1,4 +1,4 @@
-package dev.adlin.llm.adapters;
+package dev.adlin.llm.adapter;
 
 public enum Role {
     USER("U"),

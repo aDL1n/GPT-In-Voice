@@ -1,4 +1,4 @@
-package dev.adlin.llm.adapters;
+package dev.adlin.llm.adapter;
 
 import dev.adlin.llm.chat.ChatMessage;
 

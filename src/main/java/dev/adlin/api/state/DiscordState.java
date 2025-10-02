@@ -1,4 +1,4 @@
-package dev.adlin.api.states;
+package dev.adlin.api.state;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.managers.AudioManager;

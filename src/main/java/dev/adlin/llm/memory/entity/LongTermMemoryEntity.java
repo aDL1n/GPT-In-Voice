@@ -1,7 +1,7 @@
 package dev.adlin.llm.memory.entity;
 
 
-import dev.adlin.llm.adapters.Role;
+import dev.adlin.llm.adapter.Role;
 import jakarta.persistence.*;
 
 import java.util.Date;

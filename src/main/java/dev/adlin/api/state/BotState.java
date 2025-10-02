@@ -1,6 +1,6 @@
-package dev.adlin.api.states;
+package dev.adlin.api.state;
 
-import dev.adlin.api.states.util.BotStatus;
+import dev.adlin.api.state.util.BotStatus;
 import dev.adlin.llm.chat.ChatMessage;
 import org.jetbrains.annotations.Nullable;
 
