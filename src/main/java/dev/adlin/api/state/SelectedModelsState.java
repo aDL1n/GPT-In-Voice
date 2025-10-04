@@ -5,7 +5,9 @@ import dev.adlin.stt.SpeechToText;
 import dev.adlin.tts.TextToSpeech;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SelectedModelsState {
 
     @Nullable

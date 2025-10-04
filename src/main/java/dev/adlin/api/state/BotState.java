@@ -3,7 +3,9 @@ package dev.adlin.api.state;
 import dev.adlin.api.state.util.BotStatus;
 import dev.adlin.llm.chat.ChatMessage;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BotState {
 
 
