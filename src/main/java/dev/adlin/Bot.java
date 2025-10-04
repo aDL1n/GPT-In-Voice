@@ -7,6 +7,7 @@ import dev.adlin.discord.command.LeaveCommand;
 import dev.adlin.handler.VoiceReceiveHandler;
 import dev.adlin.handler.VoiceSendingHandler;
 import dev.adlin.listener.DiscordVoiceListener;
+import dev.adlin.llm.adapter.LlmAdapter;
 import dev.adlin.llm.adapter.Role;
 import dev.adlin.llm.adapter.impl.NomicEmbedding;
 import dev.adlin.llm.adapter.impl.OllamaAdapter;
@@ -18,14 +19,14 @@ import dev.adlin.llm.chat.ChatManager;
 import dev.adlin.discord.DiscordCommandManager;
 import dev.adlin.discord.audio.VoiceBufferManager;
 import dev.adlin.llm.memory.LongTermMemoryService;
-import dev.adlin.stt.SpeechToText;
-import dev.adlin.stt.impl.Whisper;
-import dev.adlin.tts.TextToSpeech;
-import dev.adlin.tts.impl.Piper;
 import dev.adlin.discord.audio.AudioProvider;
 import dev.adlin.api.state.BotState;
 import dev.adlin.api.state.util.BotStatus;
 import dev.adlin.llm.chat.ChatMessage;
+import dev.adlin.stt.SpeechToText;
+import dev.adlin.stt.impl.Whisper;
+import dev.adlin.tts.TextToSpeech;
+import dev.adlin.tts.impl.Piper;
 import jakarta.annotation.PostConstruct;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -49,8 +50,9 @@ public class Bot {
     private final BotState botState;
     private final DiscordState discordState;
     private final SelectedModelsState selectedModelsState;
-    private final String guildId;
     private final LongTermMemoryService longTermMemoryService;
+
+    private final String guildId;
 
     private static final Logger log = LogManager.getLogger(Bot.class);
 
@@ -60,7 +62,8 @@ public class Bot {
             LongTermMemoryService longTermMemoryService,
             BotState botState,
             DiscordState discordState,
-            SelectedModelsState selectedModelsState) {
+            SelectedModelsState selectedModelsState
+    ) {
         this.guildId = guildId;
         this.longTermMemoryService = longTermMemoryService;
         this.jda = JDABuilder.create(
@@ -95,7 +98,7 @@ public class Bot {
 
         TextToSpeech piper = new Piper();
         SpeechToText whisper = new Whisper();
-        OllamaAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b");
+        LlmAdapter ollamaAdapter = new OllamaAdapter("gemma3:1b");
 
         selectedModelsState.setAll(ollamaAdapter, whisper, piper);
 
