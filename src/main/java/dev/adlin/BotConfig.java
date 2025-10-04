@@ -4,7 +4,6 @@ import dev.adlin.api.state.DiscordState;
 import dev.adlin.api.state.SelectedModelsState;
 import dev.adlin.llm.memory.LongTermMemoryService;
 import dev.adlin.api.state.BotState;
-import dev.adlin.utils.ModelsFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +17,7 @@ public class BotConfig {
                    LongTermMemoryService longTermMemoryService,
                    BotState botState,
                    DiscordState discordState,
-                   SelectedModelsState selectedModelsState,
-                   ModelsFactory modelsFactory
+                   SelectedModelsState selectedModelsState
     ) {
         return new Bot(
                 token,
@@ -27,8 +25,7 @@ public class BotConfig {
                 longTermMemoryService,
                 botState,
                 discordState,
-                selectedModelsState,
-                modelsFactory
+                selectedModelsState
         );
     }
 }
