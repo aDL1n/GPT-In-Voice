@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: SpringAiTest
+  datasource:
+    url: jdbc:postgresql://192.168.0.108:5433/postgres
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+  ai:
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: hnsw
+        distance-type: cosine_distance
+        dimensions: 768
+    ollama:
+      base-url: http://localhost:11434
+      embedding:
+        model: nomic-embed-text:v1.5
+      chat:
+        model: gemma3:4b
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
+
+discord:
+  token: ${DISCORD_TOKEN}
+  guildId: ${GUILD_ID}
+
+speech:
+  recognition:
+    url: http://localhost:5000
+  synthesis:
+    url: http://localhost:5002
