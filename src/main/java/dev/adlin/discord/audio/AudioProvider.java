@@ -1,9 +1,12 @@
 package dev.adlin.discord.audio;
 
+import org.springframework.stereotype.Component;
+
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
 
+@Component
 public class AudioProvider {
     private static final int SAMPLE_RATE = 48000;
     private static final int CHANNELS = 2;

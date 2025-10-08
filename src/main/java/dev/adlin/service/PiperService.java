@@ -1,11 +1,13 @@
-package dev.adlin.tts.impl;
+package dev.adlin.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.adlin.tts.TextToSpeech;
+import dev.adlin.config.SpeechSynthesisConfig;
+import dev.adlin.speech.synthesis.SpeechSynthesisAbstract;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -15,23 +17,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public class Piper implements TextToSpeech {
+@Service
+public class PiperService extends SpeechSynthesisAbstract {
 
-    private static final Logger log = LogManager.getLogger(Piper.class);
+    private static final Logger log = LogManager.getLogger(PiperService.class);
 
     private final HttpClient client = HttpClient
             .newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
             .build();
 
-    private final String baseUrl;
-
-    public Piper(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public Piper() {
-        this.baseUrl = "http://localhost:5002";
+    public PiperService(SpeechSynthesisConfig config) {
+        super(config);
     }
 
     @Nullable
@@ -49,7 +46,7 @@ public class Piper implements TextToSpeech {
 
     public CompletableFuture<byte[]> speechAsync(String text) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + "/speech"))
+                .uri(URI.create(this.baseUrl + "/speech"))
                 .header("Content-Type", "text/plain; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(text, StandardCharsets.UTF_8))
                 .build();
@@ -58,7 +55,7 @@ public class Piper implements TextToSpeech {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenCompose(resp -> {
                     if (resp.statusCode() != 200) {
-                        throw new RuntimeException("speech request failed: " + resp.body());
+                        throw new RuntimeException("Speech request failed: " + resp.body());
                     }
                     JsonObject json = JsonParser.parseString(resp.body()).getAsJsonObject();
                     String requestId = json.get("request_id").getAsString();
@@ -69,7 +66,7 @@ public class Piper implements TextToSpeech {
 
     private CompletableFuture<byte[]> pollUntilReady(String requestId) {
         HttpRequest pollReq = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + "/result/" + requestId))
+                .uri(URI.create(this.baseUrl + "/result/" + requestId))
                 .GET()
                 .build();
 
