@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -112,13 +113,40 @@ public class DiscordBot {
                     event.getJDA().getPresence().setActivity(Activity.listening("you in " + audioChannel.getName()));
                     event.getJDA().getPresence().setStatus(OnlineStatus.ONLINE);
 
+                    SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " пригласил тебя к себе в войс-чат");
+                    this.modelService.ask(systemMessage);
+
                     event.replyEmbeds(joinedToVoiceEmbed).queue();
                 } else {
                     event.replyEmbeds(notInVoiceEmbed).queue();
                 }
             }),
             new LeaveCommand(event -> {
+                Member member = event.getMember();
 
+                Guild guild = event.getGuild();
+                if (guild == null) return;
+
+                OptionMapping option = event.getOption("user");
+                if (option != null) member = option.getAsMember();
+
+                GuildVoiceState voiceState = member.getVoiceState();
+                AudioChannel audioChannel = voiceState.getChannel();
+
+                if (audioChannel != null) {
+
+                    audioManager.openAudioConnection(audioChannel);
+
+                    event.getJDA().getPresence().setActivity(Activity.listening("you in " + audioChannel.getName()));
+                    event.getJDA().getPresence().setStatus(OnlineStatus.ONLINE);
+
+                    SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " выгнал тебя из войс чата");
+                    this.modelService.ask(systemMessage);
+
+                    event.replyEmbeds(joinedToVoiceEmbed).queue();
+                } else {
+                    event.replyEmbeds(notInVoiceEmbed).queue();
+                }
             })
         );
 
