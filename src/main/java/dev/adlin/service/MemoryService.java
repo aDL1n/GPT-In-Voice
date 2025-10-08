@@ -18,6 +18,8 @@ public class MemoryService {
     private final JdbcChatMemoryRepository chatMemoryRepository;
     private final ChatMemory chatMemory;
 
+    public static final String CONVERSATION_ID = "1";
+
     public MemoryService(JdbcChatMemoryRepository chatMemoryRepository) {
         this.chatMemoryRepository = chatMemoryRepository;
         this.chatMemory = MessageWindowChatMemory.builder()
@@ -31,17 +33,17 @@ public class MemoryService {
 
     public void addMemory(Message message) {
         log.info("Added memory");
-        this.chatMemory.add("1", message);
-        this.chatMemoryRepository.saveAll("1", getMemories());
+        this.chatMemory.add(CONVERSATION_ID, message);
+        this.chatMemoryRepository.saveAll(CONVERSATION_ID, getMemories());
     }
 
     public List<Message> getMemories() {
-        return this.chatMemory.get("1");
+        return this.chatMemory.get(CONVERSATION_ID);
     }
 
     @PreDestroy
     private void saveAll() {
         log.info("Saving all memories");
-        this.chatMemoryRepository.saveAll("1", getMemories());
+        this.chatMemoryRepository.saveAll(CONVERSATION_ID, getMemories());
     }
 }

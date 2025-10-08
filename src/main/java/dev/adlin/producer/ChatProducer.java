@@ -57,6 +57,7 @@ public class ChatProducer {
 
             if (translatedMessages.containsKey(OWNER_NAME)) {
                 this.processAnswer(new UserMessage(OWNER_NAME + ": " + translatedMessages.get("aDL1n")));
+                translatedMessages.remove(OWNER_NAME);
             } else if (translatedMessages.size() > 3) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Ответь на эти вопросы общими словами или проигнорируй\n");
@@ -66,13 +67,16 @@ public class ChatProducer {
                             .append(": ")
                             .append(transcript)
                             .append("\n");
+                    translatedMessages.remove(username);
                 });
 
                 SystemMessage systemMessage = new SystemMessage(builder.toString());
                 processAnswer(systemMessage);
+
             } else {
                 translatedMessages.forEach((username, transcript) ->
                         processAnswer(new UserMessage(username + ": " + transcript)));
+                translatedMessages.clear();
             }
 
         }, 1, TimeUnit.SECONDS);

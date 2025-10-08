@@ -1,5 +1,6 @@
 package dev.adlin.rag;
 
+import dev.adlin.service.MemoryService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
@@ -27,7 +28,7 @@ public class Memory2RagLoader implements CommandLineRunner {
     public void run(String... args) {
         log.info("Loading memories to RAG");
 
-        this.vectorStore.add(this.chatMemoryRepository.findByConversationId("1")
+        this.vectorStore.add(this.chatMemoryRepository.findByConversationId(MemoryService.CONVERSATION_ID)
                 .stream()
                 .map(message -> new Document(message.getText()))
                 .collect(Collectors.toList())
