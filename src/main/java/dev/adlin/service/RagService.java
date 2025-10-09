@@ -41,6 +41,6 @@ public class RagService {
                     .append("\n");
         }
 
-        return response.toString();
+        return similarMemories.isEmpty() ? null : response.toString();
     }
 }

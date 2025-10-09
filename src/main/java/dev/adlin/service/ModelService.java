@@ -57,7 +57,7 @@ public class ModelService {
 
         List<Message> messages = new ArrayList<>();
         messages.add(startMessage);
-        messages.add(systemMessage);
+        messages.add(systemMessage.getText().isBlank() ? null : systemMessage);
         messages.addAll(this.memoryService.getMemories());
 
         Prompt prompt = Prompt.builder()

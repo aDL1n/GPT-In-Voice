@@ -68,7 +68,7 @@ public class ChatProducer {
                     this.processAnswer(new UserMessage(OWNER_NAME + ": " + entry.getValue()));
                     entrySet.remove(entry);
                 }
-            } else if (translatedMessages.size() > 3) {
+            } else if (translatedMessages.size() > 1) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Ответь на эти вопросы общими словами или проигнорируй\n");
 
