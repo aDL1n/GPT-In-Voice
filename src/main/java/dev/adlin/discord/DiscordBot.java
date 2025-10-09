@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
 
 import java.awt.*;
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class DiscordBot {
@@ -116,7 +117,7 @@ public class DiscordBot {
                     SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " пригласил тебя к себе в войс-чат");
                     this.modelService.ask(systemMessage);
 
-                    event.replyEmbeds(joinedToVoiceEmbed).queue();
+                    event.replyEmbeds(joinedToVoiceEmbed).timeout(12, TimeUnit.SECONDS).queue();
                 } else {
                     event.replyEmbeds(notInVoiceEmbed).queue();
                 }

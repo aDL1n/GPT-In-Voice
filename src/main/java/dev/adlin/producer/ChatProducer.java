@@ -14,7 +14,10 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatProducer {
@@ -52,12 +55,19 @@ public class ChatProducer {
 
     @PostConstruct
     private void start() {
-        scheduledExecutorService.schedule(() -> {
-            if (translatedMessages.isEmpty()) return;
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            if (translatedMessages.isEmpty() && !modelService.getProcessing().get()) return;
 
             if (translatedMessages.containsKey(OWNER_NAME)) {
-                this.processAnswer(new UserMessage(OWNER_NAME + ": " + translatedMessages.get("aDL1n")));
-                translatedMessages.remove(OWNER_NAME);
+                Set<Map.Entry<String, String>> entrySet =  translatedMessages.entrySet();
+                Set<Map.Entry<String, String>> entryFiltered =  entrySet.stream()
+                        .filter(entry -> entry.getKey().equals(OWNER_NAME))
+                        .collect(Collectors.toSet());
+
+                for (Map.Entry<String, String> entry : entryFiltered) {
+                    this.processAnswer(new UserMessage(OWNER_NAME + ": " + entry.getValue()));
+                    entrySet.remove(entry);
+                }
             } else if (translatedMessages.size() > 3) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Ответь на эти вопросы общими словами или проигнорируй\n");
@@ -79,7 +89,7 @@ public class ChatProducer {
                 translatedMessages.clear();
             }
 
-        }, 1, TimeUnit.SECONDS);
+        }, 2, 2, TimeUnit.SECONDS);
     }
 
     private void processAnswer(Message message) {

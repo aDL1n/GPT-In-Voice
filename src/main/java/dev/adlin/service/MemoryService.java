@@ -24,7 +24,7 @@ public class MemoryService {
         this.chatMemoryRepository = chatMemoryRepository;
         this.chatMemory = MessageWindowChatMemory.builder()
                 .chatMemoryRepository(chatMemoryRepository)
-                .maxMessages(100)
+                .maxMessages(30)
                 .build()
         ;
 

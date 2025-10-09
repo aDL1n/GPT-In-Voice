@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +26,8 @@ public class ModelService {
 
     private final SystemMessage startMessage;
     private final ChatClient chatClient;
+
+    private final AtomicBoolean processing = new AtomicBoolean(false);
 
     public ModelService(
             ChatModel chatModel,
@@ -43,6 +46,7 @@ public class ModelService {
 
     public AssistantMessage ask(Message message) {
         log.info("Asking model");
+        processing.set(true);
 
         if (message.getText() == null && message.getText().isEmpty()) return new AssistantMessage("");
         this.memoryService.addMemory(message);
@@ -58,7 +62,7 @@ public class ModelService {
 
         Prompt prompt = Prompt.builder()
                 .chatOptions(ChatOptions.builder()
-                        .maxTokens(2048)
+                        .maxTokens(16384)
                         .build()
                 ).messages(messages)
                 .build();
@@ -77,6 +81,12 @@ public class ModelService {
         this.memoryService.addMemory(assistantMessage);
 
         log.info("Model response received");
+
+        processing.set(false);
         return assistantMessage;
+    }
+
+    public AtomicBoolean getProcessing() {
+        return processing;
     }
 }
