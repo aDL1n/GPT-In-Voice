@@ -4,11 +4,14 @@ import dev.adlin.memory.StartPromptLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.messages.*;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,12 +36,19 @@ public class ModelService {
             ChatModel chatModel,
             MemoryService memoryService,
             RagService ragService,
-            StartPromptLoader startPromptLoader
+            StartPromptLoader startPromptLoader,
+            VectorStore vectorStore
     ) {
         this.memoryService = memoryService;
         this.ragService = ragService;
 
-        this.chatClient = ChatClient.create(chatModel);
+        this.chatClient = ChatClient.builder(chatModel)
+                .defaultAdvisors(
+                        QuestionAnswerAdvisor.builder(vectorStore).build(),
+                        MessageChatMemoryAdvisor.builder(memoryService.getChatMemory()).build()
+                )
+
+                .build();
 
         startMessage = (SystemMessage) startPromptLoader.load().orElse(null);
         log.info("Model service initialized");
@@ -57,12 +67,12 @@ public class ModelService {
 
         List<Message> messages = new ArrayList<>();
         messages.add(startMessage);
-        messages.add(systemMessage.getText().isBlank() ? null : systemMessage);
+//        messages.add(systemMessage.getText().isBlank() ? null : systemMessage);
         messages.addAll(this.memoryService.getMemories());
 
         Prompt prompt = Prompt.builder()
                 .chatOptions(ChatOptions.builder()
-                        .maxTokens(16384)
+                        .maxTokens(8192)
                         .build()
                 ).messages(messages)
                 .build();
@@ -71,6 +81,8 @@ public class ModelService {
                 .call()
                 .chatResponse();
 
+        if (chatResponse != null)
+            this.ragService.write(chatResponse);
 
         System.out.println("Prompt:" + prompt.getInstructions().stream()
                 .map(Message::getText)

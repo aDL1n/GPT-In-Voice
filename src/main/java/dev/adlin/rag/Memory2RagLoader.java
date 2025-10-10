@@ -30,7 +30,7 @@ public class Memory2RagLoader implements CommandLineRunner {
 
         this.vectorStore.add(this.chatMemoryRepository.findByConversationId(MemoryService.CONVERSATION_ID)
                 .stream()
-                .map(message -> new Document(message.getText()))
+                .map(message -> new Document(message.getText(), message.getMetadata()))
                 .collect(Collectors.toList())
         );
     }

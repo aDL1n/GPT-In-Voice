@@ -49,9 +49,15 @@ public class MemoryService {
         return this.longChatMemoryRepository.findByConversationId(CONVERSATION_ID);
     }
 
+
+
     @PreDestroy
     private void saveAll() {
         log.info("Saving all memories");
         this.longChatMemoryRepository.saveAll(CONVERSATION_ID, getMemories());
+    }
+
+    public ChatMemory getChatMemory() {
+        return chatMemory;
     }
 }
