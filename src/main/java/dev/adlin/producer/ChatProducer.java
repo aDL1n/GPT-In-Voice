@@ -31,7 +31,7 @@ public class ChatProducer {
     private final ConcurrentHashMap<String, String> translatedMessages = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-    private final static String OWNER_NAME = "aDL1n";
+    private final static String OWNER_NAME = "adl1n_";
 
     public ChatProducer(AudioBufferManager audioBufferManager,
                         AudioProvider audioProvider,
@@ -72,13 +72,20 @@ public class ChatProducer {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Ответь на эти вопросы общими словами или проигнорируй\n");
 
-                translatedMessages.forEach((username, transcript) -> {
-                    builder.append(username)
+                Set<Map.Entry<String, String>> entrySet = translatedMessages.entrySet();
+                int i = 1;
+                for (Map.Entry<String, String> entry : entrySet) {
+                    String username = entry.getKey();
+                    String transcript = entry.getValue();
+                    builder.append(i)
+                            .append(". ")
+                            .append(username)
                             .append(": ")
                             .append(transcript)
                             .append("\n");
-                    translatedMessages.remove(username);
-                });
+                    entrySet.remove(entry);
+                    i++;
+                }
 
                 SystemMessage systemMessage = new SystemMessage(builder.toString());
                 processAnswer(systemMessage);
@@ -94,7 +101,7 @@ public class ChatProducer {
 
     private void processAnswer(Message message) {
         AssistantMessage assistantMessage = this.modelService.ask(message);
-
+        
         byte[] speech = speechSynthesis.speech(assistantMessage.getText());
         audioProvider.addAudio(speech);
     }

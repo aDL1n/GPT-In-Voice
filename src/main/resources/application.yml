@@ -21,6 +21,8 @@ spring:
         model: nomic-embed-text:v1.5
       chat:
         model: gemma3:4b
+      init:
+        pull-model-strategy: always
     chat:
       memory:
         repository:

@@ -43,11 +43,10 @@ public class ModelService {
         this.ragService = ragService;
 
         this.chatClient = ChatClient.builder(chatModel)
-                .defaultAdvisors(
-                        QuestionAnswerAdvisor.builder(vectorStore).build(),
-                        MessageChatMemoryAdvisor.builder(memoryService.getChatMemory()).build()
-                )
-
+//                .defaultAdvisors(
+//                        QuestionAnswerAdvisor.builder(vectorStore).build(),
+//                        MessageChatMemoryAdvisor.builder(memoryService.getChatMemory()).build()
+//                )
                 .build();
 
         startMessage = (SystemMessage) startPromptLoader.load().orElse(null);
@@ -61,13 +60,13 @@ public class ModelService {
         if (message.getText() == null && message.getText().isEmpty()) return new AssistantMessage("");
         this.memoryService.addMemory(message);
 
-        SystemMessage systemMessage = new SystemMessage(
+        SystemMessage ragMessage = new SystemMessage(
                 this.ragService.searchInMemory(message.getText())
         );
 
         List<Message> messages = new ArrayList<>();
         messages.add(startMessage);
-//        messages.add(systemMessage.getText().isBlank() ? null : systemMessage);
+        messages.add(ragMessage.getText().isBlank() ? null : ragMessage);
         messages.addAll(this.memoryService.getMemories());
 
         Prompt prompt = Prompt.builder()
@@ -91,6 +90,8 @@ public class ModelService {
 
         AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
         this.memoryService.addMemory(assistantMessage);
+
+        System.out.println("AI: " + chatResponse.getResults().stream().map(gen -> gen.getOutput().getText()).collect(Collectors.joining("\n")));
 
         log.info("Model response received");
 

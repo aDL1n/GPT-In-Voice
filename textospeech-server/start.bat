@@ -1,1 +1,0 @@
-D:\java\GPT-In-Voice\textospeech-server\.venv\Scripts\python.exe d:/java/GPT-In-Voice/textospeech-server/src/main.py
