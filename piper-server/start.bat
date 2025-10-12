@@ -1,0 +1,1 @@
+D:\java\GPT-In-Voice\piper-server\.venv\Scripts\python.exe d:/java/GPT-In-Voice/piper-server/src/main.py
