@@ -8,9 +8,11 @@ import java.util.concurrent.CompletableFuture;
 public abstract class SpeechSynthesisAbstract implements SpeechSynthesis {
 
     protected final String baseUrl;
+    private final String name;
 
-    public SpeechSynthesisAbstract(SpeechSynthesisConfig config) {
+    public SpeechSynthesisAbstract(SpeechSynthesisConfig config, String name) {
         baseUrl = config.getUrl();
+        this.name = name;
     }
 
     @Override
@@ -18,4 +20,9 @@ public abstract class SpeechSynthesisAbstract implements SpeechSynthesis {
 
     @Override
     public abstract CompletableFuture<byte[]> speechAsync(String text);
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
 }

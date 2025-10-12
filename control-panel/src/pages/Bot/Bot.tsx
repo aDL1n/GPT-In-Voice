@@ -1,6 +1,6 @@
 import './Bot.css'
 import { useState, useEffect, useRef} from 'react'
-import { ModelClient } from '../../utils/ModelClient.tsx';
+import {ModelClient} from "../../utils/modelClient.tsx";
 // import { MemoryClient } from '../../utils/MemoryClient.tsx'
 
 interface Message {

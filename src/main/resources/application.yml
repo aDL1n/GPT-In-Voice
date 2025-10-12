@@ -36,5 +36,7 @@ discord:
 speech:
   recognition:
     url: http://localhost:5000
+    default-model: "whisper"
   synthesis:
     url: http://localhost:5002
+    default-model: "piper"

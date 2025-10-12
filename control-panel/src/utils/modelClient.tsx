@@ -1,5 +1,5 @@
 export class ModelClient {
-  private baseUrl: string;
+  private readonly baseUrl: string;
 
   constructor(baseUrl: string = 'http://localhost:8080') {
     this.baseUrl = baseUrl;

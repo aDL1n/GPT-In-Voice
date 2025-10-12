@@ -7,9 +7,11 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties("speech.synthesis")
 public class SpeechSynthesisConfig {
     private String url;
+    private String defaultModel;
 
     SpeechSynthesisConfig() {
         this.url = "http://localhost:5002";
+        this.defaultModel = "piper";
     }
 
     public String getUrl() {
@@ -18,5 +20,13 @@ public class SpeechSynthesisConfig {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDefaultModel() {
+        return defaultModel;
+    }
+
+    public void setDefaultModel(String defaultModel) {
+        this.defaultModel = defaultModel;
     }
 }

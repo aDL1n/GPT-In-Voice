@@ -9,9 +9,11 @@ import java.util.concurrent.CompletableFuture;
 public abstract class SpeechRecognitionAbstract implements SpeechRecognition {
 
     protected final String baseUrl;
+    private final String name;
 
-    public SpeechRecognitionAbstract(SpeechRecognitionConfig config) {
+    public SpeechRecognitionAbstract(SpeechRecognitionConfig config, String name) {
         baseUrl = config.getUrl();
+        this.name = name;
     }
 
     @Override
@@ -19,4 +21,9 @@ public abstract class SpeechRecognitionAbstract implements SpeechRecognition {
 
     @Override
     public abstract CompletableFuture<String> transcriptAudioAsync(byte[] audio);
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
 }

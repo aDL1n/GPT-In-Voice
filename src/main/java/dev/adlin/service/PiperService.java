@@ -28,7 +28,7 @@ public class PiperService extends SpeechSynthesisAbstract {
             .build();
 
     public PiperService(SpeechSynthesisConfig config) {
-        super(config);
+        super(config, "piper");
     }
 
     @Nullable

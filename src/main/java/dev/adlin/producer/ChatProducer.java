@@ -2,6 +2,7 @@ package dev.adlin.producer;
 
 import dev.adlin.discord.audio.AudioBufferManager;
 import dev.adlin.discord.audio.AudioProvider;
+import dev.adlin.manager.ModelsManager;
 import dev.adlin.service.ModelService;
 import dev.adlin.speech.recognition.SpeechRecognition;
 import dev.adlin.speech.synthesis.SpeechSynthesis;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 public class ChatProducer {
 
     private static final Logger log = LogManager.getLogger(ChatProducer.class);
-    private final AudioBufferManager audioBufferManager;
     private final AudioProvider audioProvider;
     private final ModelService modelService;
     private final SpeechSynthesis speechSynthesis;
@@ -36,18 +36,16 @@ public class ChatProducer {
     public ChatProducer(AudioBufferManager audioBufferManager,
                         AudioProvider audioProvider,
                         ModelService modelService,
-                        SpeechRecognition speechRecognition,
-                        SpeechSynthesis speechSynthesis
+                        ModelsManager modelsManager
 
     ) {
-        this.audioBufferManager = audioBufferManager;
         this.audioProvider = audioProvider;
         this.modelService = modelService;
-        this.speechSynthesis = speechSynthesis;
+        this.speechSynthesis = modelsManager.getSpeechSynthesisModel();
 
         audioBufferManager.setBufferListener((user, data) ->
                 CompletableFuture.runAsync(() -> {
-                    String transcript = speechRecognition.transcriptAudio(data);
+                    String transcript = modelsManager.getSpeechRecognitionModel().transcriptAudio(data);
                     translatedMessages.put(user.getName(), transcript);
                 })
         );

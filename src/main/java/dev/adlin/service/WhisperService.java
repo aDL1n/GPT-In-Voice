@@ -26,7 +26,7 @@ public class WhisperService extends SpeechRecognitionAbstract {
             .build();
 
     public WhisperService(SpeechRecognitionConfig config) {
-        super(config);
+        super(config, "whisper");
     }
 
     @Nullable
