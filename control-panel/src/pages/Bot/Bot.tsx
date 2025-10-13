@@ -1,7 +1,7 @@
 import './Bot.css'
 import { useState, useEffect, useRef} from 'react'
 import {ModelClient} from "../../utils/modelClient.tsx";
-// import { MemoryClient } from '../../utils/MemoryClient.tsx'
+import { MemoryClient } from '../../utils/MemoryClient.tsx'
 
 interface Message {
   text: string;
@@ -9,12 +9,24 @@ interface Message {
 }
 
 const apiClient = new ModelClient();
+const memoryClient = new MemoryClient();
 
 function Bot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const conversationRef = useRef<HTMLDivElement>(null);
+
+  window.addEventListener('load', () => {
+    memoryClient.getMemories().then(mem => {
+      setMessages(mem.map(data => {
+        return {
+          text: data.messageType == "SYSTEM" ? "SYSTEM: " + data.text : data.text,
+          isUser: data.messageType == "USER"
+        }
+      }));
+    })
+  });
 
   useEffect(() => {
     if (conversationRef.current) {
@@ -38,30 +50,31 @@ function Bot() {
     setMessages(prev => [...prev, userMessageObj]);
     setIsLoading(true);
 
+    let answerMessage: Message;
+
     try {
       const response = await apiClient.ask(userMessage, 'aDL1n_');
       
-      const botMessage: Message = {
+      answerMessage = {
         text: response,
         isUser: false
       };
-      setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-
-      const errorMessage: Message = {
+      answerMessage = {
         text: `Error: ${error instanceof Error ? error.message : 'Failed to get response'}`,
         isUser: false
       };
-      
-      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
+
+    setMessages(prev => [...prev, answerMessage]);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
+
 
   return (
     <>
