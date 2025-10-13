@@ -1,11 +1,12 @@
 .customBody {
-    display: flex;
-    margin: 0rem 1rem 1rem 1rem;
-    border-radius: 25px;
-    background-color: rgb(78, 78, 78);
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.3);
+  flex: 1;
+  display: flex;
+  margin: 0 1rem 1rem 1rem;
+  border-radius: 25px;
+  background-color: rgb(78, 78, 78);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
