@@ -25,42 +25,37 @@
 }
 
 #input-form {
-    background-color: rgb(93, 169, 255);
-    display: flex;
-    border-radius: 21px;
-    justify-content: center;
-    align-items: center;
-    width: 60%;
-    height: 3rem;
-    transition: border-color 0.2s;
-    outline: none;
-    position: absolute;
-    bottom: 2rem;
-    z-index: 100;
-}
-
-#input-field:disabled {
-  background-color: #f8f9fa;
-  cursor: not-allowed;
+  background-color: rgb(93, 169, 255);
+  display: flex;
+  border-radius: 21px;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+  height: 3rem;
+  transition: border-color 0.2s;
+  outline: none;
+  position: absolute;
+  bottom: 2rem;
+  z-index: 100;
 }
 
 #submit-button {
-    border-bottom-right-radius: 20px;
-    border-top-right-radius: 20px;
-    transition: background-color 0.2s;
-    width: 60px;
-    height: 100%;
-    border: 0;
+  border-bottom-right-radius: 20px;
+  border-top-right-radius: 20px;
+  transition: background-color 0.2s;
+  width: 60px;
+  height: 100%;
+  border: 0;
+  background-color: #5a5a5a;
 }
 
 #submit-button:hover:not(:disabled) {
-  background: #0056b3;
+  background: #4b4b4b;
 }
 
 #submit-button:disabled {
-  background: #6c757d;
+  background: #242424;
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
 #input-field {
@@ -71,6 +66,12 @@
     border: 0;
     border-bottom-left-radius: 20px;
     border-top-left-radius: 20px;
+    background-color: #131313;
+}
+
+#input-field:disabled {
+  background-color: #f8f9fa6b;
+  cursor: not-allowed;
 }
 
 .message {
@@ -111,7 +112,7 @@
 }
 
 .loading {
-  color: #6c757d !important;
+  color: #6c757d60 !important;
   font-style: italic;
 }
 
