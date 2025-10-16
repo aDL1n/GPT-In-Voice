@@ -1,5 +1,5 @@
 export class MemoryClient {
-    private baseUrl: string;
+    private readonly baseUrl: string;
 
     constructor(baseUrl: string = 'http://localhost:8080') {
         this.baseUrl = baseUrl;
@@ -15,9 +15,7 @@ export class MemoryClient {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const messages: any[] = await response.json();
-            
-            return messages;
+            return await response.json();
         } catch (error) {
             throw new Error(`Failed to fetch chat memory: ${error instanceof Error ? error.message : String(error)}`);
         }

@@ -3,6 +3,8 @@
     <words>
       <w>curent</w>
       <w>gtts</w>
+      <w>hnsw</w>
+      <w>vectorstore</w>
     </words>
   </dictionary>
 </component>

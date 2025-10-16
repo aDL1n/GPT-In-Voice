@@ -22,8 +22,7 @@ export class ModelClient {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const responseText = await response.text();
-      return responseText;
+      return await response.text();
     } catch (error) {
       throw new Error(`Request failed: ${error instanceof Error ? error.message : String(error)}`);
     }
