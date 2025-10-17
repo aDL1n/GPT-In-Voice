@@ -1,23 +1,40 @@
-export class MemoryClient {
-    private readonly baseUrl: string;
+interface Metadata {
+    name: string,
+    data: any
+}
 
-    constructor(baseUrl: string = 'http://localhost:8080') {
-        this.baseUrl = baseUrl;
+export interface MemoryData {
+    text: string,
+    metadata: Metadata
+    messageType: string,
+    media: any
+}
+
+export class MemoryClient {
+    private readonly url: URL;
+    private readonly onMemoryUpdate: (data: MemoryData[]) => void;
+
+
+    constructor(
+        onMemoryUpdate: (data: MemoryData[]) => void,
+        baseUrl: string = "http://localhost:8080/"
+    ) {
+        this.url = new URL('/api/memory/all', baseUrl);
+        this.onMemoryUpdate = onMemoryUpdate;
     }
 
-    async getMemories(): Promise<any[]> {
-        const url = new URL('/memory/all', this.baseUrl);
+    public init(): void {
 
-        try {
-            const response = await fetch(url.toString());
+        const run = () => {
+            fetch(this.url.toString()).then(async (response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            throw new Error(`Failed to fetch chat memory: ${error instanceof Error ? error.message : String(error)}`);
+                this.onMemoryUpdate(JSON.parse(await response.text()) as MemoryData[])
+            })
         }
+        run()
+        setInterval(run, 2500);
     }
 }

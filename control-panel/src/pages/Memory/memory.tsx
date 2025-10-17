@@ -1,27 +1,19 @@
 import './memory.css'
-import { useState } from "react";
-import { MemoryClient } from '../../utils/memoryClient';
+import {useEffect, useState} from "react";
+import {MemoryClient, type MemoryData} from '../../utils/memoryClient';
 
-const memoryClient: MemoryClient = new MemoryClient()
-
-interface Memory {
-    text: string,
-    type: string
-}
 
 function Memory() {
-    const [memories, setMemories] = useState<Memory[]>([]);
+    const [memories, setMemories] = useState<MemoryData[]>([]);
 
-    window.addEventListener("load", () => {
-        memoryClient.getMemories().then(memory => {
-            setMemories(memory.map(data => {
-                return {
-                    text: data.text,
-                    type: data.messageType
-                }
-            }))
-        })
-    });
+    const handleMemoryUpdate = (data: MemoryData[]) => {
+        setMemories(data);
+    };
+
+    useEffect(() => {
+        const memoryClient: MemoryClient = new MemoryClient(handleMemoryUpdate);
+        memoryClient.init();
+    }, []);
 
     return (
         <>
@@ -29,7 +21,7 @@ function Memory() {
                 <div className="list">
                     {memories.map((memory) => (
                         <div>
-                            <h2>{memory.type}</h2>
+                            <h2>{memory.messageType}</h2>
                             <p>{memory.text}</p>
                         </div>
                     ))}

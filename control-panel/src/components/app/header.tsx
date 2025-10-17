@@ -5,7 +5,7 @@ import {
     Heading,
     HStack,
     Button,
-    IconButton,
+    IconButton, For,
 } from '@chakra-ui/react';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import {useColorMode, useColorModeValue} from "@/components/ui/color-mode.tsx";
@@ -24,8 +24,10 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
     const bg = useColorModeValue('gray.100', '#352F44');
     const color = useColorModeValue('gray.800', 'white');
 
+    // @ts-ignore
     return (
         <Box
+            flex="1"
             bg={bg}
             color={color}
             px={6}
@@ -37,26 +39,28 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
             mr="1rem"
         >
             <Flex justify="space-between" align="center" maxW="1200px" mx="auto">
+
                 <Heading size="lg" letterSpacing="tight">
                     Control Panel
                 </Heading>
 
                 <HStack>
-                    {navItems.map((item) => (
-                        <Button
-                            key={item.href}
-                            as="a"
-                            href={item.href}
-                            variant="ghost"
-                            _hover={{
-                                bg: useColorModeValue('gray.200', 'gray.700'),
-                            }}
-                            borderRadius="40px"
-                        >
-                            {item.label}
-                        </Button>
-                    ))}
-
+                    <For each={navItems}>
+                        {(item, index) => (
+                            <Button
+                                key={index}
+                                as="a"
+                                href={item.href}
+                                variant="ghost"
+                                _hover={{
+                                    bg: useColorModeValue('gray.200', 'gray.700'),
+                                }}
+                                borderRadius="40px"
+                            >
+                                {item.label}
+                            </Button>
+                        )}
+                    </For>
                     <IconButton
                         aria-label="Toggle color mode"
                         onClick={toggleColorMode}
