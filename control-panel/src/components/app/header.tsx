@@ -27,20 +27,18 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
     // @ts-ignore
     return (
         <Box
-            flex="1"
             bg={bg}
             color={color}
             px={6}
             py={3}
             boxShadow="md"
-            top={0}
             borderBottomRadius="25px"
             ml="1rem"
             mr="1rem"
         >
-            <Flex justify="space-between" align="center" maxW="1200px" mx="auto">
+            <Flex justify="space-between" align="center">
 
-                <Heading size="lg" letterSpacing="tight">
+                <Heading size="xl" letterSpacing="tight">
                     Control Panel
                 </Heading>
 
@@ -56,6 +54,7 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
                                     bg: useColorModeValue('gray.200', 'gray.700'),
                                 }}
                                 borderRadius="40px"
+                                
                             >
                                 {item.label}
                             </Button>

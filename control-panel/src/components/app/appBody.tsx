@@ -9,6 +9,7 @@ export const AppBody: FC<AppBodyProps> = ({ children }) => {
     return (
         <Box
             display="flex"
+            flex="1"
             margin="1rem 1rem 1rem 1rem"
             borderRadius="25px"
             backgroundColor="#5C5470"
@@ -16,7 +17,6 @@ export const AppBody: FC<AppBodyProps> = ({ children }) => {
             alignItems="center"
             justifyContent="center"
             boxShadow="3px 6px 8px rgba(0, 0, 0, 0.3)"
-            overflow="hidden"
         >
             {children}
         </Box>

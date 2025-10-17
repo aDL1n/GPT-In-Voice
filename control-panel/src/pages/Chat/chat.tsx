@@ -79,7 +79,7 @@ function Chat() {
 
   return (
       <>
-        <Box overflow="hidden" display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column">
           <Center flexDirection="column" h="100%" overflowY="scroll" maxH="calc(100vh - 50px)" w="100%">
             {messages.map((message, index) => (
                 <Message isUser={message.isUser} key={index}>
