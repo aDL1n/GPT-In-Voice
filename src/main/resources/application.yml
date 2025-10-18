@@ -8,6 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    open-in-view: false
   ai:
     vectorstore:
       pgvector:
@@ -40,3 +41,6 @@ speech:
   synthesis:
     url: http://localhost:5002
     default-model: "piper"
+
+web:
+  allowed-frontend-origin: "http://localhost:5173"

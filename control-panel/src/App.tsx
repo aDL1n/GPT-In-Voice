@@ -6,8 +6,11 @@ import { AppBody } from '@/components/app/appBody.tsx';
 import Chat from './pages/Chat/chat';
 import Memory from './pages/Memory/memory'
 import { Container, Flex } from '@chakra-ui/react';
+import { useColorModeValue } from './components/ui/color-mode';
 
 const App: React.FC = () => {
+  const backgroundColor = useColorModeValue("gray.900", "#2A2438");
+
   const navItems = [
     { label: 'Chat', href: '/chat' },
     { label: 'Discord', href: '/discord' },
@@ -18,8 +21,8 @@ const App: React.FC = () => {
 
   return (
     <>
-      <Container height="100vh" width="100vw">
-        <Flex direction="column" height="100%">
+      <Container height="100vh" width="100vw" backgroundColor={backgroundColor}>
+        <Flex direction="column" height="100%" width="100%">
           <Header navItems={navItems} />
           <AppBody>
             <Routes>

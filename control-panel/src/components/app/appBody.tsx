@@ -1,22 +1,26 @@
 import type {FC, ReactNode} from 'react';
 import { Box } from '@chakra-ui/react';
+import { useColorModeValue } from '../ui/color-mode';
 
 interface AppBodyProps {
     children?: ReactNode;
 }
 
 export const AppBody: FC<AppBodyProps> = ({ children }) => {
+    const backgroundColor = useColorModeValue("white", "#5C5470")
+    
     return (
-        <Box
+        <Box    
+            height="100"
             display="flex"
-            flex="1"
+            overflow="hidden"
             margin="1rem 1rem 1rem 1rem"
             borderRadius="25px"
-            backgroundColor="#5C5470"
+            backgroundColor={backgroundColor}
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
-            boxShadow="3px 6px 8px rgba(0, 0, 0, 0.3)"
+            boxShadow="2px 7px 10px rgba(0, 0, 0, 0.79)"
         >
             {children}
         </Box>

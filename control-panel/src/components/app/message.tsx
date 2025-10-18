@@ -18,7 +18,7 @@ export const Message: FC<Props> = ({ isUser, children }) => {
                     {children}
                 </Box> : <Box
                 alignSelf="flex-start"
-                backgroundColor="gray"
+                backgroundColor="gray.700"
                 padding="10px"
                 borderRadius="15px"
                 >

@@ -1,10 +1,10 @@
-import './chat.css'
 import React, { useState, useEffect, useRef} from 'react'
 import { ModelClient } from "../../utils/modelClient.tsx";
 import {MemoryClient, type MemoryData} from '../../utils/memoryClient.tsx'
-import {Box, Center, Group, IconButton, Input} from "@chakra-ui/react";
+import {Container, Flex, Group, IconButton, Input, ScrollArea} from "@chakra-ui/react";
 import {FaAngleDoubleRight} from "react-icons/fa";
 import { Message } from  "@/components/app/message.tsx"
+import { useColorModeValue } from '@/components/ui/color-mode.tsx';
 
 interface MessageData {
   text: string;
@@ -18,6 +18,9 @@ function Chat() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const conversationRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const inputBg = useColorModeValue("gray.600", "#2A2438");
 
   const handleMessageUpdate = (data: MemoryData[]) => {
     setMessages(data.map((memory) => ({
@@ -42,6 +45,7 @@ function Chat() {
 
     const userMessage = inputValue.trim();
     setInputValue('');
+    inputRef.current?.focus();
 
     const userMessageObj: MessageData = {
       text: userMessage,
@@ -73,34 +77,46 @@ function Chat() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    setInputValue(e.currentTarget.value);
   };
 
 
   return (
       <>
-        <Box display="flex" flexDirection="column">
-          <Center flexDirection="column" h="100%" overflowY="scroll" maxH="calc(100vh - 50px)" w="100%">
-            {messages.map((message, index) => (
-                <Message isUser={message.isUser} key={index}>
-                  <p>{message.text}</p>
-                </Message>
-            ))}
-            {isLoading && (
-                <div className="message bot-message">
-                  <div className="message-content loading">
-                    Думает...
-                  </div>
-                </div>
-            )}
-          </Center>
-          <Group>
-            <Input onChange={(e) => handleInputChange(e)} />
-            <IconButton onClick={(e) => handleSubmit(e)}>
+        <Flex direction="column" height="100%">
+          <Container minHeight="0" minWidth="0" paddingTop="1rem">
+            <ScrollArea.Root h="100%">
+              <ScrollArea.Viewport borderRadius="15px">
+                <ScrollArea.Content display="flex" flexDirection="column" gap="6px">
+                  {messages.map((message, index) => (
+                    <Message isUser={message.isUser} key={index}>
+                      <p style={{
+                        wordBreak: "break-word",
+                      }}>{message.text}</p>
+                    </Message>
+                  ))}
+                  {isLoading && (
+                    <Message isUser={false}>
+                      Думает...
+                    </Message>
+                  )}
+                </ScrollArea.Content>
+              </ScrollArea.Viewport>
+              <ScrollArea.Scrollbar orientation="vertical">
+                <ScrollArea.Thumb />
+              </ScrollArea.Scrollbar>
+              <ScrollArea.Corner />
+            </ScrollArea.Root>
+          </Container>
+            
+
+          <Group padding="1rem" width="80%" alignSelf="center">
+            <Input boxShadow="2px 3px 6px rgba(0, 0, 0, 0.5)" disabled={isLoading} value={inputValue} variant="subtle" backgroundColor={inputBg} borderLeftRadius="40px" onChange={handleInputChange} />
+            <IconButton boxShadow="2px 2px 8px rgba(0, 0, 0, 0.43)" borderRightRadius="40px" width="50px" onClick={handleSubmit}>
               <FaAngleDoubleRight />
             </IconButton>
           </Group>
-        </Box>
+        </Flex>
       </>
   )
 

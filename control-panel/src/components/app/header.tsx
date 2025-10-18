@@ -6,6 +6,8 @@ import {
     HStack,
     Button,
     IconButton, For,
+    Group,
+    Status
 } from '@chakra-ui/react';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import {useColorMode, useColorModeValue} from "@/components/ui/color-mode.tsx";
@@ -38,9 +40,15 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
         >
             <Flex justify="space-between" align="center">
 
-                <Heading size="xl" letterSpacing="tight">
-                    Control Panel
-                </Heading>
+                <Group display="flex" gap="20px">
+                    <Heading size="xl" letterSpacing="tight">
+                        Control Panel
+                    </Heading>
+                    <Status.Root size="lg">
+                        Status:
+                        <Status.Indicator colorPalette="red" />
+                    </Status.Root>
+                </Group>
 
                 <HStack>
                     <For each={navItems}>
@@ -51,7 +59,7 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
                                 href={item.href}
                                 variant="ghost"
                                 _hover={{
-                                    bg: useColorModeValue('gray.200', 'gray.700'),
+                                    bg: useColorModeValue('gray.300', 'gray.800'),
                                 }}
                                 borderRadius="40px"
                                 
