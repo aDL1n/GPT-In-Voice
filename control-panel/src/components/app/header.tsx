@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { type FC } from 'react';
 import {
     Box,
     Flex,
@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import {useColorMode, useColorModeValue} from "@/components/ui/color-mode.tsx";
+import { ApiStatus } from '@/utils/apiStatus';
 
 interface NavItem {
     label: string;
@@ -25,6 +26,8 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
     const { colorMode, toggleColorMode } = useColorMode();
     const bg = useColorModeValue('gray.100', '#352F44');
     const color = useColorModeValue('gray.800', 'white');
+    const statusColor = new ApiStatus().getColor();
+
 
     // @ts-ignore
     return (
@@ -37,6 +40,7 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
             borderBottomRadius="25px"
             ml="1rem"
             mr="1rem"
+            userSelect="none"
         >
             <Flex justify="space-between" align="center">
 
@@ -46,7 +50,7 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
                     </Heading>
                     <Status.Root size="lg">
                         Status:
-                        <Status.Indicator colorPalette="red" />
+                        <Status.Indicator colorPalette={statusColor} />
                     </Status.Root>
                 </Group>
 

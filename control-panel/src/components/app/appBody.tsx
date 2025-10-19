@@ -11,7 +11,7 @@ export const AppBody: FC<AppBodyProps> = ({ children }) => {
     
     return (
         <Box    
-            height="100"
+            height="100%"
             display="flex"
             overflow="hidden"
             margin="1rem 1rem 1rem 1rem"
