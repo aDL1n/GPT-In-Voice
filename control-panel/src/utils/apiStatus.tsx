@@ -5,19 +5,19 @@ export class ApiStatus {
         apiUrl: string = "http://localhost:8080/api"
     ) {
         this.url = new URL("/api", apiUrl);
-
     }
 
     public getColor(): string {
-        const request = new XMLHttpRequest();
-        request.open('GET', this.url.toString(), false); // false = синхронный запрос
-        request.send(null);
+        try {
+            const request = new XMLHttpRequest();
+            request.open('GET', this.url.toString(), false); // false = синхронный запрос
+            request.send(null);
+            
+            if (request.status !== 200) {
+                return "red";
+            }
 
-        if (request.status !== 200) {
-            return "red";
-        }
-
-        const responseData = JSON.parse(request.responseText);
+            const responseData = JSON.parse(request.responseText);
             switch (responseData.apiStatus) {
                 case "SHUTDOWN": 
                     return "red";
@@ -28,5 +28,8 @@ export class ApiStatus {
                 default:
                     return "red";
             }
+        } catch (error) {
+            return "red";
+        }
     }
 }
