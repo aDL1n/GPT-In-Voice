@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef} from 'react'
 import { ModelClient } from "../../utils/modelClient.tsx";
 import {MemoryClient, type MemoryData} from '../../utils/memoryClient.tsx'
-import {Container, Flex, Group, IconButton, Input, ScrollArea} from "@chakra-ui/react";
+import {Container, Group, IconButton, Input, ScrollArea} from "@chakra-ui/react";
 import {FaAngleDoubleRight} from "react-icons/fa";
 import { Message } from  "@/components/app/message.tsx"
 import { useColorModeValue } from '@/components/ui/color-mode.tsx';
@@ -83,40 +83,38 @@ function Chat() {
 
   return (
       <>
-        <Flex direction="column" height="100%">
-          <Container minHeight="0" minWidth="0" paddingTop="1rem">
-            <ScrollArea.Root h="100%">
-              <ScrollArea.Viewport borderRadius="15px">
-                <ScrollArea.Content display="flex" flexDirection="column" gap="6px">
-                  {messages.map((message, index) => (
-                    <Message isUser={message.isUser} key={index}>
-                      <p style={{
-                        wordBreak: "break-word",
-                      }}>{message.text}</p>
-                    </Message>
-                  ))}
-                  {isLoading && (
-                    <Message isUser={false}>
-                      Думает...
-                    </Message>
-                  )}
-                </ScrollArea.Content>
-              </ScrollArea.Viewport>
-              <ScrollArea.Scrollbar orientation="vertical">
-                <ScrollArea.Thumb />
-              </ScrollArea.Scrollbar>
-              <ScrollArea.Corner />
-            </ScrollArea.Root>
-          </Container>
-            
+        <Container minHeight="0" minWidth="0" paddingTop="1rem" height="100%">
+          <ScrollArea.Root h="100%">
+            <ScrollArea.Viewport borderRadius="15px">
+              <ScrollArea.Content display="flex" flexDirection="column" gap="6px">
+                {messages.map((message, index) => (
+                  <Message isUser={message.isUser} key={index}>
+                    <p style={{
+                      wordBreak: "break-word",
+                    }}>{message.text}</p>
+                  </Message>
+                ))}
+                {isLoading && (
+                  <Message isUser={false}>
+                    Думает...
+                  </Message>
+                )}
+              </ScrollArea.Content>
+            </ScrollArea.Viewport>
+            <ScrollArea.Scrollbar orientation="vertical">
+              <ScrollArea.Thumb />
+            </ScrollArea.Scrollbar>
+            <ScrollArea.Corner />
+          </ScrollArea.Root>
+        </Container>
+          
 
-          <Group padding="1rem" width="80%" alignSelf="center">
-            <Input boxShadow="2px 3px 6px rgba(0, 0, 0, 0.5)" disabled={isLoading} value={inputValue} variant="subtle" backgroundColor={inputBg} borderLeftRadius="40px" onChange={handleInputChange} />
-            <IconButton boxShadow="2px 2px 8px rgba(0, 0, 0, 0.43)" borderRightRadius="40px" width="50px" onClick={handleSubmit}>
-              <FaAngleDoubleRight />
-            </IconButton>
-          </Group>
-        </Flex>
+        <Group padding="1rem" width="80%" alignSelf="center">
+          <Input boxShadow="2px 3px 6px rgba(0, 0, 0, 0.5)" disabled={isLoading} value={inputValue} variant="subtle" backgroundColor={inputBg} borderLeftRadius="40px" onChange={handleInputChange} />
+          <IconButton boxShadow="2px 2px 8px rgba(0, 0, 0, 0.43)" borderRightRadius="40px" width="50px" onClick={handleSubmit}>
+            <FaAngleDoubleRight />
+          </IconButton>
+        </Group>
       </>
   )
 

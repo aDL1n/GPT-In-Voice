@@ -2,14 +2,14 @@ export class ApiStatus {
     private readonly url: URL;
 
     constructor(
-        apiUrl: string = "http://localhost:8080/api"
+        apiUrl: string = "http://localhost:8080/api/"
     ) {
         this.url = new URL("/api", apiUrl);
     }
 
     public getColor(): string {
         try {
-            const request = new XMLHttpRequest();
+            const request: XMLHttpRequest = new XMLHttpRequest();
             request.open('GET', this.url.toString(), false); // false = синхронный запрос
             request.send(null);
             
