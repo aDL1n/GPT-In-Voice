@@ -1,16 +1,17 @@
-import { type FC } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import {
     Box,
     Flex,
     Heading,
     HStack,
     Button,
-    IconButton, For,
+    IconButton,
     Group,
-    Status
+    Status,
+    Spinner,
 } from '@chakra-ui/react';
 import { FaSun, FaMoon } from 'react-icons/fa';
-import {useColorMode, useColorModeValue} from "@/components/ui/color-mode.tsx";
+import { useColorMode, useColorModeValue } from "@/components/ui/color-mode.tsx";
 import { ApiStatus } from '@/utils/apiStatus';
 
 interface NavItem {
@@ -26,10 +27,13 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
     const { colorMode, toggleColorMode } = useColorMode();
     const bg = useColorModeValue('gray.100', '#352F44');
     const color = useColorModeValue('gray.800', 'white');
-    const statusColor = new ApiStatus().getColor();
+    const [statusColor, setStatusColor] = useState<string>('gray');
 
+    useEffect(() => {
+        const apiStatus = new ApiStatus();
+        apiStatus.getColor().then(setStatusColor);
+    }, []);
 
-    // @ts-ignore
     return (
         <Box
             bg={bg}
@@ -50,28 +54,29 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
                     </Heading>
                     <Status.Root size="lg">
                         Status:
-                        <Status.Indicator colorPalette={statusColor} />
+                        {statusColor === 'gray' ? (
+                            <Spinner size="sm" ml="2" />
+                        ) : (
+                            <Status.Indicator colorPalette={statusColor} />
+                        )}
                     </Status.Root>
                 </Group>
 
                 <HStack>
-                    <For each={navItems}>
-                        {(item, index) => (
-                            <Button
-                                key={index}
-                                as="a"
-                                href={item.href}
-                                variant="ghost"
-                                _hover={{
-                                    bg: useColorModeValue('gray.300', 'gray.800'),
-                                }}
-                                borderRadius="40px"
-                                
-                            >
-                                {item.label}
-                            </Button>
-                        )}
-                    </For>
+                    {navItems.map((item, index) => (
+                        <Button
+                            key={index}
+                            as="a"
+                            href={item.href}
+                            variant="ghost"
+                            _hover={{
+                                bg: useColorModeValue('gray.300', 'gray.800'),
+                            }}
+                            borderRadius="40px"
+                        >
+                            {item.label}
+                        </Button>
+                    ))}
                     <IconButton
                         aria-label="Toggle color mode"
                         onClick={toggleColorMode}

@@ -1,27 +1,21 @@
 export class ApiStatus {
     private readonly url: URL;
 
-    constructor(
-        apiUrl: string = "http://localhost:8080/api/"
-    ) {
+    constructor(apiUrl: string = "http://localhost:8080/") {
         this.url = new URL("/api", apiUrl);
     }
 
-    public getColor(): string {
+    public async getColor(): Promise<string> {
         try {
-            const request: XMLHttpRequest = new XMLHttpRequest();
-            request.open('GET', this.url.toString(), false); // false = синхронный запрос
-            request.send(null);
-            
-            if (request.status !== 200) {
+            const response = await fetch(this.url.toString());
+            if (!response.ok) {
                 return "red";
             }
 
-            const responseData = JSON.parse(request.responseText);
+            const responseData = await response.json();
+
             switch (responseData.apiStatus) {
-                case "SHUTDOWN": 
-                    return "red";
-                case "LOADING": 
+                case "LOADING":
                     return "orange";
                 case "RUNNING":
                     return "green";
