@@ -9,7 +9,7 @@ GPT-In-Voice --- это бот для дискорда которым управ
 1. Подключение к голосовым каналам
 2. Распознование говорящего
 3. Расширенный поиск по памяти (RAG)
-4. Модульность проекта (Можно заменить LLM или сервера TTS & STT на любые *требуется написание дополнительного класса для взаимодействия*)
+4. Модульность проекта `Можно заменить LLM или сервера TTS & STT на любые (требуется написание дополнительного класса для взаимодействия)`
 5. Панель управления ботов
 6. Запросы на подключение в голосовой канал
 7. Гибкость настройки
@@ -44,7 +44,6 @@ cd GPT-In-Voice
 cd piper-server
 .\.venv\Scripts\activate.bat 
 pip install -r requiremets.txt
-...
 ```
 
 3. Установка whisper-server
@@ -52,7 +51,6 @@ pip install -r requiremets.txt
 cd whisper-server
 .\.venv\Scripts\activate.bat 
 pip install -r requiremets.txt
-...
 ```
 4. Запуск
 
@@ -94,6 +92,6 @@ pip install -r requiremets.txt
 
 ### ✉️ Контакты
 
-**Автор:** [@aDL1n](https://github.com/aDL1n)  
-Telegram: `@adlin_dev`
+**Автор:** [@aDL1n](https://github.com/aDL1n)   
+Telegram: `@adlin_dev`  
 Discord: `adl1n_`
