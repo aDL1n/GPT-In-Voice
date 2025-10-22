@@ -37,8 +37,5 @@ build/
 ### Mac OS ###
 .DS_Store
 
-src/main/java/dev/adlin/Main.java
-
-whisper-server/temp/
-
-src/main/resources/database/*
+/whisper-server/temp/
+/piper-server/models/

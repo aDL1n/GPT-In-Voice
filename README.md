@@ -1,14 +1,99 @@
-# <p style="text-align:center">GPT-In-Voice</p>
-This is a Discord bot that turns a voice channel into a live conversation with LLM. It connects to the voice, recognizes the participants' speech, understands who is speaking, and responds with voice using models like ChatGPT.
+# GPT-In-Voice
+GPT-In-Voice --- это бот для дискорда которым управляемый с помощью LLM, его цель это поддержание диалогов в войс-чате вашего дискорде сервера.
 
----
+> [!WARNING]
+> Проект в активной разработке. Некоторые функции могут быть недоработаны или не работать стабильно.
+----------
 
-> ⚠️ The project is under development.
+## Возможности
+1. Подключение к голосовым каналам
+2. Распознование говорящего
+3. Расширенный поиск по памяти (RAG)
+4. Модульность проекта (Можно заменить LLM или сервера TTS & STT на любые *требуется написание дополнительного класса для взаимодействия*)
+5. Панель управления ботов
+6. Запросы на подключение в голосовой канал
+7. Гибкость настройки
+----------
 
-## Features
+## Структура проекта
+```
+┌─ GPT-In-Voice/  
+├── whisper-server/ # сервис распознавания речи (speech-to-text)  
+├── piper-server/ # сервис синтеза речи (text-to-speech)  
+├── src/main/
+│ └── java/... # основной Java-бот (основная логика)
+│ └── resource/... # Файлы конфигурации Spring и т.д
+└── (другие конфигурационные файлы, .gitignore и т.п.)
+```
 
-- Connect to a voice channel on command (forced or request)
-- Listen to voice chat and translate audio into text
-- Send a recognized replica to LLM (e.g. ChatGPT)
-- Receive a response and voice it
-- Planned: recognition of interlocutors, bot initiative, extended memory
+----------
+
+
+## Установка и запуск (Windows)
+> [!WARNING]
+> Если вы используете форк или модифицированный проект (свой сервер для TTS или STT), то шаги могут отличатся от предоставленных в этом гайде!
+
+1. Скачайте проект
+```bash
+git clone https://github.com/aDL1n/GPT-In-Voice.git
+cd GPT-In-Voice
+```
+
+2. Установка piper-server
+```bash
+cd piper-server
+.\.venv\Scripts\activate.bat 
+pip install -r requiremets.txt
+...
+```
+
+3. Установка whisper-server
+```bash
+cd whisper-server
+.\.venv\Scripts\activate.bat 
+pip install -r requiremets.txt
+...
+```
+4. Запуск
+
+    1. Запустите PG-Vector Database (это можно сделать в Docker Container).
+    2. В файле конфигурации Spring (src/main/recource/application.yml) укажите URL вашей базы данных.
+    3. В этом же файле конфигурации укажите данные от вашего Discord-бота (можно оставить значения по умолчанию и указать параметры в параметрах запуска).
+
+    4. Запустите whisper-server
+        ```bash
+        ./whisper-server/start.bat
+        ```
+    5. Запустите piper-server
+        ```bash
+        ./piper-server/start.bat
+        ```
+    6. Запустите основное приложение
+        > Если оставили дефолтные значения для дискорд бота в файле конфигурации Spring, то используйте 
+        ```bash
+        mvn spring-boot:run args...
+        ```
+
+        > Если нет, то
+        ```bash
+        mvn spring-boot:run 
+
+        ```
+----------
+
+### Лицензия
+Лицензия: MIT (или добавь свою, если другая).
+
+----------
+
+### Вклад
+Любые улучшения приветствуются — создавай **issue**, форкай проект или делай **pull request**.  
+Перед публикацией убедись, что код проходит сборку без ошибок (`mvn verify`).
+
+----------
+
+### ✉️ Контакты
+
+**Автор:** [@aDL1n](https://github.com/aDL1n)  
+Telegram: `@adlin_dev`
+Discord: `adl1n_`
