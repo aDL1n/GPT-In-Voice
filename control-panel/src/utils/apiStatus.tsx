@@ -1,3 +1,5 @@
+import { toaster } from "@/components/ui/toaster";
+
 export class ApiStatus {
     private readonly url: URL;
 
@@ -23,6 +25,11 @@ export class ApiStatus {
                     return "red";
             }
         } catch (error) {
+            toaster.create({
+                description: "Не удалось подключиться к GPT-In-Voice",
+                type: "error",
+                closable: true
+            });
             return "red";
         }
     }

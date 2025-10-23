@@ -9,6 +9,7 @@ import {
     Group,
     Status,
     Spinner,
+    ClientOnly,
 } from '@chakra-ui/react';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import { useColorMode, useColorModeValue } from "@/components/ui/color-mode.tsx";
@@ -30,10 +31,10 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
     const [statusColor, setStatusColor] = useState<string>('gray');
 
     useEffect(() => {
-        const apiStatus = new ApiStatus();
-        apiStatus.getColor().then(setStatusColor);
+        new ApiStatus().getColor().then(setStatusColor);
     }, []);
 
+    //@ts-ignore
     return (
         <Box
             bg={bg}
@@ -64,26 +65,29 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
 
                 <HStack>
                     {navItems.map((item, index) => (
-                        <Button
+                        <Button asChild
                             key={index}
-                            as="a"
-                            href={item.href}
+                            
                             variant="ghost"
                             _hover={{
                                 bg: useColorModeValue('gray.300', 'gray.800'),
                             }}
                             borderRadius="40px"
                         >
-                            {item.label}
+                            <a href={item.href}>
+                                {item.label}
+                            </a> 
                         </Button>
                     ))}
-                    <IconButton
-                        aria-label="Toggle color mode"
-                        onClick={toggleColorMode}
-                        variant="ghost"
-                    >
-                        {colorMode === 'light' ? <FaMoon /> : <FaSun />}
-                    </IconButton>
+                    <ClientOnly>
+                        <IconButton
+                            aria-label="Toggle color mode"
+                            onClick={toggleColorMode}
+                            variant="ghost"
+                        >
+                            {colorMode === 'light' ? <FaMoon /> : <FaSun />}
+                        </IconButton>
+                    </ClientOnly>
                 </HStack>
             </Flex>
         </Box>

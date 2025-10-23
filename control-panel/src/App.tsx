@@ -10,6 +10,7 @@ import { AppBody } from '@/components/app/appBody.tsx';
 import Chat from './pages/Chat/chat';
 import Memory from './pages/Memory/memory'
 import Models from './pages/Models/models';
+import { Toaster } from './components/ui/toaster';
 
 const App: React.FC = () => {
   const backgroundColor = useColorModeValue("gray.900", "#2A2438");
@@ -36,6 +37,7 @@ const App: React.FC = () => {
             {/*<Route path="/rag" element={<Rag />} />*/}
           </Routes>
         </AppBody>
+        <Toaster />
       </Flex>
     </>
   );

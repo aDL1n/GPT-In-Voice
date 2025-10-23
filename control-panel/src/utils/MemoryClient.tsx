@@ -25,16 +25,16 @@ export class MemoryClient {
 
     public init(): void {
 
-        const run = () => {
-            fetch(this.url.toString()).then(async (response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                this.onMemoryUpdate(JSON.parse(await response.text()) as MemoryData[])
-            })
+        let run = () => {
+            fetch(this.url.toString())
+                .then(async (response) => {
+                    if (response.ok) 
+                        this.onMemoryUpdate(JSON.parse(await response.text()) as MemoryData[])
+                    
+                })
+                .catch(_ => {})
         }
-        run()
+        run();
         setInterval(run, 2500);
     }
 }
