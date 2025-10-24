@@ -21,13 +21,13 @@ public class ModelsController {
     @PostMapping("/stt/enable")
     public ResponseEntity<Void> enableRecognitionModel(@RequestParam boolean enable) {
         this.modelsManager.getRecognitionModelState().setEnabled(enable);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/tts/enable")
     public ResponseEntity<Void> enableSynthesisModel(@RequestParam boolean enable) {
         this.modelsManager.getSynthesisModelState().setEnabled(enable);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/stt/list")
@@ -35,7 +35,7 @@ public class ModelsController {
         return new ResponseEntity<>(this.modelsManager.getRecognitionModelNames(), HttpStatus.OK);
     }
 
-    @GetMapping("tts/list")
+    @GetMapping("/tts/list")
     public ResponseEntity<List<String>> getSynthesisModels() {
         return new ResponseEntity<>(this.modelsManager.getSynthesisModelNames(), HttpStatus.OK);
     }
@@ -44,17 +44,17 @@ public class ModelsController {
     public ResponseEntity<Void> changeRecognitionModel(@RequestParam String modelName) {
         try {
             this.modelsManager.setCurrentRecognitionModel(modelName);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.ok().build();
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PostMapping("tts/change")
+    @PostMapping("/tts/change")
     public ResponseEntity<Void> changeSynthesisModel(@RequestParam String modelName) {
         try {
             this.modelsManager.setCurrentSynthesisModel(modelName);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.ok().build();
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
