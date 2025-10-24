@@ -11,9 +11,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -93,10 +93,10 @@ public class ModelsManager {
     }
 
     public List<String> getSynthesisModelNames() {
-        return synthesisModels.keySet().stream().collect(Collectors.toList());
+        return new ArrayList<>(synthesisModels.keySet());
     }
 
     public List<String> getRecognitionModelNames() {
-        return recognitionModels.keySet().stream().collect(Collectors.toList());
+        return new ArrayList<>(recognitionModels.keySet());
     }
 }

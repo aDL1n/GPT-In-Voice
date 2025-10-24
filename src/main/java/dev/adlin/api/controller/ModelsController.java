@@ -53,7 +53,7 @@ public class ModelsController {
     @PostMapping("tts/change")
     public ResponseEntity<Void> changeSynthesisModel(@RequestParam String modelName) {
         try {
-            this.changeSynthesisModel(modelName);
+            this.modelsManager.setCurrentSynthesisModel(modelName);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
