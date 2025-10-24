@@ -1,4 +1,4 @@
-import { Button, Center, Container, Flex, Heading, NativeSelect, Switch, Text, Textarea } from "@chakra-ui/react";
+import {Button, Center, Container, Flex, Heading, NativeSelect, Switch, Text, Textarea} from "@chakra-ui/react";
 import type { JSX } from "react";
 
 function Models(): JSX.Element {
@@ -83,12 +83,18 @@ function Models(): JSX.Element {
                     <Heading size="2xl" padding="10px" textAlign="center">
                         LLM
                     </Heading>
-                    <Center>
-                        <Text textAlign="center">
+                    <Center display="flex" flexDirection="column" gap="10px">
+                        <Heading size="md" textAlign="center">
                             Start prompt
                             <Textarea autoresize placeholder="prompt..." backgroundColor="gray.700" />
                             <Button type="submit">Submit</Button>
-                        </Text>
+                        </Heading>
+                        <Center>
+                            <Text fontWeight="semibold">
+                                Model name:&nbsp;
+                            </Text>
+                            <Text>Llama</Text>
+                        </Center>
                     </Center>
                 </Container>
             </Flex>

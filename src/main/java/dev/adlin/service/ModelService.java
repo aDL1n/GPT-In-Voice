@@ -3,6 +3,7 @@ package dev.adlin.service;
 import dev.adlin.memory.StartPromptLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -24,30 +26,26 @@ public class ModelService {
 
     private static final Logger log = LogManager.getLogger(ModelService.class);
 
+    private final ChatModel chatModel;
     private final MemoryService memoryService;
     private final RagService ragService;
 
-    private final SystemMessage startMessage;
-    private final ChatClient chatClient;
+    private SystemMessage startMessage;
 
+    private final ChatClient chatClient;
     private final AtomicBoolean processing = new AtomicBoolean(false);
 
     public ModelService(
             ChatModel chatModel,
             MemoryService memoryService,
             RagService ragService,
-            StartPromptLoader startPromptLoader,
-            VectorStore vectorStore
+            StartPromptLoader startPromptLoader
     ) {
+        this.chatModel = chatModel;
         this.memoryService = memoryService;
         this.ragService = ragService;
 
-        this.chatClient = ChatClient.builder(chatModel)
-//                .defaultAdvisors(
-//                        QuestionAnswerAdvisor.builder(vectorStore).build(),
-//                        MessageChatMemoryAdvisor.builder(memoryService.getChatMemory()).build()
-//                )
-                .build();
+        this.chatClient = ChatClient.builder(chatModel).build();
 
         startMessage = (SystemMessage) startPromptLoader.load().orElse(null);
         log.info("Model service initialized");
@@ -97,6 +95,15 @@ public class ModelService {
 
         processing.set(false);
         return assistantMessage;
+    }
+
+    public SystemMessage changeStartMessage(String newMessage) {
+        log.info("Start system message changed");
+        return this.startMessage = new SystemMessage(newMessage);
+    }
+
+    public Optional<String> getModelName() {
+        return Optional.ofNullable(chatModel.getDefaultOptions().getModel());
     }
 
     public AtomicBoolean getProcessing() {
