@@ -15,6 +15,7 @@ public class ApiState {
     public Status getApiStatus() {
         return this.currentStatus;
     }
+
     public void setApiStatus(Status apiStatus) {
         this.currentStatus = apiStatus;
     }

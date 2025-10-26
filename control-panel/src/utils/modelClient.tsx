@@ -1,17 +1,17 @@
 export class ModelClient {
-  private readonly baseUrl: string;
+  private readonly url: URL;
 
-  constructor(baseUrl: string = 'http://localhost:8080/api') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl: string = 'http://localhost:8080/') {
+    this.url = new URL("/api/model/", baseUrl);
   }
 
   async ask(message: string, username: string): Promise<string> {
-    const url = new URL('/api/model/ask', this.baseUrl);
-    url.searchParams.append('message', message);
-    url.searchParams.append('username', username);
+    const askUrl = new URL("/ask", this.url);
+    askUrl.searchParams.append('message', message);
+    askUrl.searchParams.append('username', username);
 
     try {
-      const response = await fetch(url.toString(), {
+      const response = await fetch(askUrl.toString(), {
         method: 'GET',
         headers: {
           'Accept': 'text/plain; charset=utf-8'

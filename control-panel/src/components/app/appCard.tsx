@@ -7,7 +7,7 @@ interface AppCardProps {
 }
 
 export const AppCard: FC<AppCardProps> = ({ children }) => {
-    const backgroundColor = useColorModeValue("white", "#5C5470")
+    const backgroundColor = useColorModeValue("white", "gray.800")
     
     return (
         <Box    

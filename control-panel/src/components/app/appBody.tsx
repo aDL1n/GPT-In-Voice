@@ -7,7 +7,7 @@ interface AppBodyProps {
 }
 
 export const AppBody: FC<AppBodyProps> = ({ children }) => {
-    const backgroundColor = useColorModeValue("white", "#5C5470")
+    const backgroundColor = useColorModeValue("white", "gray.900")
     
     return (
         <Box    
@@ -20,7 +20,7 @@ export const AppBody: FC<AppBodyProps> = ({ children }) => {
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
-            boxShadow="2px 7px 10px rgba(0, 0, 0, 0.79)"
+            shadow="lg"
         >
             {children}
         </Box>

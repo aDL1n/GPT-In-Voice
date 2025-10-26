@@ -26,7 +26,7 @@ interface HeaderProps {
 
 export const Header: FC<HeaderProps> = ({ navItems }) => {
     const { colorMode, toggleColorMode } = useColorMode();
-    const bg = useColorModeValue('gray.100', '#352F44');
+    const bg = useColorModeValue('white', 'gray.800');
     const color = useColorModeValue('gray.800', 'white');
     const [statusColor, setStatusColor] = useState<string>('gray');
 
@@ -34,7 +34,6 @@ export const Header: FC<HeaderProps> = ({ navItems }) => {
         new ApiStatus().getColor().then(setStatusColor);
     }, []);
 
-    //@ts-ignore
     return (
         <Box
             bg={bg}

@@ -1,4 +1,4 @@
-package dev.adlin.service;
+package dev.adlin.speech.recognition.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

@@ -1,7 +1,6 @@
 package dev.adlin.speech.recognition;
 
 import dev.adlin.config.SpeechRecognitionConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.CompletableFuture;
 

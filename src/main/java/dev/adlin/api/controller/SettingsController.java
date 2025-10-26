@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/models")
-public class ModelsController {
+@RequestMapping("/api/settings")
+public class SettingsController {
 
     private final ModelsManager modelsManager;
 
-    public ModelsController(ModelsManager modelsManager) {
+    public SettingsController(ModelsManager modelsManager) {
         this.modelsManager = modelsManager;
     }
 
