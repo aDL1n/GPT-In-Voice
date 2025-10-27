@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class DiscordBot {
 
     private static final Logger log = LogManager.getLogger(DiscordBot.class);
+
     private final JDA jda;
     private final Guild guild;
     private final VoiceListener voiceListener;
@@ -84,70 +85,14 @@ public class DiscordBot {
 
         DiscordCommandManager commandManager = new DiscordCommandManager(jda);
 
-        final MessageEmbed notInVoiceEmbed = new EmbedBuilder()
-                .setTitle("You not in voice chat")
-                .setColor(Color.RED)
-                .build();
-
-        final MessageEmbed joinedToVoiceEmbed = new EmbedBuilder()
-                .setTitle("Successfully connected to the voice channel")
-                .setColor(Color.GREEN)
-                .build();
-
         commandManager.addDiscordCommands(
-            new JoinCommand(event -> {
-                Member member = event.getMember();
-
-                Guild guild = event.getGuild();
-                if (guild == null) return;
-
-                OptionMapping option = event.getOption("user");
-                if (option != null) member = option.getAsMember();
-
-                GuildVoiceState voiceState = member.getVoiceState();
-                AudioChannel audioChannel = voiceState.getChannel();
-
-                if (audioChannel != null) {
-
-                    audioManager.openAudioConnection(audioChannel);
-
-                    event.getJDA().getPresence().setActivity(Activity.listening("you in " + audioChannel.getName()));
-                    event.getJDA().getPresence().setStatus(OnlineStatus.ONLINE);
-
-                    SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " пригласил тебя к себе в войс-чат");
-                    this.modelService.ask(systemMessage);
-
-                    event.replyEmbeds(joinedToVoiceEmbed).timeout(12, TimeUnit.SECONDS).queue();
-                } else {
-                    event.replyEmbeds(notInVoiceEmbed).queue();
-                }
+            new JoinCommand(member -> {
+                SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " пригласил тебя к себе в войс-чат");
+                this.modelService.ask(systemMessage);
             }),
-            new LeaveCommand(event -> {
-                Member member = event.getMember();
-
-                Guild guild = event.getGuild();
-                if (guild == null) return;
-
-                OptionMapping option = event.getOption("user");
-                if (option != null) member = option.getAsMember();
-
-                GuildVoiceState voiceState = member.getVoiceState();
-                AudioChannel audioChannel = voiceState.getChannel();
-
-                if (audioChannel != null) {
-
-                    audioManager.openAudioConnection(audioChannel);
-
-                    event.getJDA().getPresence().setActivity(Activity.listening("you in " + audioChannel.getName()));
-                    event.getJDA().getPresence().setStatus(OnlineStatus.ONLINE);
-
-                    SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " выгнал тебя из войс чата");
-                    this.modelService.ask(systemMessage);
-
-                    event.replyEmbeds(joinedToVoiceEmbed).queue();
-                } else {
-                    event.replyEmbeds(notInVoiceEmbed).queue();
-                }
+            new LeaveCommand(member -> {
+                SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " выгнал тебя из войс чата");
+                this.modelService.ask(systemMessage);
             })
         );
 

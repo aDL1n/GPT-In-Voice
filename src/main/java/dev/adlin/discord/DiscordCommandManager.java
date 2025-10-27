@@ -65,12 +65,9 @@ public class DiscordCommandManager extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         discordCommandList.stream()
-                .filter(command -> command.getCommandName().equals(event.getName()))
-                .findFirst()
-                .ifPresentOrElse(
-                        command -> command.execute(event),
-                        () -> log.warn("Command not found: {}", event.getName())
-                );
+                .filter(command ->
+                        command.getCommandName().equals(event.getName()))
+                .forEach(command -> command.execute(event));
     }
 
     public void addDiscordCommand(DiscordAbstractCommand command) {
