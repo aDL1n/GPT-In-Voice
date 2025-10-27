@@ -22,7 +22,6 @@ public class MemoryService {
 
     public static final String CONVERSATION_ID = "1";
 
-
     public MemoryService(JdbcChatMemoryRepository longChatMemoryRepository) {
         this.longChatMemoryRepository = longChatMemoryRepository;
         this.shortChatMemoryRepository = new InMemoryChatMemoryRepository();
@@ -34,11 +33,22 @@ public class MemoryService {
 
         this.shortChatMemoryRepository.saveAll(CONVERSATION_ID, this.getLongMemories());
         log.info("Memory service initialized");
+
     }
 
     public void addMemory(Message message) {
         log.info("Added memory");
         this.chatMemory.add(CONVERSATION_ID, message);
+    }
+
+    public void removeMemory(String messageIndex) {
+        //Get memories
+        List<Message> memories = this.chatMemory.get(CONVERSATION_ID);
+        memories.remove(messageIndex);
+        //Clear all memories
+        this.chatMemory.clear(CONVERSATION_ID);
+        //Save updated memories
+        this.chatMemory.add(CONVERSATION_ID, memories);
     }
 
     public List<Message> getMemories() {
@@ -49,12 +59,15 @@ public class MemoryService {
         return this.longChatMemoryRepository.findByConversationId(CONVERSATION_ID);
     }
 
-
-
     @PreDestroy
     private void saveAll() {
         log.info("Saving all memories");
-        this.longChatMemoryRepository.saveAll(CONVERSATION_ID, getMemories());
+        //Get all long memories
+        List<Message> longMemories = this.getLongMemories();
+        //Add new from short memory
+        longMemories.addAll(getMemories());
+        //Update long memories
+        this.longChatMemoryRepository.saveAll(CONVERSATION_ID, longMemories);
     }
 
     public ChatMemory getChatMemory() {
