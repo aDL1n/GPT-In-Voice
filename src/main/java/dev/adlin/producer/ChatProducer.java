@@ -5,7 +5,6 @@ import dev.adlin.discord.audio.AudioBufferManager;
 import dev.adlin.discord.audio.AudioProvider;
 import dev.adlin.manager.ModelsManager;
 import dev.adlin.service.ModelService;
-import dev.adlin.speech.recognition.SpeechRecognition;
 import dev.adlin.speech.synthesis.SpeechSynthesis;
 import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;

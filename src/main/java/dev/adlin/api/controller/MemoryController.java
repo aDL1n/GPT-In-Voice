@@ -46,7 +46,7 @@ public class MemoryController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteMemory(@RequestBody String messageIndex) {
+    public ResponseEntity<Void> deleteMemory(@RequestBody int messageIndex) {
         this.memoryService.removeMemory(messageIndex);
         return ResponseEntity.ok().build();
     }

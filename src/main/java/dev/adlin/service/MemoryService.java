@@ -42,7 +42,7 @@ public class MemoryService {
         this.chatMemory.add(CONVERSATION_ID, message);
     }
 
-    public void removeMemory(String messageIndex) {
+    public void removeMemory(int messageIndex) {
         //Get memories
         List<Message> memories = this.chatMemory.get(CONVERSATION_ID);
         memories.remove(messageIndex);
