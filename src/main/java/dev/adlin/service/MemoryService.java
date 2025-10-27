@@ -1,5 +1,6 @@
 package dev.adlin.service;
 
+import dev.adlin.config.ChatConfig;
 import jakarta.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,12 +23,12 @@ public class MemoryService {
 
     public static final String CONVERSATION_ID = "1";
 
-    public MemoryService(JdbcChatMemoryRepository longChatMemoryRepository) {
+    public MemoryService(JdbcChatMemoryRepository longChatMemoryRepository, ChatConfig config) {
         this.longChatMemoryRepository = longChatMemoryRepository;
         this.shortChatMemoryRepository = new InMemoryChatMemoryRepository();
         this.chatMemory = MessageWindowChatMemory.builder()
                 .chatMemoryRepository(shortChatMemoryRepository)
-                .maxMessages(30)
+                .maxMessages(config.getShortMemorySize())
                 .build()
         ;
 

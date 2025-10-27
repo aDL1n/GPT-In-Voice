@@ -44,3 +44,7 @@ speech:
 
 web:
   allowed-frontend-origin: "http://localhost:5173"
+
+chat:
+  owner-name: "aDL1n"
+  short-memory-size: 30

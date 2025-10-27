@@ -1,5 +1,6 @@
 package dev.adlin.producer;
 
+import dev.adlin.config.ChatConfig;
 import dev.adlin.discord.audio.AudioBufferManager;
 import dev.adlin.discord.audio.AudioProvider;
 import dev.adlin.manager.ModelsManager;
@@ -27,21 +28,22 @@ public class ChatProducer {
     private final AudioProvider audioProvider;
     private final ModelService modelService;
     private final SpeechSynthesis speechSynthesis;
+    private final ChatConfig chatConfig;
 
     private final ConcurrentHashMap<String, String> translatedMessages = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-    private final static String OWNER_NAME = "adl1n_";
-
     public ChatProducer(AudioBufferManager audioBufferManager,
                         AudioProvider audioProvider,
                         ModelService modelService,
-                        ModelsManager modelsManager
+                        ModelsManager modelsManager,
+                        ChatConfig chatConfig
 
     ) {
         this.audioProvider = audioProvider;
         this.modelService = modelService;
         this.speechSynthesis = modelsManager.getSpeechSynthesisModel();
+        this.chatConfig = chatConfig;
 
         audioBufferManager.setBufferListener((user, data) ->
                 CompletableFuture.runAsync(() -> {
@@ -56,14 +58,14 @@ public class ChatProducer {
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             if (translatedMessages.isEmpty() && !modelService.getProcessing().get()) return;
 
-            if (translatedMessages.containsKey(OWNER_NAME)) {
+            if (translatedMessages.containsKey(chatConfig.getOwnerName())) {
                 Set<Map.Entry<String, String>> entrySet =  translatedMessages.entrySet();
                 Set<Map.Entry<String, String>> entryFiltered =  entrySet.stream()
-                        .filter(entry -> entry.getKey().equals(OWNER_NAME))
+                        .filter(entry -> entry.getKey().equals(chatConfig.getOwnerName()))
                         .collect(Collectors.toSet());
 
                 for (Map.Entry<String, String> entry : entryFiltered) {
-                    this.processAnswer(new UserMessage(OWNER_NAME + ": " + entry.getValue()));
+                    this.processAnswer(new UserMessage(chatConfig.getOwnerName() + ": " + entry.getValue()));
                     entrySet.remove(entry);
                 }
             } else if (translatedMessages.size() > 1) {
