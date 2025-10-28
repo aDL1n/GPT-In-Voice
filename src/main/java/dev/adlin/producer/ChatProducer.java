@@ -13,6 +13,7 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -24,13 +25,12 @@ import java.util.stream.Collectors;
 public class ChatProducer {
 
     private static final Logger log = LogManager.getLogger(ChatProducer.class);
+    private final ConcurrentHashMap<String, String> translatedMessages = new ConcurrentHashMap<>();
+
     private final AudioProvider audioProvider;
     private final ModelService modelService;
     private final SpeechSynthesis speechSynthesis;
     private final ChatConfig chatConfig;
-
-    private final ConcurrentHashMap<String, String> translatedMessages = new ConcurrentHashMap<>();
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
     public ChatProducer(AudioBufferManager audioBufferManager,
                         AudioProvider audioProvider,
@@ -52,10 +52,9 @@ public class ChatProducer {
         );
     }
 
-    @PostConstruct
-    private void start() {
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            if (translatedMessages.isEmpty() && !modelService.getProcessing().get()) return;
+    @Scheduled(fixedDelay = 2000)
+    private void process() {
+            if (translatedMessages.isEmpty() && modelService.getProcessing().get()) return;
 
             if (translatedMessages.containsKey(chatConfig.getOwnerName())) {
                 Set<Map.Entry<String, String>> entrySet =  translatedMessages.entrySet();
@@ -94,8 +93,6 @@ public class ChatProducer {
                         processAnswer(new UserMessage(username + ": " + transcript)));
                 translatedMessages.clear();
             }
-
-        }, 2, 2, TimeUnit.SECONDS);
     }
 
     private void processAnswer(Message message) {

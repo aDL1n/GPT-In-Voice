@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
 
 import java.awt.*;
 import java.util.EnumSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -87,12 +88,17 @@ public class DiscordBot {
 
         commandManager.addDiscordCommands(
             new JoinCommand(member -> {
-                SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " пригласил тебя к себе в войс-чат");
-                this.modelService.ask(systemMessage);
+                //run without block command thread
+                CompletableFuture.runAsync(() -> {
+                    SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " пригласил тебя к себе в войс-чат");
+                    this.modelService.ask(systemMessage);
+                });
             }),
             new LeaveCommand(member -> {
-                SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " выгнал тебя из войс чата");
-                this.modelService.ask(systemMessage);
+                CompletableFuture.runAsync(() -> {
+                    SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " выгнал тебя из войс-чата");
+                    this.modelService.ask(systemMessage);
+                });
             })
         );
 

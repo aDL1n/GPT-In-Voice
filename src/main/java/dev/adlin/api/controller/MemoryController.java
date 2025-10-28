@@ -2,12 +2,10 @@ package dev.adlin.api.controller;
 
 import dev.adlin.service.MemoryService;
 import org.springframework.ai.chat.messages.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/memory")
@@ -45,7 +43,7 @@ public class MemoryController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     public ResponseEntity<Void> deleteMemory(@RequestBody int messageIndex) {
         this.memoryService.removeMemory(messageIndex);
         return ResponseEntity.ok().build();

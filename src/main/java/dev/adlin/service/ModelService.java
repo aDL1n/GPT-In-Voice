@@ -77,7 +77,7 @@ public class ModelService {
         if (chatResponse != null)
             this.ragService.write(chatResponse);
 
-        System.out.println("Prompt:" + prompt.getInstructions().stream()
+        System.out.println("Prompt: \n" + prompt.getInstructions().stream()
                 .map(Message::getText)
                 .collect(Collectors.joining("\n"))
         );

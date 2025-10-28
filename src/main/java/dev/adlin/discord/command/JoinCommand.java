@@ -55,7 +55,6 @@ public class JoinCommand extends DiscordAbstractCommand {
             event.getJDA().getPresence().setActivity(Activity.listening("you in " + memberAudioChannel.getName()));
             event.getJDA().getPresence().setStatus(OnlineStatus.ONLINE);
 
-            SystemMessage systemMessage = new SystemMessage(member.getEffectiveName() + " пригласил тебя к себе в войс-чат");
             this.onJoin.accept(null);
 
             event.replyEmbeds(joinedToVoiceEmbed).timeout(12, TimeUnit.SECONDS).queue();
