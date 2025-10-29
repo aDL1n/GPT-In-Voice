@@ -6,7 +6,7 @@ export class ModelClient {
   }
 
   async ask(message: string, username: string): Promise<string> {
-    const askUrl = new URL("/ask", this.url);
+    const askUrl = new URL("/ask/", this.url);
     askUrl.searchParams.append('message', message);
     askUrl.searchParams.append('username', username);
 
