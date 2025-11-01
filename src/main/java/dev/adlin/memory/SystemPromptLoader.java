@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class StartPromptLoader {
+public class SystemPromptLoader {
 
-    private static final Logger log = LogManager.getLogger(StartPromptLoader.class);
+    private static final Logger log = LogManager.getLogger(SystemPromptLoader.class);
 
     public Optional<Message> load() {
         log.info("Loading start prompt...");

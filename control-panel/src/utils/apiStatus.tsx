@@ -3,13 +3,13 @@ import { toaster } from "@/components/ui/toaster";
 export class ApiStatus {
     private readonly url: URL;
 
-    constructor(apiUrl: string = "http://localhost:8080/") {
-        this.url = new URL("/api", apiUrl);
+    constructor(baseUrl: string = "http://localhost:8080/") {
+        this.url = new URL(baseUrl);
     }
 
     public async getColor(): Promise<string> {
         try {
-            const response = await fetch(this.url.toString());
+            const response = await fetch(this.url + "api");
             if (!response.ok) {
                 return "red";
             }

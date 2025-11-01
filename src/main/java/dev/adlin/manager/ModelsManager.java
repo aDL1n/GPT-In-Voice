@@ -70,17 +70,17 @@ public class ModelsManager {
     }
 
     public SpeechSynthesis setCurrentSynthesisModel(String name) {
-        if (!this.synthesisModels.containsKey(name)) throw new NoSuchElementException("Synthesis model not found");
-        this.currentSynthesisModel = name;
+        if (!this.synthesisModels.containsKey(name.toLowerCase())) throw new NoSuchElementException("Synthesis model not found");
+        this.currentSynthesisModel = name.toLowerCase();
         log.info("Synthesis model changed to {}", currentSynthesisModel);
-        return synthesisModels.get(name);
+        return synthesisModels.get(name.toLowerCase());
     }
 
     public SpeechRecognition setCurrentRecognitionModel(String name) {
-        if (!this.recognitionModels.containsKey(name)) throw new NoSuchElementException("Recognition model not found");
-        this.currentRecognitionModel = name;
+        if (!this.recognitionModels.containsKey(name.toLowerCase())) throw new NoSuchElementException("Recognition model not found");
+        this.currentRecognitionModel = name.toLowerCase();
         log.info("Recognition model changed to {}", currentRecognitionModel);
-        return recognitionModels.get(name);
+        return recognitionModels.get(name.toLowerCase());
     }
 
     public SynthesisModelState getSynthesisModelState() {

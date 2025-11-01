@@ -12,7 +12,7 @@ public abstract class SpeechRecognitionAbstract implements SpeechRecognition {
 
     public SpeechRecognitionAbstract(SpeechRecognitionConfig config, String name) {
         baseUrl = config.getUrl();
-        this.name = name;
+        this.name = name.toLowerCase();
     }
 
     @Override

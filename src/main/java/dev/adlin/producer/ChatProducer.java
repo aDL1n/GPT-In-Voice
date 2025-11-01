@@ -31,25 +31,27 @@ public class ChatProducer {
     private final ModelService modelService;
     private final SpeechSynthesis speechSynthesis;
     private final ChatConfig chatConfig;
+    private final ModelsManager modelsManager;
 
     public ChatProducer(AudioBufferManager audioBufferManager,
                         AudioProvider audioProvider,
                         ModelService modelService,
                         ModelsManager modelsManager,
-                        ChatConfig chatConfig
-
-    ) {
+                        ChatConfig chatConfig) {
         this.audioProvider = audioProvider;
         this.modelService = modelService;
-        this.speechSynthesis = modelsManager.getSpeechSynthesisModel();
+        this.modelsManager = modelsManager;
         this.chatConfig = chatConfig;
 
-        audioBufferManager.setBufferListener((user, data) ->
+        this.speechSynthesis = modelsManager.getSpeechSynthesisModel();
+
+        audioBufferManager.setBufferListener((user, data) -> {
+            if (modelsManager.getRecognitionModelState().isEnabled())
                 CompletableFuture.runAsync(() -> {
                     String transcript = modelsManager.getSpeechRecognitionModel().transcriptAudio(data);
                     translatedMessages.put(user.getName(), transcript);
-                })
-        );
+                });
+        });
     }
 
     @Scheduled(fixedDelay = 2000)
@@ -97,9 +99,11 @@ public class ChatProducer {
 
     private void processAnswer(Message message) {
         AssistantMessage assistantMessage = this.modelService.ask(message);
-        
-        byte[] speech = speechSynthesis.speech(assistantMessage.getText());
-        audioProvider.addAudio(speech);
+
+        if (modelsManager.getSynthesisModelState().isEnabled()) {
+            byte[] speech = speechSynthesis.speech(assistantMessage.getText());
+            audioProvider.addAudio(speech);
+        }
     }
 
 }

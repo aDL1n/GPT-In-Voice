@@ -1,6 +1,6 @@
 package dev.adlin.service;
 
-import dev.adlin.memory.StartPromptLoader;
+import dev.adlin.memory.SystemPromptLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.client.ChatClient;
@@ -26,7 +26,7 @@ public class ModelService {
     private final MemoryService memoryService;
     private final RagService ragService;
 
-    private SystemMessage startMessage;
+    private SystemMessage systemMessage;
 
     private final ChatClient chatClient;
     private final AtomicBoolean processing = new AtomicBoolean(false);
@@ -35,7 +35,7 @@ public class ModelService {
             ChatModel chatModel,
             MemoryService memoryService,
             RagService ragService,
-            StartPromptLoader startPromptLoader
+            SystemPromptLoader systemPromptLoader
     ) {
         this.chatModel = chatModel;
         this.memoryService = memoryService;
@@ -43,7 +43,7 @@ public class ModelService {
 
         this.chatClient = ChatClient.builder(chatModel).build();
 
-        startMessage = (SystemMessage) startPromptLoader.load().orElse(null);
+        systemMessage = (SystemMessage) systemPromptLoader.load().orElse(null);
         log.info("Model service initialized");
     }
 
@@ -59,9 +59,9 @@ public class ModelService {
         );
 
         List<Message> messages = new ArrayList<>();
-        messages.add(startMessage);
+        messages.add(systemMessage);
         messages.add(ragMessage.getText().isBlank() ? null : ragMessage);
-        messages.addAll(this.memoryService.getMemories());
+        messages.addAll(this.memoryService.getShortMemories());
 
         Prompt prompt = Prompt.builder()
                 .chatOptions(ChatOptions.builder()
@@ -93,9 +93,13 @@ public class ModelService {
         return assistantMessage;
     }
 
-    public SystemMessage changeStartMessage(String newMessage) {
+    public SystemMessage changeSystemMessage(String newMessage) {
         log.info("Start system message changed");
-        return this.startMessage = new SystemMessage(newMessage);
+        return this.systemMessage = new SystemMessage(newMessage);
+    }
+
+    public SystemMessage getSystemMessage() {
+        return this.systemMessage;
     }
 
     public Optional<String> getModelName() {

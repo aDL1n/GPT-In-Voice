@@ -18,23 +18,20 @@ public class MemoryService {
 
     private static final Logger log = LogManager.getLogger(MemoryService.class);
     private final JdbcChatMemoryRepository longChatMemoryRepository;
-    private final InMemoryChatMemoryRepository shortChatMemoryRepository;
     private final ChatMemory chatMemory;
 
     public static final String CONVERSATION_ID = "1";
 
     public MemoryService(JdbcChatMemoryRepository longChatMemoryRepository, ChatConfig config) {
         this.longChatMemoryRepository = longChatMemoryRepository;
-        this.shortChatMemoryRepository = new InMemoryChatMemoryRepository();
         this.chatMemory = MessageWindowChatMemory.builder()
-                .chatMemoryRepository(shortChatMemoryRepository)
+                .chatMemoryRepository(new InMemoryChatMemoryRepository())
                 .maxMessages(config.getShortMemorySize())
                 .build()
         ;
 
-        this.shortChatMemoryRepository.saveAll(CONVERSATION_ID, this.getLongMemories());
+        this.chatMemory.add(CONVERSATION_ID, this.getLongMemories());
         log.info("Memory service initialized");
-
     }
 
     public void addMemory(Message message) {
@@ -52,7 +49,7 @@ public class MemoryService {
         this.chatMemory.add(CONVERSATION_ID, memories);
     }
 
-    public List<Message> getMemories() {
+    public List<Message> getShortMemories() {
         return this.chatMemory.get(CONVERSATION_ID);
     }
 
@@ -63,11 +60,15 @@ public class MemoryService {
     @PreDestroy
     private void saveAll() {
         log.info("Saving all memories");
-        //Get all long memories
+        // Get all long memories
         List<Message> longMemories = this.getLongMemories();
-        //Add new from short memory
-        longMemories.addAll(getMemories());
-        //Update long memories
+        //Get and check short memories
+        for (Message shortMemory : this.getShortMemories()) {
+            if (!longMemories.contains(shortMemory)) {
+                longMemories.add(shortMemory);
+            }
+        }
+        // Update long memories
         this.longChatMemoryRepository.saveAll(CONVERSATION_ID, longMemories);
     }
 

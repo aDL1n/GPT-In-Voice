@@ -1,7 +1,6 @@
 package dev.adlin.speech.synthesis;
 
 import dev.adlin.config.SpeechSynthesisConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -12,7 +11,7 @@ public abstract class SpeechSynthesisAbstract implements SpeechSynthesis {
 
     public SpeechSynthesisAbstract(SpeechSynthesisConfig config, String name) {
         baseUrl = config.getUrl();
-        this.name = name;
+        this.name = name.toLowerCase();
     }
 
     @Override

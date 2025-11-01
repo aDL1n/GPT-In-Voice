@@ -19,11 +19,11 @@ public class MemoryController {
 
     @GetMapping("/all")
     public ResponseEntity<List<Message>> getChatMemory() {
-        return ResponseEntity.ok(this.memoryService.getMemories());
+        return ResponseEntity.ok(this.memoryService.getShortMemories());
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> addMemory(@RequestBody String messageType, String messageText) {
+    public ResponseEntity<Void> addMemory(@RequestBody String messageType,@RequestBody String messageText) {
         try {
             MessageType messageTypeEnum = MessageType.valueOf(messageType);
 

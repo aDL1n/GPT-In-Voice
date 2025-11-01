@@ -20,7 +20,7 @@ function Chat() {
   const conversationRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const inputBg = useColorModeValue("gray.600", "#2A2438");
+  const inputBg = useColorModeValue("gray.600", "gray.800");
 
   const handleMessageUpdate = (data: MemoryData[]) => {
     setMessages(data.map((memory) => ({
@@ -58,7 +58,7 @@ function Chat() {
     let answerMessage: MessageData;
 
     try {
-      const response = await apiClient.ask(userMessage, 'aDL1n_');
+      const response = await apiClient.ask(userMessage, 'aDL1n');
 
       answerMessage = {
         text: response,

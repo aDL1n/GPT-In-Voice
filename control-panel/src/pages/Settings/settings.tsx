@@ -1,20 +1,40 @@
 import { SettingsClient } from "@/utils/settingsClient";
-import { Button, Container, Field, Flex, Heading, Portal, Select, Separator, Switch, Textarea } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import {
+    Container,
+    Field,
+    Flex,
+    Heading,
+    type ListCollection,
+    Portal,
+    Select,
+    Separator,
+    Switch,
+    Textarea,
+} from "@chakra-ui/react";
+import {useEffect,useState} from "react";
+import {ModelClient} from "@/utils/modelClient.tsx";
 
 function Models() {
     const settingsClient = new SettingsClient();
+    const modelClient = new ModelClient();
 
-    const [recognitionModels, setRecognitionModels] = useState<string[]>([]);
-    const [synthsisModels, setSynthesisModels] = useState<string[]>([]);
+    const [recognitionModels, setRecognitionModels] = useState<ListCollection<{ label: string; value: string }>>();
+    const [synthesisModels, setSynthesisModels] = useState<ListCollection<{ label: string; value: string }>>();
+    const [systemPrompt, setSystemPrompt] = useState<string>();
 
     useEffect(() => {
-        setRecognitionModels(settingsClient.getRecognitionModels());
-        
-        settingsClient.getSynthesisModels().then((data) => {
+        settingsClient.getRecognitionModels().then(data => {
+            setRecognitionModels(data);
+        });
+
+        settingsClient.getSynthesisModels().then(data => {
             setSynthesisModels(data);
         });
-    }, []) 
+
+        modelClient.getSystemPrompt().then((data) => {
+           setSystemPrompt(data);
+        });
+    }, [])
 
     return (
         <>
@@ -44,38 +64,46 @@ function Models() {
                             </Heading>
                             <Switch.Root
                                 defaultChecked
+                                onCheckedChange={(e) => settingsClient.enableSynthesisModel(e.checked)}
                             >
-                                <Switch.HiddenInput />
+                                <Switch.HiddenInput/>
                                 <Switch.Label>Enable TTS</Switch.Label>
                                 <Switch.Control>
                                     <Switch.Thumb />
                                 </Switch.Control>
                                 <Switch.Label />
                             </Switch.Root>
-
-                            <Select.Root
-                                size="sm"
-                                width="220px"
-                            >
-                                <Select.HiddenSelect />
-                                <Select.Label>Select TTS model</Select.Label>
-                                <Select.Control>
-                                    <Select.Trigger>
-                                        <Select.ValueText />
-                                    </Select.Trigger>
-                                    <Select.IndicatorGroup>
-                                        <Select.Indicator />
-                                    </Select.IndicatorGroup>
-                                </Select.Control>
-                                <Portal>
-                                    <Select.Positioner>
-                                        <Select.Content>
-
-                                        </Select.Content>
-                                    </Select.Positioner>
-                                </Portal>
-                            </Select.Root>
-
+                            {synthesisModels && (
+                                <Select.Root
+                                    collection={synthesisModels?.copy()}
+                                    size="sm"
+                                    width="220px"
+                                    defaultValue={["piper"]}
+                                    onValueChange={(e) => console.log(e.value)}
+                                >
+                                    <Select.HiddenSelect />
+                                    <Select.Label>Selected TTS model</Select.Label>
+                                    <Select.Control>
+                                        <Select.Trigger>
+                                            <Select.ValueText />
+                                        </Select.Trigger>
+                                        <Select.IndicatorGroup>
+                                            <Select.Indicator />
+                                        </Select.IndicatorGroup>
+                                    </Select.Control>
+                                    <Portal>
+                                        <Select.Positioner>
+                                            <Select.Content>
+                                                {synthesisModels.items.map((model) => (
+                                                    <Select.Item item={model} key={model.value}>
+                                                        {model.label}
+                                                    </Select.Item>
+                                                ))}
+                                            </Select.Content>
+                                        </Select.Positioner>
+                                    </Portal>
+                                </Select.Root>
+                            )}
                         </Container>
 
                         <Separator
@@ -92,7 +120,7 @@ function Models() {
                             <Heading textAlign="center" size="2xl">
                                 STT
                             </Heading>
-                            <Switch.Root defaultChecked >
+                            <Switch.Root defaultChecked onCheckedChange={(e) => settingsClient.enableRecognitionModel(e.checked)} >
                                 <Switch.HiddenInput />
                                 <Switch.Label>Enable STT</Switch.Label>
                                 <Switch.Control>
@@ -101,28 +129,37 @@ function Models() {
                                 <Switch.Label />
                             </Switch.Root>
 
-                            <Select.Root
-                                size="sm"
-                                width="220px"
-                            >
-                                <Select.HiddenSelect />
-                                <Select.Label>Select STT model</Select.Label>
-                                <Select.Control>
-                                    <Select.Trigger>
-                                        <Select.ValueText />
-                                    </Select.Trigger>
-                                    <Select.IndicatorGroup>
-                                        <Select.Indicator />
-                                    </Select.IndicatorGroup>
-                                </Select.Control>
-                                <Portal>
-                                    <Select.Positioner>
-                                        <Select.Content>
-
-                                        </Select.Content>
-                                    </Select.Positioner>
-                                </Portal>
-                            </Select.Root>
+                            {recognitionModels && (
+                                <Select.Root
+                                    collection={recognitionModels?.copy()}
+                                    size="sm"
+                                    width="220px"
+                                    defaultValue={["whisper"]}
+                                    onValueChange={(e) => console.log(e.value)}
+                                >
+                                    <Select.HiddenSelect />
+                                    <Select.Label>Selected STT model</Select.Label>
+                                    <Select.Control>
+                                        <Select.Trigger>
+                                            <Select.ValueText />
+                                        </Select.Trigger>
+                                        <Select.IndicatorGroup>
+                                            <Select.Indicator />
+                                        </Select.IndicatorGroup>
+                                    </Select.Control>
+                                    <Portal>
+                                        <Select.Positioner>
+                                            <Select.Content>
+                                                {recognitionModels.items.map((model) => (
+                                                    <Select.Item item={model} key={model.value}>
+                                                        {model.label}
+                                                    </Select.Item>
+                                                ))}
+                                            </Select.Content>
+                                        </Select.Positioner>
+                                    </Portal>
+                                </Select.Root>
+                            )}
                         </Container>
                     </Flex>
                 </Container>
@@ -143,13 +180,15 @@ function Models() {
                                 <Field.Label>
                                     Start system prompt
                                 </Field.Label>
-                                <Textarea 
-                                    autoresize 
-                                    placeholder="prompt..." 
-                                    variant="outline" 
+                                <Textarea
+                                    autoresize
+                                    placeholder="prompt..."
+                                    variant="outline"
                                     borderColor="gray.700"
+                                    value={systemPrompt}
+                                    disabled
                                 />
-                                <Button type="submit">Submit</Button>
+                                {/*<Button type="submit">Submit</Button>*/}
                             </Field.Root>
                         </Container>
                     </Flex>

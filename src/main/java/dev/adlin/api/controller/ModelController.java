@@ -21,15 +21,20 @@ public class ModelController {
         return ResponseEntity.ok(this.modelService.ask(new UserMessage(username + ": " + message)).getText());
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<String> getModelName() {
         return new ResponseEntity<>(this.modelService.getModelName().orElse("Model not loaded"), HttpStatus.OK);
     }
 
     @PostMapping("/changeSystemPrompt")
     public ResponseEntity<String> changeSystemPrompt(@RequestParam String newSystemPrompt) {
-        this.modelService.changeStartMessage(newSystemPrompt);
+        this.modelService.changeSystemMessage(newSystemPrompt);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/systemPrompt")
+    public ResponseEntity<String> getSystemPrompt() {
+        return ResponseEntity.ok(this.modelService.getSystemMessage().getText());
     }
 
 }

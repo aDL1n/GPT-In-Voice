@@ -5,6 +5,7 @@
       <w>gtts</w>
       <w>hnsw</w>
       <w>vectorstore</w>
+      <w>промпт</w>
     </words>
   </dictionary>
 </component>

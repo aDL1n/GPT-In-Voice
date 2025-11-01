@@ -1,6 +1,8 @@
 package dev.adlin.api.controller;
 
 import dev.adlin.manager.ModelsManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/settings")
 public class SettingsController {
 
+    private static final Logger log = LogManager.getLogger(SettingsController.class);
     private final ModelsManager modelsManager;
 
     public SettingsController(ModelsManager modelsManager) {
@@ -19,14 +22,16 @@ public class SettingsController {
     }
 
     @PostMapping("/stt/enable")
-    public ResponseEntity<Void> enableRecognitionModel(@RequestParam boolean enable) {
+    public ResponseEntity<Void> enableRecognitionModel(@RequestBody boolean enable) {
         this.modelsManager.getRecognitionModelState().setEnabled(enable);
+        log.info("Setting recognition model enable={}", enable);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/tts/enable")
-    public ResponseEntity<Void> enableSynthesisModel(@RequestParam boolean enable) {
+    public ResponseEntity<Void> enableSynthesisModel(@RequestBody boolean enable) {
         this.modelsManager.getSynthesisModelState().setEnabled(enable);
+        log.info("Setting synthesis model enable={}", enable);
         return ResponseEntity.ok().build();
     }
 
@@ -41,7 +46,7 @@ public class SettingsController {
     }
 
     @PostMapping("/stt/change")
-    public ResponseEntity<Void> changeRecognitionModel(@RequestParam String modelName) {
+    public ResponseEntity<Void> changeRecognitionModel(@RequestBody String modelName) {
         try {
             this.modelsManager.setCurrentRecognitionModel(modelName);
             return ResponseEntity.ok().build();
@@ -51,7 +56,7 @@ public class SettingsController {
     }
 
     @PostMapping("/tts/change")
-    public ResponseEntity<Void> changeSynthesisModel(@RequestParam String modelName) {
+    public ResponseEntity<Void> changeSynthesisModel(@RequestBody String modelName) {
         try {
             this.modelsManager.setCurrentSynthesisModel(modelName);
             return ResponseEntity.ok().build();

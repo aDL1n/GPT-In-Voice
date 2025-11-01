@@ -2,6 +2,7 @@ package dev.adlin.api.listener;
 
 import dev.adlin.api.state.ApiState;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class AppStatusListener {
     }
 
     @EventListener()
-    private void onApplicationShuttingDown(ContextRefreshedEvent event) {
+    private void onApplicationShuttingDown(ContextStoppedEvent event) {
         this.state.setApiStatus(ApiState.Status.SHUTDOWN);
     }
 }
