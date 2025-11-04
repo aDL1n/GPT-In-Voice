@@ -1,6 +1,5 @@
 package dev.adlin.discord.audio;
 
-import dev.adlin.discord.VoiceUserState;
 import dev.adlin.discord.listener.AudioBufferListener;
 import jakarta.annotation.PreDestroy;
 import net.dv8tion.jda.api.entities.User;
@@ -10,45 +9,42 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @Component
 public class AudioBufferManager {
 
     private static final Logger log = LogManager.getLogger(AudioBufferManager.class);
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
-            Math.max(2, Runtime.getRuntime().availableProcessors() / 2));
-    private final ConcurrentHashMap<User, VoiceUserState> users = new ConcurrentHashMap<>();
-
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ConcurrentHashMap<User, UserAudioBuffer> userBuffers = new ConcurrentHashMap<>();
     private AudioBufferListener bufferListener;
 
     private static final double VOLUME_THRESHOLD = 0.017;
     private static final long SILENCE_DELAY_MS = 2000;
 
-
-    public AudioBufferManager() {}
-
     public void processAudioPerUser(User user, byte[] data, double volume) {
         if (user == null || data == null || data.length == 0) return;
 
-        VoiceUserState voiceUserState = users.computeIfAbsent(user, VoiceUserState::new);
+        UserAudioBuffer buffer = userBuffers.computeIfAbsent(user, UserAudioBuffer::new);
 
-        synchronized (voiceUserState.getLock()) {
+        synchronized (buffer) {
             if (volume > VOLUME_THRESHOLD) {
-                voiceUserState.setLastSoundTime(System.currentTimeMillis());
-                if (!voiceUserState.isRecording()) voiceUserState.setRecording(true);
-                cancelPendingTask(voiceUserState);
+                buffer.lastSoundTime = System.currentTimeMillis();
+                if (!buffer.recording) buffer.recording = true;
+
+                cancelTask(buffer);
             }
 
-            if (voiceUserState.isRecording()) {
-                writeToBuffer(voiceUserState.getBuffer(), data);
+            if (buffer.recording) {
+                writeToBuffer(buffer.data, data);
 
-                if (volume <= VOLUME_THRESHOLD && voiceUserState.getPendingTask() == null)
-                    scheduleSendTask(voiceUserState);
+                if (volume <= VOLUME_THRESHOLD && buffer.pendingTask == null)
+                    buffer.pendingTask = scheduler.schedule(() -> {
+                        if (buffer.recording
+                                && System.currentTimeMillis() - buffer.lastSoundTime >= SILENCE_DELAY_MS
+                        ) flushBuffer(buffer);
+                    }, SILENCE_DELAY_MS, TimeUnit.MILLISECONDS);
             }
         }
     }
@@ -61,57 +57,50 @@ public class AudioBufferManager {
         }
     }
 
-    private void cancelPendingTask(VoiceUserState voiceUserState) {
-        if (voiceUserState.getPendingTask() != null) {
-            voiceUserState.getPendingTask().cancel(false);
-            voiceUserState.setPendingTask(null);
+    private void cancelTask(UserAudioBuffer buffer) {
+        if (buffer.pendingTask != null) {
+            buffer.pendingTask.cancel(false);
+            buffer.pendingTask = null;
         }
     }
 
-    private void scheduleSendTask(VoiceUserState voiceUserState) {
-        voiceUserState.setPendingTask(
-                scheduler.schedule(() -> {
-                    synchronized (voiceUserState.getLock()) {
-                        if (voiceUserState.isRecording() && System.currentTimeMillis() - voiceUserState.getLastSoundTime() >= SILENCE_DELAY_MS) {
-                            flushBuffer(voiceUserState);
-                        }
-                    }
-                }, SILENCE_DELAY_MS, TimeUnit.MILLISECONDS)
-        );
-    }
-
-    private void flushBuffer(VoiceUserState voiceUserState) {
-        if (voiceUserState.getBuffer().size() > 0) {
-            byte[] audioData = voiceUserState.getBuffer().toByteArray();
+    private void flushBuffer(UserAudioBuffer buffer) {
+        if (buffer.data.size() > 0) {
+            byte[] audioData = buffer.data.toByteArray();
 
             scheduler.execute(() -> {
                 if (bufferListener != null) {
-                    bufferListener.onBufferReady(voiceUserState.getUser(), audioData);
+                    bufferListener.onBufferReady(buffer.user, audioData);
                     log.info("Buffer is ready");
                 }
             });
 
-            voiceUserState.getBuffer().reset();
+            buffer.data.reset();
         }
 
-        voiceUserState.setRecording(false);
-        cancelPendingTask(voiceUserState);
+        buffer.recording = false;
+        cancelTask(buffer);
     }
 
     @PreDestroy
     public void shutdown() {
         log.info("Shutting down AudioBufferManager");
         scheduler.shutdown();
-
-        try {
-            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS))
-                scheduler.shutdownNow();
-        } catch (InterruptedException e) {
-            scheduler.shutdownNow();
-        }
     }
 
     public void setBufferListener(AudioBufferListener listener) {
         this.bufferListener = listener;
+    }
+
+    private static class UserAudioBuffer {
+        final User user;
+        final ByteArrayOutputStream data = new ByteArrayOutputStream();
+        boolean recording;
+        long lastSoundTime;
+        ScheduledFuture<?> pendingTask;
+
+        UserAudioBuffer(User user) {
+            this.user = user;
+        }
     }
 }
