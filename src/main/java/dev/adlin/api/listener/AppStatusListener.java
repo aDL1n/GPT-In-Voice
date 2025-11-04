@@ -17,11 +17,11 @@ public class AppStatusListener {
 
     @EventListener()
     private void onApplicationLoaded(ContextRefreshedEvent event) {
-        this.state.setApiStatus(ApiState.Status.RUNNING);
+        this.state.setStatus(ApiState.Status.RUNNING);
     }
 
     @EventListener()
     private void onApplicationShuttingDown(ContextStoppedEvent event) {
-        this.state.setApiStatus(ApiState.Status.SHUTDOWN);
+        this.state.setStatus(ApiState.Status.SHUTDOWN);
     }
 }

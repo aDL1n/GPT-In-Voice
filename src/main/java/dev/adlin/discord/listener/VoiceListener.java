@@ -15,8 +15,7 @@ public class VoiceListener extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
-        if (consumer == null) return;
-        consumer.accept(event);
+        if (consumer != null) consumer.accept(event);
     }
 
     public void setConsumer(Consumer<GuildVoiceUpdateEvent> consumer) {

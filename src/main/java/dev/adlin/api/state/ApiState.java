@@ -12,11 +12,11 @@ public class ApiState {
 
     private Status currentStatus = Status.LOADING;
 
-    public Status getApiStatus() {
+    public Status getStatus() {
         return this.currentStatus;
     }
 
-    public void setApiStatus(Status apiStatus) {
+    public void setStatus(Status apiStatus) {
         this.currentStatus = apiStatus;
     }
 }

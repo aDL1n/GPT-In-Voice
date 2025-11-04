@@ -1,5 +1,6 @@
 package dev.adlin.api.controller;
 
+import dev.adlin.config.ChatConfig;
 import dev.adlin.service.MemoryService;
 import org.springframework.ai.chat.messages.*;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,11 @@ import java.util.List;
 public class MemoryController {
 
     private final MemoryService memoryService;
+    private final ChatConfig chatConfig;
 
-    public MemoryController(MemoryService memoryService) {
+    public MemoryController(MemoryService memoryService, ChatConfig chatConfig) {
         this.memoryService = memoryService;
+        this.chatConfig = chatConfig;
     }
 
     @GetMapping("/all")
@@ -30,7 +33,7 @@ public class MemoryController {
             Message message = null;
             switch (messageTypeEnum) {
                 case ASSISTANT -> message = new AssistantMessage(messageText);
-                case USER -> message = new UserMessage("aDL1n: " + messageText);
+                case USER -> message = new UserMessage(chatConfig.getOwnerName() + messageText);
                 case SYSTEM -> message = new SystemMessage(messageText);
             }
 
