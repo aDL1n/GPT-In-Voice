@@ -37,16 +37,19 @@ public class SettingsController {
 
     @GetMapping("/stt/list")
     public ResponseEntity<List<String>> getRecognitionModels() {
+        log.info("REST request to get list of recognition models");
         return new ResponseEntity<>(this.modelsManager.getRecognitionModelNames(), HttpStatus.OK);
     }
 
     @GetMapping("/tts/list")
     public ResponseEntity<List<String>> getSynthesisModels() {
+        log.info("REST request to get list of synthesis models");
         return new ResponseEntity<>(this.modelsManager.getSynthesisModelNames(), HttpStatus.OK);
     }
 
     @PostMapping("/stt/change")
     public ResponseEntity<Void> changeRecognitionModel(@RequestBody String modelName) {
+        log.info("REST request to change recognition model name");
         try {
             this.modelsManager.setCurrentRecognitionModel(modelName);
             return ResponseEntity.ok().build();
@@ -57,6 +60,7 @@ public class SettingsController {
 
     @PostMapping("/tts/change")
     public ResponseEntity<Void> changeSynthesisModel(@RequestBody String modelName) {
+        log.info("REST request to change synthesis model name");
         try {
             this.modelsManager.setCurrentSynthesisModel(modelName);
             return ResponseEntity.ok().build();

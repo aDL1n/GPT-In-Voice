@@ -93,11 +93,6 @@ public class ModelService {
         return assistantMessage;
     }
 
-    public SystemMessage changeSystemMessage(String newMessage) {
-        log.info("Start system message changed");
-        return this.systemMessage = new SystemMessage(newMessage);
-    }
-
     public SystemMessage getSystemMessage() {
         return this.systemMessage;
     }

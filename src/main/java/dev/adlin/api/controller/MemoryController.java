@@ -2,6 +2,8 @@ package dev.adlin.api.controller;
 
 import dev.adlin.config.ChatConfig;
 import dev.adlin.service.MemoryService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.messages.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import java.util.List;
 @RequestMapping("/api/memory")
 public class MemoryController {
 
+    private static final Logger log = LogManager.getLogger(MemoryController.class);
     private final MemoryService memoryService;
     private final ChatConfig chatConfig;
 
@@ -22,11 +25,13 @@ public class MemoryController {
 
     @GetMapping("/all")
     public ResponseEntity<List<Message>> getChatMemory() {
+        log.info("REST request to get all chat memory");
         return ResponseEntity.ok(this.memoryService.getShortMemories());
     }
 
     @PostMapping("/add")
     public ResponseEntity<Void> addMemory(@RequestBody String messageType,@RequestBody String messageText) {
+        log.info("REST request to save memory message");
         try {
             MessageType messageTypeEnum = MessageType.valueOf(messageType);
 
@@ -48,6 +53,7 @@ public class MemoryController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> deleteMemory(@RequestBody int messageIndex) {
+        log.info("REST request to delete memory message");
         this.memoryService.removeMemory(messageIndex);
         return ResponseEntity.ok().build();
     }
