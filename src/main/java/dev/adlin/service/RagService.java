@@ -46,7 +46,7 @@ public class RagService {
         return similarMemories.isEmpty() ? null : response.toString();
     }
 
-    public void write(ChatResponse chatResponse) {
+    public void add(ChatResponse chatResponse) {
         List<AssistantMessage> assistantMessages = chatResponse.getResults().stream().map(Generation::getOutput).toList();
 
         List<Document> toRagData = assistantMessages.stream()

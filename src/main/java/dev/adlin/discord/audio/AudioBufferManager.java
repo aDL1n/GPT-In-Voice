@@ -16,7 +16,7 @@ public class AudioBufferManager {
 
     private static final Logger log = LogManager.getLogger(AudioBufferManager.class);
 
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
     private final ConcurrentHashMap<User, UserAudioBuffer> userBuffers = new ConcurrentHashMap<>();
     private AudioBufferListener bufferListener;
 
@@ -53,7 +53,7 @@ public class AudioBufferManager {
         try {
             buffer.write(data);
         } catch (IOException e) {
-            log.error("Failed to write to buffer", e);
+            log.error("Failed to add to buffer", e);
         }
     }
 

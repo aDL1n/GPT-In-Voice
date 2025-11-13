@@ -22,7 +22,8 @@ public class ModelController {
     @GetMapping("/ask")
     public ResponseEntity<String> ask(@RequestParam String message, @RequestParam String username) {
         log.info("REST request to ask for memory message");
-        return ResponseEntity.ok(this.modelService.ask(new UserMessage(username + ": " + message)).getText());
+//        return ResponseEntity.ok(this.modelService.ask(new UserMessage(username + ": " + message)).getText());
+        return ResponseEntity.ok(message);
     }
 
     @GetMapping("")

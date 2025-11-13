@@ -6,7 +6,6 @@ import dev.adlin.discord.audio.AudioProvider;
 import dev.adlin.manager.ModelsManager;
 import dev.adlin.service.ModelService;
 import dev.adlin.speech.synthesis.SpeechSynthesis;
-import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -17,9 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ChatProducer {
@@ -46,55 +43,52 @@ public class ChatProducer {
         this.speechSynthesis = modelsManager.getSpeechSynthesisModel();
 
         audioBufferManager.setBufferListener((user, data) -> {
-            if (modelsManager.getRecognitionModelState().isEnabled())
+            if (modelsManager.getRecognitionModelState().isEnabled()) {
                 CompletableFuture.runAsync(() -> {
-                    String transcript = modelsManager.getSpeechRecognitionModel().transcriptAudio(data);
-                    translatedMessages.put(user.getName(), transcript);
+                    String transcript = modelsManager
+                            .getSpeechRecognitionModel()
+                            .transcriptAudio(data);
+
+                    if (transcript != null && !transcript.isBlank())
+                        translatedMessages.put(user.getName(), transcript);
                 });
+            }
         });
     }
 
     @Scheduled(fixedDelay = 2000)
     private void process() {
-            if (translatedMessages.isEmpty() && modelService.getProcessing().get()) return;
+        if (translatedMessages.isEmpty() && !modelService.getProcessing().get()) {
+            return;
+        }
 
-            if (translatedMessages.containsKey(chatConfig.getOwnerName())) {
-                Set<Map.Entry<String, String>> entrySet =  translatedMessages.entrySet();
-                Set<Map.Entry<String, String>> entryFiltered =  entrySet.stream()
-                        .filter(entry -> entry.getKey().equals(chatConfig.getOwnerName()))
-                        .collect(Collectors.toSet());
+        if (translatedMessages.containsKey(chatConfig.getOwnerName())) {
+            String text = translatedMessages.remove(chatConfig.getOwnerName());
+            processAnswer(new UserMessage(chatConfig.getOwnerName() + ": " + text));
+            return;
+        }
 
-                for (Map.Entry<String, String> entry : entryFiltered) {
-                    this.processAnswer(new UserMessage(chatConfig.getOwnerName() + ": " + entry.getValue()));
-                    entrySet.remove(entry);
-                }
-            } else if (translatedMessages.size() > 1) {
-                StringBuilder builder = new StringBuilder();
-                builder.append("Ответь на эти вопросы общими словами или проигнорируй\n");
+        if (translatedMessages.size() > 2) {
+            StringBuilder builder = new StringBuilder("Ответь на эти вопросы общими словами или проигнорируй:\n");
 
-                Set<Map.Entry<String, String>> entrySet = translatedMessages.entrySet();
-                int i = 1;
-                for (Map.Entry<String, String> entry : entrySet) {
-                    String username = entry.getKey();
-                    String transcript = entry.getValue();
-                    builder.append(i)
-                            .append(". ")
-                            .append(username)
-                            .append(": ")
-                            .append(transcript)
-                            .append("\n");
-                    entrySet.remove(entry);
-                    i++;
-                }
-
-                SystemMessage systemMessage = new SystemMessage(builder.toString());
-                processAnswer(systemMessage);
-
-            } else {
-                translatedMessages.forEach((username, transcript) ->
-                        processAnswer(new UserMessage(username + ": " + transcript)));
-                translatedMessages.clear();
+            int i = 1;
+            for (Map.Entry<String, String> entry : translatedMessages.entrySet()) {
+                builder.append(i++)
+                        .append(". ")
+                        .append(entry.getKey())
+                        .append(": ")
+                        .append(entry.getValue())
+                        .append("\n");
             }
+
+            translatedMessages.clear();
+            processAnswer(new SystemMessage(builder.toString()));
+            return;
+        }
+
+        translatedMessages.forEach((username, transcript) ->
+                processAnswer(new UserMessage(username + ": " + transcript)));
+        translatedMessages.clear();
     }
 
     private void processAnswer(Message message) {
