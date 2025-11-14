@@ -91,13 +91,18 @@ public class ChatProducer {
         translatedMessages.clear();
     }
 
-    private void processAnswer(Message message) {
+    public AssistantMessage processAnswer(Message message) {
+        log.info("Processing answer");
         AssistantMessage assistantMessage = this.modelService.ask(message);
 
-        if (modelsManager.getSynthesisModelState().isEnabled()) {
-            byte[] speech = speechSynthesis.speech(assistantMessage.getText());
-            audioProvider.addAudio(speech);
-        }
+        CompletableFuture.runAsync(() -> {
+            if (modelsManager.getSynthesisModelState().isEnabled()) {
+                byte[] speech = speechSynthesis.speech(assistantMessage.getText());
+                audioProvider.addAudio(speech);
+            }
+        });
+
+        return assistantMessage;
     }
 
 }

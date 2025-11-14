@@ -1,5 +1,6 @@
 package dev.adlin.api.controller;
 
+import dev.adlin.producer.ChatProducer;
 import dev.adlin.service.ModelService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,17 +14,22 @@ import org.springframework.web.bind.annotation.*;
 public class ModelController {
 
     private static final Logger log = LogManager.getLogger(ModelController.class);
+
+    private final ChatProducer chatProducer;
     private final ModelService modelService;
 
-    public ModelController(ModelService modelService) {
+    public ModelController(
+            ChatProducer chatProducer,
+            ModelService modelService
+    ) {
+        this.chatProducer = chatProducer;
         this.modelService = modelService;
     }
 
     @GetMapping("/ask")
     public ResponseEntity<String> ask(@RequestParam String message, @RequestParam String username) {
         log.info("REST request to ask for memory message");
-//        return ResponseEntity.ok(this.modelService.ask(new UserMessage(username + ": " + message)).getText());
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(this.chatProducer.processAnswer(new UserMessage(username + ": " + message)).getText());
     }
 
     @GetMapping("")

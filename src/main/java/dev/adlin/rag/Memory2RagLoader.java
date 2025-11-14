@@ -2,14 +2,12 @@ package dev.adlin.rag;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -19,11 +17,9 @@ public class Memory2RagLoader {
     private static final Logger log = LogManager.getLogger(Memory2RagLoader.class);
 
     private final VectorStore vectorStore;
-    private final ChatMemoryRepository chatMemoryRepository;
 
-    public Memory2RagLoader(VectorStore vectorStore, ChatMemoryRepository chatMemoryRepository) {
+    public Memory2RagLoader(VectorStore vectorStore) {
         this.vectorStore = vectorStore;
-        this.chatMemoryRepository = chatMemoryRepository;
     }
 
     public void add(Message... messages) {
