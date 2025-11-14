@@ -29,22 +29,26 @@ spring:
         repository:
           jdbc:
             initialize-schema: always
+app:
+  discord:
+    token: ${DISCORD_TOKEN}
+    guildId: ${GUILD_ID}
 
-discord:
-  token: ${DISCORD_TOKEN}
-  guildId: ${GUILD_ID}
+  speech:
+    recognition:
+      url: http://localhost:5000
+      default-model: "whisper"
+    synthesis:
+      url: http://localhost:5002
+      default-model: "piper"
 
-speech:
-  recognition:
-    url: http://localhost:5000
-    default-model: "whisper"
-  synthesis:
-    url: http://localhost:5002
-    default-model: "piper"
+  web:
+    allowed-frontend-origin: "http://localhost:5173"
 
-web:
-  allowed-frontend-origin: "http://localhost:5173"
+  chat:
+    owner-name: "aDL1n"
+    short-memory-size: 40
 
-chat:
-  owner-name: "aDL1n"
-  short-memory-size: 40
+  rag:
+    top-k: 5
+    similarity-threshold: 0.8

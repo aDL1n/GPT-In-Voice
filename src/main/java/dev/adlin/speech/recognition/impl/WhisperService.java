@@ -2,7 +2,7 @@ package dev.adlin.speech.recognition.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.adlin.config.SpeechRecognitionConfig;
+import dev.adlin.config.properties.SpeechRecognitionConfig;
 import dev.adlin.speech.recognition.SpeechRecognitionAbstract;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

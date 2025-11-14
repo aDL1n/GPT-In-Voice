@@ -1,18 +1,13 @@
-package dev.adlin.config;
+package dev.adlin.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties("speech.recognition")
-public class SpeechRecognitionConfig {
-    private String url;
-    private String defaultModel;
-
-    SpeechRecognitionConfig() {
-        this.url = "http://localhost:5000";
-        this.defaultModel = "whisper";
-    }
+@ConfigurationProperties("app.speech.synthesis")
+public class SpeechSynthesisConfig {
+    private String url = "http://localhost:5002";
+    private String defaultModel = "piper";
 
     public String getUrl() {
         return url;

@@ -1,6 +1,6 @@
 package dev.adlin.service;
 
-import dev.adlin.config.ChatConfig;
+import dev.adlin.config.properties.ChatConfig;
 import jakarta.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

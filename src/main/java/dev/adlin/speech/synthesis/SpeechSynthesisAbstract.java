@@ -1,6 +1,6 @@
 package dev.adlin.speech.synthesis;
 
-import dev.adlin.config.SpeechSynthesisConfig;
+import dev.adlin.config.properties.SpeechSynthesisConfig;
 
 import java.util.concurrent.CompletableFuture;
 

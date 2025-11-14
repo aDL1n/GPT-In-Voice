@@ -1,5 +1,6 @@
 package dev.adlin.service;
 
+import dev.adlin.config.properties.RagConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -16,9 +17,12 @@ import java.util.List;
 public class RagService {
 
     private static final Logger log = LogManager.getLogger(RagService.class);
+
+    private final RagConfig ragConfig;
     private final VectorStore vectorStore;
 
-    public RagService(VectorStore vectorStore) {
+    public RagService(RagConfig ragConfig, VectorStore vectorStore) {
+        this.ragConfig = ragConfig;
         this.vectorStore = vectorStore;
         log.info("RAG service initialized");
     }

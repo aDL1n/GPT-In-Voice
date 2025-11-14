@@ -2,7 +2,7 @@ package dev.adlin.speech.synthesis.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.adlin.config.SpeechSynthesisConfig;
+import dev.adlin.config.properties.SpeechSynthesisConfig;
 import dev.adlin.speech.synthesis.SpeechSynthesisAbstract;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

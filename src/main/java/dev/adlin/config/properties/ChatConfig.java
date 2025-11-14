@@ -1,17 +1,13 @@
-package dev.adlin.config;
+package dev.adlin.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties("chat")
+@ConfigurationProperties("app.chat")
 public class ChatConfig {
-    private String ownerName;
-    private int shortMemorySize;
-
-    ChatConfig() {
-        this.shortMemorySize = 30;
-    }
+    private String ownerName = "aDL1n";
+    private int shortMemorySize = 30;
 
     public String getOwnerName() {
         return ownerName;

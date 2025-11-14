@@ -2,8 +2,8 @@ package dev.adlin.manager;
 
 import dev.adlin.api.state.RecognitionModelState;
 import dev.adlin.api.state.SynthesisModelState;
-import dev.adlin.config.SpeechRecognitionConfig;
-import dev.adlin.config.SpeechSynthesisConfig;
+import dev.adlin.config.properties.SpeechRecognitionConfig;
+import dev.adlin.config.properties.SpeechSynthesisConfig;
 import dev.adlin.speech.recognition.SpeechRecognition;
 import dev.adlin.speech.synthesis.SpeechSynthesis;
 import org.apache.logging.log4j.LogManager;

@@ -1,10 +1,10 @@
-package dev.adlin.config;
+package dev.adlin.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties("discord")
+@ConfigurationProperties("app.discord")
 public class DiscordConfig {
     private String token;
     private String guildId;

@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${web.allowed-frontend-origin}")
+    @Value("${app.web.allowed-frontend-origin}")
     private String allowedFrontendOrigin;
 
     @Override

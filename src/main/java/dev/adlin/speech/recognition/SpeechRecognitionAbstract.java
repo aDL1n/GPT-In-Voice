@@ -1,6 +1,6 @@
 package dev.adlin.speech.recognition;
 
-import dev.adlin.config.SpeechRecognitionConfig;
+import dev.adlin.config.properties.SpeechRecognitionConfig;
 
 import java.util.concurrent.CompletableFuture;
 

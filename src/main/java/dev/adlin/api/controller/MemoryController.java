@@ -1,6 +1,6 @@
 package dev.adlin.api.controller;
 
-import dev.adlin.config.ChatConfig;
+import dev.adlin.config.properties.ChatConfig;
 import dev.adlin.service.MemoryService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,6 +1,6 @@
 package dev.adlin.producer;
 
-import dev.adlin.config.ChatConfig;
+import dev.adlin.config.properties.ChatConfig;
 import dev.adlin.discord.audio.AudioBufferManager;
 import dev.adlin.discord.audio.AudioProvider;
 import dev.adlin.manager.ModelsManager;

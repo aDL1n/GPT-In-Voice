@@ -1,6 +1,6 @@
 package dev.adlin.discord;
 
-import dev.adlin.config.DiscordConfig;
+import dev.adlin.config.properties.DiscordConfig;
 import dev.adlin.discord.command.JoinCommand;
 import dev.adlin.discord.command.LeaveCommand;
 import dev.adlin.discord.handler.VoiceReceiveHandler;
@@ -9,13 +9,10 @@ import dev.adlin.discord.listener.VoiceListener;
 import dev.adlin.service.ModelService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -25,10 +22,8 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class DiscordBot {
