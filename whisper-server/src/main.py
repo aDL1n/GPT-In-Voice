@@ -16,7 +16,8 @@ DISCORD_SR = 48000
 TARGET_SR = 16000
 BYTES_PER_FRAME = int(DISCORD_SR * 0.02 * 2 * 2)  # 20ms, 2 channels, 2 bytes
 
-model = WhisperModel("small", compute_type="float32")
+# model = WhisperModel("small", compute_type="float32")
+model = WhisperModel("dvislobokov/faster-whisper-large-v3-turbo-russian", compute_type="float16")
 
 tasks: Dict[str, Dict] = {}  # request_id: {"status": "pending/done", "text": ...}
 

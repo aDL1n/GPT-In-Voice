@@ -47,6 +47,7 @@ public class DiscordBot {
         this.modelService = modelService;
         this.receiveHandler = receiveHandler;
         this.sendingHandler = sendingHandler;
+
         this.jda = JDABuilder.create(
                 discordConfig.getToken(),
                 EnumSet.of(
@@ -96,6 +97,24 @@ public class DiscordBot {
                 });
             })
         );
+
+        this.voiceListener.OnUserJoin(event -> {
+            CompletableFuture.runAsync(() -> {
+               SystemMessage message = new SystemMessage(
+                       "Пользователь %s присоединился к голосовому чату. Поприветствуй его"
+                       .formatted(event.getEntity().getEffectiveName())
+               );
+               this.modelService.ask(message);
+            });
+        });
+
+        this.voiceListener.OnUserLeave(event -> {
+            SystemMessage message = new SystemMessage(
+                    "Пользователь %s покинул голосовой чат"
+                            .formatted(event.getEntity().getEffectiveName())
+            );
+            this.modelService.ask(message);
+        });
 
         commandManager.registerCommands();
 

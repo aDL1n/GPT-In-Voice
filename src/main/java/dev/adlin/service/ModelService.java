@@ -89,7 +89,10 @@ public class ModelService {
         AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
         this.memoryService.addMemory(assistantMessage);
 
-        System.out.println("AI: " + chatResponse.getResults().stream().map(gen -> gen.getOutput().getText()).collect(Collectors.joining("\n")));
+        System.out.println("AI: " + chatResponse.getResults().stream()
+                .map(gen ->
+                        gen.getOutput().getText())
+                .collect(Collectors.joining("\n")));
 
         log.info("Model response received");
 
