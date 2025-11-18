@@ -4,6 +4,7 @@ import dev.adlin.config.properties.RagConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.document.Document;
@@ -11,6 +12,8 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
+import javax.print.Doc;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -50,14 +53,26 @@ public class RagService {
         return similarMemories.isEmpty() ? null : response.toString();
     }
 
-    public void add(ChatResponse chatResponse) {
-        List<AssistantMessage> assistantMessages = chatResponse.getResults().stream().map(Generation::getOutput).toList();
+    public void addMessages(Message... messages) {
+        if (messages == null || messages.length == 0) return;
 
-        List<Document> toRagData = assistantMessages.stream()
-                .filter(message -> message.getText().isBlank())
+        List<Document> radData = Arrays.stream(messages)
+                .filter(message -> message != null)
+                .filter(message -> !message.getText().isBlank())
                 .map(message -> new Document(message.getText(), message.getMetadata()))
                 .toList();
 
-        this.vectorStore.add(toRagData);
+        if (!radData.isEmpty()) this.vectorStore.add(radData);
+    }
+
+    public void addChatResponse(ChatResponse chatResponse) {
+        List<AssistantMessage> assistantMessages = chatResponse.getResults().stream().map(Generation::getOutput).toList();
+
+        List<Document> ragData = assistantMessages.stream()
+                .filter(message -> !message.getText().isBlank())
+                .map(message -> new Document(message.getText(), message.getMetadata()))
+                .toList();
+
+        if (!ragData.isEmpty()) this.vectorStore.add(ragData);
     }
 }

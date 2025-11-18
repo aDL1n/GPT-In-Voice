@@ -26,7 +26,6 @@ public class ChatProducer {
 
     private final AudioProvider audioProvider;
     private final ModelService modelService;
-    private final SpeechSynthesis speechSynthesis;
     private final ChatConfig chatConfig;
     private final ModelsManager modelsManager;
 
@@ -39,8 +38,6 @@ public class ChatProducer {
         this.modelService = modelService;
         this.modelsManager = modelsManager;
         this.chatConfig = chatConfig;
-
-        this.speechSynthesis = modelsManager.getSpeechSynthesisModel();
 
         audioBufferManager.setBufferListener((user, data) -> {
             if (modelsManager.getRecognitionModelState().isEnabled()) {
@@ -69,7 +66,7 @@ public class ChatProducer {
         }
 
         if (translatedMessages.size() > 2) {
-            StringBuilder builder = new StringBuilder("Ответь на эти вопросы общими словами или проигнорируй:\n");
+            StringBuilder builder = new StringBuilder("Ответь на эти сообщения общими словами или проигнорируй:\n");
 
             int i = 1;
             for (Map.Entry<String, String> entry : translatedMessages.entrySet()) {
@@ -97,7 +94,7 @@ public class ChatProducer {
 
         CompletableFuture.runAsync(() -> {
             if (modelsManager.getSynthesisModelState().isEnabled()) {
-                byte[] speech = speechSynthesis.speech(assistantMessage.getText());
+                byte[] speech = modelsManager.getSpeechSynthesisModel().speech(assistantMessage.getText());
                 audioProvider.addAudio(speech);
             }
         });

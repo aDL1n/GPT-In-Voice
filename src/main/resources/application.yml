@@ -52,3 +52,9 @@ app:
   rag:
     top-k: 5
     similarity-threshold: 0.8
+  attention:
+    mentions:
+      - GPT
+      - Бот
+      - Валера
+    mention-only: false

@@ -19,20 +19,17 @@ public class SystemPromptLoader {
 
     private static final Logger log = LogManager.getLogger(SystemPromptLoader.class);
 
-    public Optional<Message> load() {
+    public Message load() {
         log.info("Loading start prompt...");
         Path startPromptPath = Paths.get("src/main/resources/startPrompt.txt");
 
         try (Stream<String> lines = Files.lines(startPromptPath)) {
             log.info("Start prompt loaded successfully");
-            return Optional.of(
-                    new SystemMessage(
-                            lines.collect(Collectors.joining("\n"))
-                    )
+            return new SystemMessage(lines.collect(Collectors.joining("\n"))
+
             );
         } catch (IOException e) {
-            log.error("Unable to read file startPrompt.txt");
-            return Optional.empty();
+            throw new RuntimeException("Unable to read file startPrompt.txt " + e);
         }
     }
 }

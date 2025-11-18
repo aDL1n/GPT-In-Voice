@@ -1,8 +1,8 @@
 package dev.adlin.service;
 
 import dev.adlin.memory.SystemPromptLoader;
+import dev.adlin.model.attention.SimpleAttention;
 import dev.adlin.model.tool.DiscordTools;
-import dev.adlin.rag.Memory2RagLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.client.ChatClient;
@@ -27,9 +27,8 @@ public class ModelService {
     private final ChatModel chatModel;
     private final MemoryService memoryService;
     private final RagService ragService;
-
+    private final SimpleAttention attention;
     private SystemMessage systemMessage;
-    private final Memory2RagLoader memory2RagLoader;
 
     private final ChatClient chatClient;
     private final AtomicBoolean processing = new AtomicBoolean(false);
@@ -39,19 +38,19 @@ public class ModelService {
             MemoryService memoryService,
             RagService ragService,
             SystemPromptLoader systemPromptLoader,
-            Memory2RagLoader memory2RagLoader,
-            DiscordTools discordTools
+            DiscordTools discordTools,
+            SimpleAttention attention
     ) {
         this.chatModel = chatModel;
         this.memoryService = memoryService;
         this.ragService = ragService;
+        this.attention = attention;
 
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultTools(discordTools)
                 .build();
 
-        systemMessage = (SystemMessage) systemPromptLoader.load().orElse(null);
-        this.memory2RagLoader = memory2RagLoader;
+        systemMessage = (SystemMessage) systemPromptLoader.load();
         log.info("Model service initialized");
     }
 
@@ -59,11 +58,13 @@ public class ModelService {
         log.info("Asking model");
         processing.set(true);
 
-        if (message.getText() == null && message.getText().isEmpty()) return new AssistantMessage("");
+        if (message.getText() == null || message.getText().isEmpty()) return new AssistantMessage("");
         this.memoryService.addMemory(message);
+        this.ragService.addMessages(message);
+
+        if (!attention.check(message)) return new AssistantMessage("");
 
         List<Message> messages = new ArrayList<>();
-        messages.add(systemMessage);
 
         String ragResult = this.ragService.searchInMemory(message.getText());
         if (ragResult != null) messages.add(new SystemMessage(ragResult));
@@ -78,11 +79,12 @@ public class ModelService {
                 .build();
 
         ChatResponse chatResponse = chatClient.prompt(prompt)
+                .system(systemMessage.getText())
                 .call()
                 .chatResponse();
 
         if (chatResponse != null)
-            this.ragService.add(chatResponse);
+            this.ragService.addChatResponse(chatResponse);
 
         System.out.println("Prompt: \n" + prompt.getInstructions().stream()
                 .map(Message::getText)
@@ -98,8 +100,6 @@ public class ModelService {
                 .collect(Collectors.joining("\n")));
 
         log.info("Model response received");
-
-        memory2RagLoader.add(message, assistantMessage);
 
         processing.set(false);
         return assistantMessage;
