@@ -1,6 +1,7 @@
 package dev.adlin.service;
 
 import dev.adlin.memory.SystemPromptLoader;
+import dev.adlin.model.tool.DiscordTools;
 import dev.adlin.rag.Memory2RagLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,13 +39,15 @@ public class ModelService {
             MemoryService memoryService,
             RagService ragService,
             SystemPromptLoader systemPromptLoader,
-            Memory2RagLoader memory2RagLoader
+            Memory2RagLoader memory2RagLoader,
+            DiscordTools discordTools
     ) {
         this.chatModel = chatModel;
         this.memoryService = memoryService;
         this.ragService = ragService;
 
         this.chatClient = ChatClient.builder(chatModel)
+                .defaultTools(discordTools)
                 .build();
 
         systemMessage = (SystemMessage) systemPromptLoader.load().orElse(null);
