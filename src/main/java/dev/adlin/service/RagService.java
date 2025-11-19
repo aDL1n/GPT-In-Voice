@@ -12,7 +12,6 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import javax.print.Doc;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,9 +33,9 @@ public class RagService {
         log.info("Searching in memory");
 
         SearchRequest request = SearchRequest.builder()
-                .topK(5)
+                .topK(ragConfig.getTopK())
                 .query(query)
-                .similarityThreshold(0.8)
+                .similarityThreshold(ragConfig.getSimilarityThreshold())
                 .build();
 
         List<Document> similarMemories = this.vectorStore.similaritySearch(request);
