@@ -5,7 +5,6 @@ import dev.adlin.discord.audio.AudioBufferManager;
 import dev.adlin.discord.audio.AudioProvider;
 import dev.adlin.manager.ModelsManager;
 import dev.adlin.service.ModelService;
-import dev.adlin.speech.synthesis.SpeechSynthesis;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -40,16 +39,13 @@ public class ChatProducer {
         this.chatConfig = chatConfig;
 
         audioBufferManager.setBufferListener((user, data) -> {
-            if (modelsManager.getRecognitionModelState().isEnabled()) {
-                CompletableFuture.runAsync(() -> {
-                    String transcript = modelsManager
-                            .getSpeechRecognitionModel()
-                            .transcriptAudio(data);
-
-                    if (transcript != null && !transcript.isBlank())
-                        translatedMessages.put(user.getName(), transcript);
-                });
-            }
+            if (modelsManager.getSpeechRecognitionState().isEnabled())
+                modelsManager.getSpeechRecognitionModel().transcribeAsync(data)
+                        .thenAccept(transcript -> {
+                            if (transcript != null && !translatedMessages.isEmpty()) {
+                                translatedMessages.put(user.getName(), transcript);
+                            }
+                        });
         });
     }
 
@@ -92,12 +88,11 @@ public class ChatProducer {
         log.info("Processing answer");
         AssistantMessage assistantMessage = this.modelService.ask(message);
 
-        CompletableFuture.runAsync(() -> {
-            if (modelsManager.getSynthesisModelState().isEnabled()) {
-                byte[] speech = modelsManager.getSpeechSynthesisModel().speech(assistantMessage.getText());
-                audioProvider.addAudio(speech);
-            }
-        });
+        if (modelsManager.getSpeechSynthesisState().isEnabled())
+            modelsManager.getSpeechSynthesisModel().synthesizeAsync(assistantMessage.getText())
+                    .thenAccept(audio -> {
+                        audioProvider.addAudio(audio);
+                    });
 
         return assistantMessage;
     }

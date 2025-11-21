@@ -3,7 +3,7 @@ package dev.adlin.api.state;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RecognitionModelState {
+public class SpeechSynthesisState {
 
     private boolean enabled;
 

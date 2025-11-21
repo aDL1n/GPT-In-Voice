@@ -1,7 +1,7 @@
 package dev.adlin.manager;
 
-import dev.adlin.api.state.RecognitionModelState;
-import dev.adlin.api.state.SynthesisModelState;
+import dev.adlin.api.state.SpeechRecognitionState;
+import dev.adlin.api.state.SpeechSynthesisState;
 import dev.adlin.config.properties.SpeechRecognitionConfig;
 import dev.adlin.config.properties.SpeechSynthesisConfig;
 import dev.adlin.speech.recognition.SpeechRecognition;
@@ -26,20 +26,20 @@ public class ModelsManager {
     private String currentSynthesisModel;
     private String currentRecognitionModel;
 
-    private final SynthesisModelState synthesisModelState;
-    private final RecognitionModelState recognitionModelState;
+    private final SpeechSynthesisState speechSynthesisState;
+    private final SpeechRecognitionState speechRecognitionState;
 
     @Autowired
     public ModelsManager(List<SpeechSynthesis> synthesisList,
                          List<SpeechRecognition> recognitionList,
                          SpeechSynthesisConfig synthesisConfig,
                          SpeechRecognitionConfig recognitionConfig,
-                         SynthesisModelState synthesisModelState,
-                         RecognitionModelState recognitionModelState
+                         SpeechSynthesisState speechSynthesisState,
+                         SpeechRecognitionState speechRecognitionState
     ) {
 
-        this.synthesisModelState = synthesisModelState;
-        this.recognitionModelState = recognitionModelState;
+        this.speechSynthesisState = speechSynthesisState;
+        this.speechRecognitionState = speechRecognitionState;
         log.info("Initializing ModelsManager...");
 
         synthesisList.forEach(model -> synthesisModels.put(model.getName(), model));
@@ -83,12 +83,12 @@ public class ModelsManager {
         return recognitionModels.get(name.toLowerCase());
     }
 
-    public SynthesisModelState getSynthesisModelState() {
-        return this.synthesisModelState;
+    public SpeechSynthesisState getSpeechSynthesisState() {
+        return this.speechSynthesisState;
     }
 
-    public RecognitionModelState getRecognitionModelState() {
-        return this.recognitionModelState;
+    public SpeechRecognitionState getSpeechRecognitionState() {
+        return this.speechRecognitionState;
     }
 
     public List<String> getSynthesisModelNames() {

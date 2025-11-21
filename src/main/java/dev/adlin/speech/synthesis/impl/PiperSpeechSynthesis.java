@@ -7,6 +7,7 @@ import dev.adlin.speech.synthesis.SpeechSynthesisAbstract;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -17,72 +18,64 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-@Service
-public class PiperService extends SpeechSynthesisAbstract {
+@Component
+public class PiperSpeechSynthesis extends SpeechSynthesisAbstract {
 
-    private static final Logger log = LogManager.getLogger(PiperService.class);
+    private static final Logger log = LogManager.getLogger(PiperSpeechSynthesis.class);
 
     private final HttpClient client = HttpClient
             .newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
             .build();
 
-    public PiperService(SpeechSynthesisConfig config) {
+    public PiperSpeechSynthesis(SpeechSynthesisConfig config) {
         super(config, "piper");
     }
 
     @Nullable
     @Override
-    public byte[] speech(String text) {
-        try {
-            log.info("The answer has been successfully translated into speech");
-            return speechAsync(text).get();
-        } catch (Exception e) {
-            log.error("Failed to convert text to speech", e);
-        }
-
-        return null;
+    public byte[] synthesize(String text) {
+        return this.synthesizeAsync(text).join();
     }
 
-    public CompletableFuture<byte[]> speechAsync(String text) {
+    public CompletableFuture<byte[]> synthesizeAsync(String text) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(this.baseUrl + "/speech"))
                 .header("Content-Type", "text/plain; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(text, StandardCharsets.UTF_8))
                 .build();
 
-
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenCompose(resp -> {
-                    if (resp.statusCode() != 200) {
-                        throw new RuntimeException("Speech request failed: " + resp.body());
-                    }
-                    JsonObject json = JsonParser.parseString(resp.body()).getAsJsonObject();
-                    String requestId = json.get("request_id").getAsString();
+                .thenCompose(response -> {
+                    if (response.statusCode() != 200)
+                        throw new RuntimeException("Speech request failed: " + response.body());
 
-                    return pollUntilReady(requestId);
+                    JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject();
+                    return pollUntilDone(json.get("request_id").getAsString());
+                }).exceptionallyAsync(throwable -> {
+                    log.error("Text speech failed", throwable);
+                    throw new RuntimeException("Speech   service unavailable", throwable);
                 });
     }
 
-    private CompletableFuture<byte[]> pollUntilReady(String requestId) {
+    private CompletableFuture<byte[]> pollUntilDone(String requestId) {
         HttpRequest pollReq = HttpRequest.newBuilder()
                 .uri(URI.create(this.baseUrl + "/result/" + requestId))
-                .GET()
-                .build();
+                .GET().build();
 
         return client.sendAsync(pollReq, HttpResponse.BodyHandlers.ofByteArray())
-                .thenCompose(resp -> {
-                    String contentType = resp.headers()
+                .thenCompose(response -> {
+                    String contentType = response.headers()
                             .firstValue("content-type").orElse("");
 
                     if (contentType.startsWith("audio/")) {
-                        return CompletableFuture.completedFuture(resp.body());
-                    } else {
-                        return CompletableFuture.supplyAsync(
-                                () -> null,
-                                CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS)
-                        ).thenCompose(x -> pollUntilReady(requestId));
+                        log.info("Text to speech completed");
+                        return CompletableFuture.completedFuture(response.body());
                     }
+                    else return CompletableFuture.supplyAsync(
+                            () -> null,
+                            CompletableFuture.delayedExecutor(250, TimeUnit.MILLISECONDS)
+                    ).thenCompose(future -> pollUntilDone(requestId));
                 });
     }
 }

@@ -15,10 +15,10 @@ public abstract class SpeechSynthesisAbstract implements SpeechSynthesis {
     }
 
     @Override
-    public abstract byte[] speech(String text);
+    public abstract byte[] synthesize(String text);
 
     @Override
-    public abstract CompletableFuture<byte[]> speechAsync(String text);
+    public abstract CompletableFuture<byte[]> synthesizeAsync(String text);
 
     @Override
     public String getName() {

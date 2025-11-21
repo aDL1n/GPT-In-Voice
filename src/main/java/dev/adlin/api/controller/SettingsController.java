@@ -22,15 +22,15 @@ public class SettingsController {
     }
 
     @PostMapping("/stt/enable")
-    public ResponseEntity<Void> enableRecognitionModel(@RequestBody boolean enable) {
-        this.modelsManager.getRecognitionModelState().setEnabled(enable);
+    public ResponseEntity<Void> enableSpeechRecognition(@RequestBody boolean enable) {
+        this.modelsManager.getSpeechRecognitionState().setEnabled(enable);
         log.info("Setting recognition model enable={}", enable);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/tts/enable")
-    public ResponseEntity<Void> enableSynthesisModel(@RequestBody boolean enable) {
-        this.modelsManager.getSynthesisModelState().setEnabled(enable);
+    public ResponseEntity<Void> enableSpeechSynthesis(@RequestBody boolean enable) {
+        this.modelsManager.getSpeechSynthesisState().setEnabled(enable);
         log.info("Setting synthesis model enable={}", enable);
         return ResponseEntity.ok().build();
     }

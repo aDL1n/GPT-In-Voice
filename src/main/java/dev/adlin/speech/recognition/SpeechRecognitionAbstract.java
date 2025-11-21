@@ -16,10 +16,10 @@ public abstract class SpeechRecognitionAbstract implements SpeechRecognition {
     }
 
     @Override
-    public abstract String transcriptAudio(byte[] data);
+    public abstract String transcribe(byte[] data);
 
     @Override
-    public abstract CompletableFuture<String> transcriptAudioAsync(byte[] audio);
+    public abstract CompletableFuture<String> transcribeAsync(byte[] audio);
 
     @Override
     public String getName() {
