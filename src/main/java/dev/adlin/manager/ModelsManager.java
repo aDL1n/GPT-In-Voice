@@ -42,19 +42,17 @@ public class ModelsManager {
         this.speechRecognitionState = speechRecognitionState;
         log.info("Initializing ModelsManager...");
 
-        synthesisList.forEach(model -> synthesisModels.put(model.getName(), model));
-        recognitionList.forEach(model -> recognitionModels.put(model.getName(), model));
-
         if (synthesisList.isEmpty()) throw new IllegalArgumentException("Synthesis models list is empty");
         if (recognitionList.isEmpty()) throw new IllegalArgumentException("Recognition models list is empty");
+
+        synthesisList.forEach(model -> synthesisModels.put(model.getName(), model));
+        recognitionList.forEach(model -> recognitionModels.put(model.getName(), model));
 
         currentSynthesisModel = synthesisConfig.getDefaultModel();
         log.info("Default synthesis model set to {}", currentSynthesisModel);
 
-
         currentRecognitionModel = recognitionConfig.getDefaultModel();
         log.info("Default recognition model set to {}", currentRecognitionModel);
-
 
         log.info("ModelsManager initialized");
     }

@@ -29,6 +29,7 @@ public class ModelService {
     private final ChatModel chatModel;
     private final MemoryService memoryService;
     private final RagService ragService;
+    private final DiscordTools discordTools;
     private final SimpleAttention attention;
     private SystemMessage systemMessage;
 
@@ -46,10 +47,10 @@ public class ModelService {
         this.chatModel = chatModel;
         this.memoryService = memoryService;
         this.ragService = ragService;
+        this.discordTools = discordTools;
         this.attention = attention;
 
         this.chatClient = ChatClient.builder(chatModel)
-                .defaultTools(discordTools)
                 .build();
 
         systemMessage = (SystemMessage) systemPromptLoader.load();
@@ -80,8 +81,10 @@ public class ModelService {
                 ).messages(messages)
                 .build();
 
-        ChatResponse chatResponse = chatClient.prompt(prompt)
+        ChatResponse chatResponse = chatClient
+                .prompt(prompt)
                 .system(systemMessage.getText())
+                .tools(discordTools)
                 .call()
                 .chatResponse();
 

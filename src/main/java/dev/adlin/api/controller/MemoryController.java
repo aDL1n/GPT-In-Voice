@@ -25,7 +25,7 @@ public class MemoryController {
 
     @GetMapping("/all")
     public ResponseEntity<List<Message>> getChatMemory() {
-        log.info("REST request to get all chat memory");
+//        log.info("REST request to get all chat memory");
         return ResponseEntity.ok(this.memoryService.getShortMemories());
     }
 

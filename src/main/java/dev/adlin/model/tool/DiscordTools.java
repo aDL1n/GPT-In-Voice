@@ -1,6 +1,7 @@
 package dev.adlin.model.tool;
 
 import dev.adlin.discord.DiscordBot;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
@@ -15,33 +16,33 @@ import java.util.stream.Collectors;
 @Component
 public class DiscordTools {
 
-    private final DiscordBot discordBot;
+    private final Guild guild;
 
-    public DiscordTools(DiscordBot discordBot) {
-        this.discordBot = discordBot;
+    public DiscordTools(Guild guild) {
+        this.guild = guild;
     }
 
-    @Tool(description = "Список участников в войс чате дискорда")
+    @Tool(description = "Список участников в голосовом канале дискорда")
     public String getUsersInVoiceChannel() {
-        if (discordBot.getGuild().getSelfMember().getVoiceState().getChannel() == null)
+        if (guild.getSelfMember().getVoiceState().getChannel() == null)
             return "Ты не в голосовом канале";
 
-        AudioChannelUnion channel = discordBot.getGuild().getSelfMember().getVoiceState().getChannel();
+        AudioChannelUnion channel = guild.getSelfMember().getVoiceState().getChannel();
 
         if (channel.getMembers().size() == 1) return "Ты один в этом голосовом канале";
 
         return channel.getMembers().stream()
-                .filter(member -> member != discordBot.getGuild().getSelfMember())
+                .filter(member -> member != guild.getSelfMember())
                 .map(Member::getEffectiveName)
                 .collect(Collectors.joining(", "));
     }
 
     @Tool(description = "Список голосовых каналов этого дискорд сервера")
     public String getVoiceChannels() {
-        List<VoiceChannel> voiceChannels = discordBot.getGuild().getVoiceChannels();
+        List<VoiceChannel> voiceChannels = guild.getVoiceChannels();
         if (voiceChannels.isEmpty()) return "На этом дискорд сервере нет голосовых каналов";
 
-        return discordBot.getGuild().getVoiceChannels().stream()
+        return guild.getVoiceChannels().stream()
                 .map(VoiceChannel::getName)
                 .collect(Collectors.joining(", "));
     }
@@ -50,13 +51,13 @@ public class DiscordTools {
     public String connectToVoiceChannel(@ToolParam(description = "Название канала из списка доступных") String voiceChannelName) {
         if (!getVoiceChannels().contains(voiceChannelName)) return "Голосового канала с таким названием нет";
 
-        AudioManager audioManager = discordBot.getGuild().getAudioManager();
+        AudioManager audioManager = guild.getAudioManager();
 
         if (audioManager.isConnected()) audioManager.closeAudioConnection();
 
         try {
             audioManager.openAudioConnection(
-                    discordBot.getGuild().getVoiceChannels().stream()
+                    guild.getVoiceChannels().stream()
                             .filter(voiceChannel -> voiceChannel.getName().equals(voiceChannelName))
                             .findFirst().orElse(null)
             );

@@ -17,8 +17,7 @@ public class VoiceListener extends ListenerAdapter {
     public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
         if (onUserLeave == null && onUserJoin == null) return;
 
-        if (event.getGuild().getAudioManager() == null &&
-                !event.getGuild().getAudioManager().isConnected()) return;
+        if (!event.getGuild().getAudioManager().isConnected()) return;
 
         AudioChannelUnion connectedChannel = event.getGuild().getAudioManager().getConnectedChannel();
 

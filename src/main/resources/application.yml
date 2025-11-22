@@ -2,7 +2,7 @@ spring:
   application:
     name: GPT-In-Voice
   datasource:
-    url: jdbc:postgresql://192.168.0.105:5433/postgres
+    url: jdbc:postgresql://192.168.0.106:5433/postgres
     username: postgres
     password: postgres
   jpa:
