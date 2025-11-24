@@ -22,6 +22,8 @@ spring:
         model: nomic-embed-text:v1.5
       chat:
         model: qwen3:4b
+        options:
+          temperature: 0.4
       init:
         pull-model-strategy: always
     chat:

@@ -30,12 +30,13 @@ public class ModelsManager {
     private final SpeechRecognitionState speechRecognitionState;
 
     @Autowired
-    public ModelsManager(List<SpeechSynthesis> synthesisList,
-                         List<SpeechRecognition> recognitionList,
-                         SpeechSynthesisProperties synthesisProperties,
-                         SpeechRecognitionProperties recognitionProperties,
-                         SpeechSynthesisState speechSynthesisState,
-                         SpeechRecognitionState speechRecognitionState
+    public ModelsManager(
+            List<SpeechSynthesis> synthesisList,
+            List<SpeechRecognition> recognitionList,
+            SpeechSynthesisProperties synthesisProperties,
+            SpeechRecognitionProperties recognitionProperties,
+            SpeechSynthesisState speechSynthesisState,
+            SpeechRecognitionState speechRecognitionState
     ) {
 
         this.speechSynthesisState = speechSynthesisState;
