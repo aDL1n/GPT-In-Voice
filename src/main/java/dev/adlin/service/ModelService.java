@@ -1,6 +1,5 @@
 package dev.adlin.service;
 
-import dev.adlin.memory.SystemPromptLoader;
 import dev.adlin.model.attention.SimpleAttention;
 import dev.adlin.model.tool.DiscordTools;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +8,6 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -26,35 +23,27 @@ public class ModelService {
 
     private static final Logger log = LogManager.getLogger(ModelService.class);
 
-    private final ChatModel chatModel;
     private final MemoryService memoryService;
     private final RagService ragService;
     private final DiscordTools discordTools;
     private final SimpleAttention attention;
-    private SystemMessage systemMessage;
 
     private final ChatClient chatClient;
     private final AtomicBoolean processing = new AtomicBoolean(false);
 
     public ModelService(
-            ChatModel chatModel,
+            ChatClient chatClient,
             MemoryService memoryService,
             RagService ragService,
-            SystemPromptLoader systemPromptLoader,
             DiscordTools discordTools,
             SimpleAttention attention
     ) {
-        this.chatModel = chatModel;
         this.memoryService = memoryService;
         this.ragService = ragService;
         this.discordTools = discordTools;
         this.attention = attention;
+        this.chatClient = chatClient;
 
-        this.chatClient = ChatClient.builder(chatModel)
-                .defaultTools(discordTools)
-                .build();
-
-        systemMessage = (SystemMessage) systemPromptLoader.load();
         log.info("Model service initialized");
     }
 
@@ -76,16 +65,12 @@ public class ModelService {
         messages.addAll(this.memoryService.getShortMemories());
 
         Prompt prompt = Prompt.builder()
-                .chatOptions(ChatOptions.builder()
-                        .maxTokens(8192)
-                        .build()
-                ).messages(messages)
+                .messages(messages)
                 .build();
 
         ChatResponse chatResponse = chatClient
                 .prompt(prompt)
-                .system(systemMessage.getText())
-//                .tools(discordTools)
+                .tools(discordTools)
                 .call()
                 .chatResponse();
 
@@ -109,14 +94,6 @@ public class ModelService {
 
         processing.set(false);
         return assistantMessage;
-    }
-
-    public SystemMessage getSystemMessage() {
-        return this.systemMessage;
-    }
-
-    public Optional<String> getModelName() {
-        return Optional.ofNullable(chatModel.getDefaultOptions().getModel());
     }
 
     public AtomicBoolean getProcessing() {

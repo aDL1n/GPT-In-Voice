@@ -19,14 +19,14 @@ public class ModelController {
     private static final Logger log = LogManager.getLogger(ModelController.class);
 
     private final ChatProducer chatProducer;
-    private final ModelService modelService;
+//    private final ModelService modelService;
 
     public ModelController(
-            ChatProducer chatProducer,
-            ModelService modelService
+            ChatProducer chatProducer
+//            ModelService modelService
     ) {
         this.chatProducer = chatProducer;
-        this.modelService = modelService;
+//        this.modelService = modelService;
     }
 
     @GetMapping("/ask")
@@ -35,16 +35,16 @@ public class ModelController {
         return ResponseEntity.ok(this.chatProducer.processAnswer(new UserMessage(username + ": " + message)).getText());
     }
 
-    @GetMapping("")
-    public ResponseEntity<String> getModelName() {
-        log.info("REST request to get model name");
-        return new ResponseEntity<>(this.modelService.getModelName().orElse("Model not loaded"), HttpStatus.OK);
-    }
+//    @GetMapping("")
+//    public ResponseEntity<String> getModelName() {
+//        log.info("REST request to get model name");
+//        return new ResponseEntity<>(this.modelService.getModelName().orElse("Model not loaded"), HttpStatus.OK);
+//    }
 
-    @GetMapping("/systemPrompt")
-    public ResponseEntity<String> getSystemPrompt() {
-        log.info("REST request to get system prompt");
-        return ResponseEntity.ok(this.modelService.getSystemMessage().getText());
-    }
+//    @GetMapping("/systemPrompt")
+//    public ResponseEntity<String> getSystemPrompt() {
+//        log.info("REST request to get system prompt");
+//        return ResponseEntity.ok(this.modelService.getSystemMessage().getText());
+//    }
 
 }
