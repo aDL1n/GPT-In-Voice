@@ -30,7 +30,6 @@ public class VoiceListener extends ListenerAdapter {
         if (event.getChannelLeft() != null &&
                 event.getChannelLeft().getId().equals(connectedChannel.getId())) {
             if (onUserLeave != null) onUserLeave.accept(event);
-            return;
         }
 
     }
