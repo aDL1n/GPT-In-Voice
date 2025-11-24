@@ -1,6 +1,6 @@
 package dev.adlin.service;
 
-import dev.adlin.config.properties.RagConfig;
+import dev.adlin.config.properties.RagProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -20,11 +20,11 @@ public class RagService {
 
     private static final Logger log = LogManager.getLogger(RagService.class);
 
-    private final RagConfig ragConfig;
+    private final RagProperties ragProperties;
     private final VectorStore vectorStore;
 
-    public RagService(RagConfig ragConfig, VectorStore vectorStore) {
-        this.ragConfig = ragConfig;
+    public RagService(RagProperties ragProperties, VectorStore vectorStore) {
+        this.ragProperties = ragProperties;
         this.vectorStore = vectorStore;
         log.info("RAG service initialized");
     }
@@ -33,9 +33,9 @@ public class RagService {
         log.info("Searching in memory");
 
         SearchRequest request = SearchRequest.builder()
-                .topK(ragConfig.getTopK())
+                .topK(ragProperties.getTopK())
                 .query(query)
-                .similarityThreshold(ragConfig.getSimilarityThreshold())
+                .similarityThreshold(ragProperties.getSimilarityThreshold())
                 .build();
 
         List<Document> similarMemories = this.vectorStore.similaritySearch(request);

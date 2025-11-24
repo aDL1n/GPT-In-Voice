@@ -2,8 +2,8 @@ package dev.adlin.manager;
 
 import dev.adlin.api.state.SpeechRecognitionState;
 import dev.adlin.api.state.SpeechSynthesisState;
-import dev.adlin.config.properties.SpeechRecognitionConfig;
-import dev.adlin.config.properties.SpeechSynthesisConfig;
+import dev.adlin.config.properties.SpeechRecognitionProperties;
+import dev.adlin.config.properties.SpeechSynthesisProperties;
 import dev.adlin.speech.recognition.SpeechRecognition;
 import dev.adlin.speech.synthesis.SpeechSynthesis;
 import org.apache.logging.log4j.LogManager;
@@ -32,8 +32,8 @@ public class ModelsManager {
     @Autowired
     public ModelsManager(List<SpeechSynthesis> synthesisList,
                          List<SpeechRecognition> recognitionList,
-                         SpeechSynthesisConfig synthesisConfig,
-                         SpeechRecognitionConfig recognitionConfig,
+                         SpeechSynthesisProperties synthesisProperties,
+                         SpeechRecognitionProperties recognitionProperties,
                          SpeechSynthesisState speechSynthesisState,
                          SpeechRecognitionState speechRecognitionState
     ) {
@@ -48,10 +48,10 @@ public class ModelsManager {
         synthesisList.forEach(model -> synthesisModels.put(model.getName(), model));
         recognitionList.forEach(model -> recognitionModels.put(model.getName(), model));
 
-        currentSynthesisModel = synthesisConfig.getDefaultModel();
+        currentSynthesisModel = synthesisProperties.getDefaultModel();
         log.info("Default synthesis model set to {}", currentSynthesisModel);
 
-        currentRecognitionModel = recognitionConfig.getDefaultModel();
+        currentRecognitionModel = recognitionProperties.getDefaultModel();
         log.info("Default recognition model set to {}", currentRecognitionModel);
 
         log.info("ModelsManager initialized");

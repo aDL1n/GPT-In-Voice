@@ -1,6 +1,5 @@
 package dev.adlin.model.tool;
 
-import dev.adlin.discord.DiscordBot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -39,6 +38,7 @@ public class DiscordTools {
 
     @Tool(description = "Список голосовых каналов этого дискорд сервера")
     public String getVoiceChannels() {
+        System.out.println("use tool");
         List<VoiceChannel> voiceChannels = guild.getVoiceChannels();
         if (voiceChannels.isEmpty()) return "На этом дискорд сервере нет голосовых каналов";
 

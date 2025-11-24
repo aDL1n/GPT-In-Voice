@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties("app.speech.synthesis")
-public class SpeechSynthesisConfig {
+public class SpeechSynthesisProperties {
     private String url = "http://localhost:5002";
     private String defaultModel = "piper";
 

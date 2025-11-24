@@ -7,7 +7,7 @@ import java.util.List;
 
 @Configuration
 @ConfigurationProperties("app.attention")
-public class AttentionConfig {
+public class AttentionProperties {
     private List<String> mentions = List.of("GPT", "Бот", "Валера");
     private boolean mentionOnly = false;
 

@@ -51,6 +51,7 @@ public class ModelService {
         this.attention = attention;
 
         this.chatClient = ChatClient.builder(chatModel)
+                .defaultTools(discordTools)
                 .build();
 
         systemMessage = (SystemMessage) systemPromptLoader.load();
@@ -84,7 +85,7 @@ public class ModelService {
         ChatResponse chatResponse = chatClient
                 .prompt(prompt)
                 .system(systemMessage.getText())
-                .tools(discordTools)
+//                .tools(discordTools)
                 .call()
                 .chatResponse();
 

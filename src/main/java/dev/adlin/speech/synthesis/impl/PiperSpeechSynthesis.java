@@ -2,7 +2,7 @@ package dev.adlin.speech.synthesis.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.adlin.config.properties.SpeechSynthesisConfig;
+import dev.adlin.config.properties.SpeechSynthesisProperties;
 import dev.adlin.speech.synthesis.SpeechSynthesisAbstract;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,8 +27,8 @@ public class PiperSpeechSynthesis extends SpeechSynthesisAbstract {
             .version(HttpClient.Version.HTTP_1_1)
             .build();
 
-    public PiperSpeechSynthesis(SpeechSynthesisConfig config) {
-        super(config, "piper");
+    public PiperSpeechSynthesis(SpeechSynthesisProperties properties) {
+        super(properties, "piper");
     }
 
     @Nullable

@@ -1,6 +1,6 @@
 package dev.adlin.api.controller;
 
-import dev.adlin.config.properties.ChatConfig;
+import dev.adlin.config.properties.ChatProperties;
 import dev.adlin.service.MemoryService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,11 +16,11 @@ public class MemoryController {
 
     private static final Logger log = LogManager.getLogger(MemoryController.class);
     private final MemoryService memoryService;
-    private final ChatConfig chatConfig;
+    private final ChatProperties chatProperties;
 
-    public MemoryController(MemoryService memoryService, ChatConfig chatConfig) {
+    public MemoryController(MemoryService memoryService, ChatProperties chatProperties) {
         this.memoryService = memoryService;
-        this.chatConfig = chatConfig;
+        this.chatProperties = chatProperties;
     }
 
     @GetMapping("/all")
@@ -38,7 +38,7 @@ public class MemoryController {
             Message message = null;
             switch (messageTypeEnum) {
                 case ASSISTANT -> message = new AssistantMessage(messageText);
-                case USER -> message = new UserMessage(chatConfig.getOwnerName() + messageText);
+                case USER -> message = new UserMessage(chatProperties.getOwnerName() + messageText);
                 case SYSTEM -> message = new SystemMessage(messageText);
             }
 

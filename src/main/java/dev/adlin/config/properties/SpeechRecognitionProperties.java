@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties("app.speech.recognition")
-public class SpeechRecognitionConfig {
+public class SpeechRecognitionProperties {
     private String url = "http://localhost:5000";
     private String defaultModel = "whisper";
 

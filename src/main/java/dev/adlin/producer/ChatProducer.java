@@ -1,6 +1,6 @@
 package dev.adlin.producer;
 
-import dev.adlin.config.properties.ChatConfig;
+import dev.adlin.config.properties.ChatProperties;
 import dev.adlin.discord.audio.AudioBufferManager;
 import dev.adlin.discord.audio.AudioProvider;
 import dev.adlin.manager.ModelsManager;
@@ -25,18 +25,20 @@ public class ChatProducer {
 
     private final AudioProvider audioProvider;
     private final ModelService modelService;
-    private final ChatConfig chatConfig;
     private final ModelsManager modelsManager;
+    private final ChatProperties chatProperties;
 
-    public ChatProducer(AudioBufferManager audioBufferManager,
-                        AudioProvider audioProvider,
-                        ModelService modelService,
-                        ModelsManager modelsManager,
-                        ChatConfig chatConfig) {
+    public ChatProducer(
+            AudioBufferManager audioBufferManager,
+            AudioProvider audioProvider,
+            ModelService modelService,
+            ModelsManager modelsManager,
+            ChatProperties chatProperties
+    ) {
         this.audioProvider = audioProvider;
         this.modelService = modelService;
         this.modelsManager = modelsManager;
-        this.chatConfig = chatConfig;
+        this.chatProperties = chatProperties;
 
         audioBufferManager.setBufferListener((user, data) -> {
             if (modelsManager.getSpeechRecognitionState().isEnabled())
@@ -55,9 +57,9 @@ public class ChatProducer {
             return;
         }
 
-        if (translatedMessages.containsKey(chatConfig.getOwnerName())) {
-            String text = translatedMessages.remove(chatConfig.getOwnerName());
-            processAnswer(new UserMessage(chatConfig.getOwnerName() + ": " + text));
+        if (translatedMessages.containsKey(chatProperties.getOwnerName())) {
+            String text = translatedMessages.remove(chatProperties.getOwnerName());
+            processAnswer(new UserMessage(chatProperties.getOwnerName() + ": " + text));
             return;
         }
 

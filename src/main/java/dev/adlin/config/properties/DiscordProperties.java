@@ -16,7 +16,7 @@ import java.util.EnumSet;
 
 @Configuration
 @ConfigurationProperties("app.discord")
-public class DiscordConfig {
+public class DiscordProperties {
     private String token;
     private String guildId;
 
@@ -34,31 +34,5 @@ public class DiscordConfig {
 
     public void setGuildId(String guildId) {
         this.guildId = guildId;
-    }
-
-    @Bean
-    public JDA getJda() {
-        try {
-            return JDABuilder.create(
-                    getToken(),
-                    EnumSet.of(
-                            GatewayIntent.GUILD_MESSAGES,
-                            GatewayIntent.GUILD_VOICE_STATES,
-                            GatewayIntent.MESSAGE_CONTENT
-                    )
-                    ).setActivity(Activity.customStatus("Waiting for you"))
-                    .setStatus(OnlineStatus.IDLE)
-                    .enableCache(CacheFlag.VOICE_STATE)
-                    .build()
-                    .awaitReady();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Bean
-    public Guild getGuild() {
-        Assert.notNull(getGuildId(),  "Guild Id cannot be null");
-        return getJda().getGuildById(getGuildId());
     }
 }

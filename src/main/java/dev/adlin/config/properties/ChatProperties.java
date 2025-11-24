@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties("app.chat")
-public class ChatConfig {
+public class ChatProperties {
     private String ownerName = "aDL1n";
     private int shortMemorySize = 30;
 

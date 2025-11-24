@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties("app.rag")
-public class RagConfig {
+public class RagProperties {
     private int topK = 5;
     private double similarityThreshold = 0.8;
 

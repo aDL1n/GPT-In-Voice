@@ -2,7 +2,7 @@ package dev.adlin.speech.recognition.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.adlin.config.properties.SpeechRecognitionConfig;
+import dev.adlin.config.properties.SpeechRecognitionProperties;
 import dev.adlin.speech.recognition.SpeechRecognitionAbstract;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,8 +24,8 @@ public class WhisperSpeechRecognition extends SpeechRecognitionAbstract {
     private final HttpClient client = HttpClient.newBuilder()
             .build();
 
-    public WhisperSpeechRecognition(SpeechRecognitionConfig config) {
-        super(config, "whisper");
+    public WhisperSpeechRecognition(SpeechRecognitionProperties properties) {
+        super(properties, "whisper");
     }
 
     @Nullable
