@@ -12,9 +12,13 @@ public class ChatClientConfig {
 
     private final ChatModel chatModel;
     private final SystemPromptLoader systemPromptLoader;
+
     private SystemMessage systemMessage;
 
-    public ChatClientConfig(ChatModel chatModel, SystemPromptLoader systemPromptLoader) {
+    public ChatClientConfig(
+            ChatModel chatModel,
+            SystemPromptLoader systemPromptLoader
+    ) {
         this.chatModel = chatModel;
         this.systemPromptLoader = systemPromptLoader;
     }

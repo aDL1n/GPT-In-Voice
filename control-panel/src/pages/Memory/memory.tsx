@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MemoryClient, type MemoryData } from '../../utils/memoryClient';
-import { Box, Container, Heading, ScrollArea } from '@chakra-ui/react';
+import { Box, Button, Container, Heading, IconButton, ScrollArea } from '@chakra-ui/react';
+import { FaTrash } from "react-icons/fa";
 
 
 function Memory() {
@@ -10,8 +11,9 @@ function Memory() {
         setMemories(data);
     };
 
+    const memoryClient: MemoryClient = new MemoryClient(handleMemoryUpdate);
+
     useEffect(() => {
-        const memoryClient: MemoryClient = new MemoryClient(handleMemoryUpdate);
         memoryClient.init();
     }, []);
 
@@ -21,9 +23,22 @@ function Memory() {
                 <ScrollArea.Root>
                     <ScrollArea.Viewport borderRadius="15px">
                         <ScrollArea.Content display="flex" flexDirection="column" gap="6px">
-                            {memories.map((memory) => (
+                            {memories.map((memory, id) => (
                                 <Box backgroundColor="gray.800" padding="10px" borderRadius="15px">
-                                    <Heading size="lg">{memory.messageType}</Heading>
+                                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                                        <Heading size="lg">{memory.messageType}</Heading>
+                                        <IconButton
+                                            borderRadius="10px"
+                                            height="32px"
+                                            width="32px"
+                                            minWidth="16px"
+                                            onClick={(e) => {
+                                                memoryClient.delete(id)
+                                            }}
+                                        >
+                                            <FaTrash />
+                                        </IconButton>
+                                    </Box>
                                     <p style={{
                                         wordBreak: "break-word",
                                     }}>{memory.text}</p>

@@ -39,12 +39,15 @@ public class MemoryService {
         this.chatMemory.add(CONVERSATION_ID, message);
     }
 
+    // Temporary remove from short memory
     public void removeMemory(int messageIndex) {
         //Get memories
         List<Message> memories = this.chatMemory.get(CONVERSATION_ID);
         memories.remove(messageIndex);
+
         //Clear all memories
         this.chatMemory.clear(CONVERSATION_ID);
+
         //Save updated memories
         this.chatMemory.add(CONVERSATION_ID, memories);
     }

@@ -10,6 +10,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class ModelService {
     private final AtomicBoolean processing = new AtomicBoolean(false);
 
     public ModelService(
+
             ChatClient chatClient,
             MemoryService memoryService,
             RagService ragService,

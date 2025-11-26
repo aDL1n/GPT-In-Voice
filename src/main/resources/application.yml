@@ -23,7 +23,7 @@ spring:
       chat:
         model: qwen3:4b
         options:
-          temperature: 0.4
+          temperature: 0.5
           max-tokens: 16384
       init:
         pull-model-strategy: always
