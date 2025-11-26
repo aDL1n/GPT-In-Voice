@@ -10,6 +10,8 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.support.ToolCallbacks;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -63,13 +65,15 @@ public class ModelService {
 
         messages.addAll(this.memoryService.getShortMemories());
 
+        ToolCallback[] toolCallback = ToolCallbacks.from(discordTools);
+
         Prompt prompt = Prompt.builder()
                 .messages(messages)
                 .build();
 
         ChatResponse chatResponse = chatClient
                 .prompt(prompt)
-                .tools(discordTools)
+                .toolCallbacks(toolCallback)
                 .call()
                 .chatResponse();
 
