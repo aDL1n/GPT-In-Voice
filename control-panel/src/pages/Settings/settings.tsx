@@ -13,10 +13,13 @@ import {
 } from "@chakra-ui/react";
 import {useEffect,useState} from "react";
 import {ModelClient} from "@/utils/modelClient.tsx";
+import { useColorModeValue } from "@/components/ui/color-mode";
 
 function Models() {
     const settingsClient = new SettingsClient();
     const modelClient = new ModelClient();
+
+    const textColor = useColorModeValue("gray.800", "white")
 
     const [recognitionModels, setRecognitionModels] = useState<ListCollection<{ label: string; value: string }>>();
     const [synthesisModels, setSynthesisModels] = useState<ListCollection<{ label: string; value: string }>>();
@@ -59,12 +62,13 @@ function Models() {
                             gap="1"
                             width="100%"
                         >
-                            <Heading textAlign="center" size="2xl" padding="10px">
+                            <Heading textAlign="center" size="2xl" padding="10px" color={textColor}>
                                 TTS
                             </Heading>
                             <Switch.Root
                                 defaultChecked
                                 onCheckedChange={(e) => settingsClient.enableSynthesisModel(e.checked)}
+                                color={textColor}
                             >
                                 <Switch.HiddenInput/>
                                 <Switch.Label>Enable TTS</Switch.Label>
@@ -80,6 +84,7 @@ function Models() {
                                     width="220px"
                                     defaultValue={["piper"]}
                                     onValueChange={(e) => console.log(e.value)}
+                                    color={textColor}
                                 >
                                     <Select.HiddenSelect />
                                     <Select.Label>Selected TTS model</Select.Label>
@@ -117,10 +122,14 @@ function Models() {
                             flexDirection="column"
                             gap="1"
                         >
-                            <Heading textAlign="center" size="2xl">
+                            <Heading textAlign="center" size="2xl" color={textColor}>
                                 STT
                             </Heading>
-                            <Switch.Root defaultChecked onCheckedChange={(e) => settingsClient.enableRecognitionModel(e.checked)} >
+                            <Switch.Root 
+                                defaultChecked 
+                                onCheckedChange={(e) => settingsClient.enableRecognitionModel(e.checked)} 
+                                color={textColor}
+                            >
                                 <Switch.HiddenInput />
                                 <Switch.Label>Enable STT</Switch.Label>
                                 <Switch.Control>
@@ -136,6 +145,7 @@ function Models() {
                                     width="220px"
                                     defaultValue={["whisper"]}
                                     onValueChange={(e) => console.log(e.value)}
+                                    color={textColor}
                                 >
                                     <Select.HiddenSelect />
                                     <Select.Label>Selected STT model</Select.Label>
@@ -171,12 +181,17 @@ function Models() {
                     shadow="md"
                     p="0"
                 >
-                    <Heading size="2xl" padding="10px" textAlign="center">
+                    <Heading 
+                        size="2xl" 
+                        padding="10px" 
+                        textAlign="center"
+                        color={textColor}
+                    >
                         LLM
                     </Heading>
                     <Flex>
                         <Container>
-                            <Field.Root gap="2">
+                            <Field.Root gap="2" color={textColor}>
                                 <Field.Label>
                                     Start system prompt
                                 </Field.Label>

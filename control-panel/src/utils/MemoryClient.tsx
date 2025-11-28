@@ -5,7 +5,7 @@ interface Metadata {
 
 export interface MemoryData {
     text: string,
-    metadata: Metadata
+    metadata: Metadata,
     messageType: string,
     media: any
 }
@@ -19,22 +19,39 @@ export class MemoryClient {
         onMemoryUpdate: (data: MemoryData[]) => void,
         baseUrl: string = "http://localhost:8080/"
     ) {
-        this.url = new URL('/api/memory/all', baseUrl);
+        this.url = new URL('/api/memory', baseUrl);
         this.onMemoryUpdate = onMemoryUpdate;
     }
 
     public init(): void {
 
-        let run = () => {
-            fetch(this.url.toString())
+        
+        this.run();
+        setInterval(this.run, 2500);
+    }
+
+    private run = () => {
+        fetch(this.url.toString() + "/all")
                 .then(async (response) => {
-                    if (response.ok) 
+                    if (response.ok)
                         this.onMemoryUpdate(JSON.parse(await response.text()) as MemoryData[])
-                    
+
                 })
-                .catch(_ => {})
-        }
-        run();
-        setInterval(run, 2500);
+                .catch(_ => { })
+    }
+
+    public delete(messageIndex: Number): void {
+        fetch(
+            this.url.toString() + "/delete",
+            {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json' // ОЧЕНЬ ВАЖНО указать тип содержимого
+                },
+                body: JSON.stringify(messageIndex)
+            }).then(() => {
+                this.run();
+            }
+        );
     }
 }
