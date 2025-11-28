@@ -2,105 +2,19 @@ import { useEffect, useState } from "react";
 import { MemoryClient, type MemoryData } from '../../utils/memoryClient';
 import { Box, Container, Heading, IconButton, ScrollArea } from '@chakra-ui/react';
 import { FaTrash } from "react-icons/fa";
-import { useColorModeValue } from "@/components/ui/color-mode";
 
 
 function Memory() {
     const [memories, setMemories] = useState<MemoryData[]>([]);
 
     const handleMemoryUpdate = (data: MemoryData[]) => {
-        // setMemories(data);
+        setMemories(data);
     };
-
-    // const deleteButtonBackground = useColorModeValue("white", "gray.900");
 
     const memoryClient: MemoryClient = new MemoryClient(handleMemoryUpdate);
 
     useEffect(() => {
         memoryClient.init();
-        setMemories([
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            },
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            },
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            },
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            },
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            },
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            },
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            },
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            },
-            {
-                text: "string",
-                metadata: {
-                    name: "",
-                    data: ""
-                },
-                messageType: "USER",
-                media: ""
-            }
-        ])
     }, []);
 
     return (

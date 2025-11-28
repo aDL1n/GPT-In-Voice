@@ -4,6 +4,7 @@ import dev.adlin.config.properties.ChatProperties;
 import dev.adlin.discord.audio.AudioBufferManager;
 import dev.adlin.discord.audio.AudioProvider;
 import dev.adlin.manager.ModelsManager;
+import dev.adlin.model.filter.AnswerFilter;
 import dev.adlin.service.ModelService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,18 +28,21 @@ public class ChatProducer {
     private final ModelService modelService;
     private final ModelsManager modelsManager;
     private final ChatProperties chatProperties;
+    private final AnswerFilter answerFilter;
 
     public ChatProducer(
             AudioBufferManager audioBufferManager,
             AudioProvider audioProvider,
             ModelService modelService,
             ModelsManager modelsManager,
-            ChatProperties chatProperties
+            ChatProperties chatProperties,
+            AnswerFilter answerFilter
     ) {
         this.audioProvider = audioProvider;
         this.modelService = modelService;
         this.modelsManager = modelsManager;
         this.chatProperties = chatProperties;
+        this.answerFilter = answerFilter;
 
         audioBufferManager.setBufferListener((user, data) -> {
             if (modelsManager.getSpeechRecognitionState().isEnabled())
@@ -91,10 +95,11 @@ public class ChatProducer {
         AssistantMessage assistantMessage = this.modelService.ask(message);
 
         if (modelsManager.getSpeechSynthesisState().isEnabled())
-            modelsManager.getSpeechSynthesisModel().synthesizeAsync(assistantMessage.getText())
-                    .thenAccept(audio -> {
-                        audioProvider.addAudio(audio);
-                    });
+            modelsManager.getSpeechSynthesisModel().synthesizeAsync(
+                    answerFilter.process(assistantMessage.getText())
+            ).thenAccept(audio -> {
+                audioProvider.addAudio(audio);
+            });
 
         return assistantMessage;
     }

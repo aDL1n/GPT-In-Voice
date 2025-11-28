@@ -8,9 +8,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Service
 public class ModelService {
@@ -34,7 +31,6 @@ public class ModelService {
     private final AtomicBoolean processing = new AtomicBoolean(false);
 
     public ModelService(
-
             ChatClient chatClient,
             MemoryService memoryService,
             RagService ragService,
@@ -73,32 +69,25 @@ public class ModelService {
                 .messages(messages)
                 .build();
 
-        ChatResponse chatResponse = chatClient
+        AssistantMessage response = chatClient
                 .prompt(prompt)
                 .toolCallbacks(toolCallback)
                 .call()
-                .chatResponse();
+                .chatResponse()
+                .getResult()
+                .getOutput();
 
-        if (chatResponse != null)
-            this.ragService.addChatResponse(chatResponse);
+        if (response != null)
+            this.ragService.addMessages(response);
 
-        System.out.println("Prompt: \n" + prompt.getInstructions().stream()
-                .map(Message::getText)
-                .collect(Collectors.joining("\n"))
-        );
+        this.memoryService.addMemory(response);
 
-        AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
-        this.memoryService.addMemory(assistantMessage);
-
-        System.out.println("AI: " + chatResponse.getResults().stream()
-                .map(gen ->
-                        gen.getOutput().getText())
-                .collect(Collectors.joining("\n")));
+        System.out.println("AI: " + response.getText());
 
         log.info("Model response received");
-
         processing.set(false);
-        return assistantMessage;
+
+        return response;
     }
 
     public AtomicBoolean getProcessing() {
